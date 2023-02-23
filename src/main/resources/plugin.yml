@@ -1,0 +1,4 @@
+name: TheBridge
+version: ${project.version}
+main: practice.hippo.logic.PluginMain
+api-version: 1.8
