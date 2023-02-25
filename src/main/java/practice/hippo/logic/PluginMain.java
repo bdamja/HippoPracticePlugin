@@ -1,9 +1,10 @@
 package practice.hippo.logic;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
-import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.bukkit.BukkitWorld;
+import com.sk89q.worldedit.schematic.MCEditSchematicFormat;
+import com.sk89q.worldedit.world.DataException;
+import org.bukkit.Location;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -22,6 +23,7 @@ public class PluginMain extends JavaPlugin implements Listener {
     public static MapInformation currentMap = null;
     public MapInformation getCurrentMap() { return currentMap; }
     public HashSet<Block> recordedBlocks = new HashSet<>();
+    private World world;
 
     @Override
     public void onEnable() {
@@ -29,7 +31,7 @@ public class PluginMain extends JavaPlugin implements Listener {
         PluginManager pluginManager = this.getServer().getPluginManager();
         registerEventListeners(pluginManager);
         setDefaultGameRules();
-        currentMap = new MapInformation();
+        currentMap = new MapInformation(Bukkit.getWorld("world"));
     }
 
     private void registerEventListeners(PluginManager pluginManager) {
@@ -44,21 +46,27 @@ public class PluginMain extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new WeatherChangeHandler(), this);
     }
 
-    private static void setDefaultGameRules() {
-        Bukkit.getWorld("world").setGameRuleValue("keepInventory", "true");
-        Bukkit.getWorld("world").setGameRuleValue("naturalRegeneration", "false");
-        Bukkit.getWorld("world").setGameRuleValue("doDaylightCycle", "false");
-        Bukkit.getWorld("world").setGameRuleValue("randomTickSpeed", "0");
+    private void setDefaultGameRules() {
+        world = Bukkit.getWorld("world");
+        world.setGameRuleValue("keepInventory", "true");
+        world.setGameRuleValue("naturalRegeneration", "false");
+        world.setGameRuleValue("doDaylightCycle", "false");
+        world.setGameRuleValue("randomTickSpeed", "0");
     }
 
     public void refreshPlayerAttributes(Player player) throws IOException {
-        player.teleport(MapInformation.getMapCenter());
+        System.out.println(currentMap);
+        player.teleport(currentMap.getBlueSpawnPoint());
         player.setGameMode(GameMode.SURVIVAL);
         player.setHealth(20);
         player.setFoodLevel(20);
         player.setSaturation(20);
         Inventory.setDefaultInventory(player);
         resetMap();
+    }
+
+    public World getWorld() {
+        return world;
     }
 
     @Override
@@ -81,29 +89,25 @@ public class PluginMain extends JavaPlugin implements Listener {
         }
     }
 
-    public void resetBridge() throws IOException {
-        World world = Bukkit.getWorld("world");
-        pasteSchematic("bluebridge", new Location(world, 0, 92, 0, 0, 0), true);
+    public void resetBridge() {
+        pasteSchematic("bluebridge", new Location(world, 0, 93, 0, 0, 0), true);
     }
 
-    public boolean pasteSchematic(String schematicName, Location loc, boolean noAir) throws IOException {
-
+    @SuppressWarnings("deprecation") // worldedit's just like that yk
+    public void pasteSchematic(String schematicName, Location loc, boolean noAir) {
+        EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(new BukkitWorld(world), -1);
         File file = new File(getDataFolder() + File.separator + "schematics" + File.separator + schematicName + ".schematic");
         System.out.println(file.toPath());
         if (!file.exists()) {
             System.out.println("Could not find file");
-            return false;
+            return;
         }
         try {
-            EditSession editSession = ClipboardFormats.findByFile(file)
-                    .load(file)
-                    .paste((com.sk89q.worldedit.world.World) Bukkit.getWorld("world"), BlockVector3.at(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
-            System.out.println("pog");
-        } catch (IOException e) {
+            CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(file).load(file);
+            clipboard.paste(editSession, new Vector(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), noAir);
+        } catch (DataException | IOException | MaxChangedBlocksException e) {
             e.printStackTrace();
-            return false;
         }
-        return true;
     }
 
 }
