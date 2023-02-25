@@ -95,7 +95,7 @@ public class PluginMain extends JavaPlugin implements Listener {
     }
 
     private void resetBridge() {
-        pasteSchematic("bluebridge", new Location(world, 0, 93, 0, 0, 0), true);
+        pasteSchematic("mainbridge", new Location(world, 0, 93, 0, 0, 0), true);
     }
 
     @SuppressWarnings("deprecation")
@@ -108,6 +108,7 @@ public class PluginMain extends JavaPlugin implements Listener {
         }
         try {
             CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(file).load(file);
+            System.out.println("format: " + MCEditSchematicFormat.getFormat(file).toString());
             clipboard.paste(editSession, new Vector(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), noAir);
         } catch (DataException | IOException | MaxChangedBlocksException e) {
             e.printStackTrace();
