@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import practice.hippo.logic.MapInformation;
 import practice.hippo.logic.PluginMain;
+import practice.hippo.util.BoundingBox;
 
 public class BlockBreakHandler implements Listener {
 
@@ -35,7 +36,8 @@ public class BlockBreakHandler implements Listener {
     private boolean isBlockPartOfTheBridge(Block block) {
         MapInformation currentMap = parentPlugin.getCurrentMap();
         Location location = block.getLocation();
-        return false;
+        BoundingBox bridgeDimensions = currentMap.getBridgeDimensions();
+        return bridgeDimensions.containsInclusive(location.toVector());
     }
 
     private boolean wasBlockPlacedByPlayer(Block block) {

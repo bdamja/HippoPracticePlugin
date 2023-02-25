@@ -7,6 +7,8 @@ import com.sk89q.worldedit.world.DataException;
 import org.bukkit.Location;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
@@ -16,6 +18,7 @@ import practice.hippo.events.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Iterator;
 
 public class PluginMain extends JavaPlugin implements Listener {
 
@@ -63,6 +66,7 @@ public class PluginMain extends JavaPlugin implements Listener {
         player.setSaturation(20);
         Inventory.setDefaultInventory(player);
         resetMap();
+
     }
 
     public World getWorld() {
@@ -81,6 +85,7 @@ public class PluginMain extends JavaPlugin implements Listener {
     public void resetMap() throws IOException {
         removeAllBlocksPlacedByPlayers();
         resetBridge();
+        killItems();
     }
 
     public void removeAllBlocksPlacedByPlayers() {
@@ -89,12 +94,12 @@ public class PluginMain extends JavaPlugin implements Listener {
         }
     }
 
-    public void resetBridge() {
+    private void resetBridge() {
         pasteSchematic("bluebridge", new Location(world, 0, 93, 0, 0, 0), true);
     }
 
-    @SuppressWarnings("deprecation") // worldedit's just like that yk
-    public void pasteSchematic(String schematicName, Location loc, boolean noAir) {
+    @SuppressWarnings("deprecation")
+    private void pasteSchematic(String schematicName, Location loc, boolean noAir) {
         EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(new BukkitWorld(world), -1);
         File file = new File(getDataFolder() + File.separator + "schematics" + File.separator + schematicName + ".schematic");
         if (!file.exists()) {
@@ -106,6 +111,15 @@ public class PluginMain extends JavaPlugin implements Listener {
             clipboard.paste(editSession, new Vector(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), noAir);
         } catch (DataException | IOException | MaxChangedBlocksException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void killItems() {
+        for (Iterator<Entity> entityIterator = world.getEntities().iterator(); entityIterator.hasNext();) {
+            Entity entity = entityIterator.next();
+            if (entity instanceof Item) {
+                entity.remove();
+            }
         }
     }
 

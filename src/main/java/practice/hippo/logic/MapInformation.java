@@ -19,8 +19,8 @@ public class MapInformation {
         this.mapName = "Aquatica";
         this.redSpawnPoint = new Location(Bukkit.getWorld("world"), 29.5, 98.0, 0.5, 90, 0);
         this.blueSpawnPoint = new Location(Bukkit.getWorld("world"), -28.5, 98.0, 0.5, -90, 0);
-        this.buildLimits = new BoundingBox(-25.0, 84.0, -20.0, 50, 15, 40);
-        this.bridgeDimensions = new BoundingBox(-20.0, 84, 0.0, 0, 8.0, 0.0);
+        this.buildLimits = new BoundingBox(-25, 84, -20, 0, 99, 20);
+        this.bridgeDimensions = new BoundingBox(-20, 84, -0, 0, 92, 0);
     }
 
     public Location getRedSpawnPoint() {

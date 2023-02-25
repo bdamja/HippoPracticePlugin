@@ -741,6 +741,12 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
                 && z >= this.minZ && z < this.maxZ;
     }
 
+    public boolean containsInclusive(double x, double y, double z) {
+        return x >= this.minX && x <= this.maxX
+                && y >= this.minY && y <= this.maxY
+                && z >= this.minZ && z <= this.maxZ;
+    }
+
     /**
      * Checks if this bounding box contains the specified position.
      * <p>
@@ -756,6 +762,11 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
     public boolean contains(@NotNull Vector position) {
         Validate.notNull(position, "Position is null!");
         return this.contains(position.getX(), position.getY(), position.getZ());
+    }
+
+    public boolean containsInclusive(@NotNull Vector position) {
+        Validate.notNull(position, "Position is null!");
+        return this.containsInclusive(position.getX(), position.getY(), position.getZ());
     }
 
     private boolean contains(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {

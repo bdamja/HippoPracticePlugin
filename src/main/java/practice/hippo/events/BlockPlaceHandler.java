@@ -11,6 +11,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import practice.hippo.logic.MapInformation;
 import practice.hippo.logic.PluginMain;
+import practice.hippo.util.BoundingBox;
 
 public class BlockPlaceHandler implements Listener {
 
@@ -39,7 +40,8 @@ public class BlockPlaceHandler implements Listener {
     private boolean isBlockWithinLimits(Block block) {
         MapInformation currentMap = parentPlugin.getCurrentMap();
         Location location = block.getLocation();
-        return false;
+        BoundingBox buildLimits = currentMap.getBuildLimits();
+        return buildLimits.containsInclusive(location.toVector());
     }
 
 }
