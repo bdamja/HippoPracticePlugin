@@ -1,6 +1,5 @@
 package practice.hippo.events.block;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -9,15 +8,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import practice.hippo.logic.MapInformation;
-import practice.hippo.logic.PluginMain;
+import practice.hippo.logic.MapLogic;
+import practice.hippo.logic.HippoPractice;
 import practice.hippo.util.BoundingBox;
 
 public class BlockBreakHandler implements Listener {
 
-    private final PluginMain parentPlugin;
+    private final HippoPractice parentPlugin;
 
-    public BlockBreakHandler(PluginMain parentPlugin) {
+    public BlockBreakHandler(HippoPractice parentPlugin) {
         this.parentPlugin = parentPlugin;
     }
 
@@ -25,18 +24,18 @@ public class BlockBreakHandler implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
+        MapLogic mapLogic = parentPlugin.playerMap.get(player.getUniqueId());
         if (player.getGameMode() != GameMode.CREATIVE) {
-            if (!isBlockPartOfTheBridge(block) && !wasBlockPlacedByPlayer(block)) {
+            if (!isBlockPartOfTheBridge(block, mapLogic) && !wasBlockPlacedByPlayer(block)) {
                 player.sendMessage(ChatColor.RED + "You can't break that block!");
                 event.setCancelled(true);
             }
         }
     }
 
-    private boolean isBlockPartOfTheBridge(Block block) {
-        MapInformation currentMap = parentPlugin.getCurrentMap();
+    private boolean isBlockPartOfTheBridge(Block block, MapLogic mapLogic) {
         Location location = block.getLocation();
-        BoundingBox bridgeDimensions = currentMap.getBridgeDimensions();
+        BoundingBox bridgeDimensions = mapLogic.getBridgeDimensions();
         return bridgeDimensions.containsInclusive(location.toVector());
     }
 

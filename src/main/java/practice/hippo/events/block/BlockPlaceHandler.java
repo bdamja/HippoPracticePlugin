@@ -9,15 +9,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-import practice.hippo.logic.MapInformation;
-import practice.hippo.logic.PluginMain;
+import practice.hippo.logic.MapLogic;
+import practice.hippo.logic.HippoPractice;
 import practice.hippo.util.BoundingBox;
 
 public class BlockPlaceHandler implements Listener {
 
-    private final PluginMain parentPlugin;
+    private final HippoPractice parentPlugin;
 
-    public BlockPlaceHandler(PluginMain parentPlugin) {
+    public BlockPlaceHandler(HippoPractice parentPlugin) {
         this.parentPlugin = parentPlugin;
     }
 
@@ -25,8 +25,9 @@ public class BlockPlaceHandler implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
+        MapLogic mapLogic = parentPlugin.playerMap.get(player.getUniqueId());
         if (player.getGameMode() != GameMode.CREATIVE) {
-            if (isBlockWithinLimits(block)) {
+            if (isBlockWithinLimits(block, mapLogic)) {
                 // the server will remember which blocks were placed by players
                 block.setMetadata("placed by player", new FixedMetadataValue(parentPlugin, ""));
                 parentPlugin.recordedBlocks.add(block);
@@ -37,10 +38,9 @@ public class BlockPlaceHandler implements Listener {
         }
     }
 
-    private boolean isBlockWithinLimits(Block block) {
-        MapInformation currentMap = parentPlugin.getCurrentMap();
+    private boolean isBlockWithinLimits(Block block, MapLogic mapLogic) {
         Location location = block.getLocation();
-        BoundingBox buildLimits = currentMap.getBuildLimits();
+        BoundingBox buildLimits = mapLogic.getBuildLimits();
         return buildLimits.containsInclusive(location.toVector());
     }
 

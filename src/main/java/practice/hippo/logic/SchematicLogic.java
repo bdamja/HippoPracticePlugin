@@ -9,12 +9,12 @@ import org.bukkit.World;
 import java.io.File;
 import java.io.IOException;
 
-public class SchematicPaster {
+public class SchematicLogic {
 
-    private final PluginMain parentPlugin;
+    private final HippoPractice parentPlugin;
     private final World world;
 
-    public SchematicPaster(PluginMain parentPlugin, World world) {
+    public SchematicLogic(HippoPractice parentPlugin, World world) {
         this.parentPlugin = parentPlugin;
         this.world = world;
     }

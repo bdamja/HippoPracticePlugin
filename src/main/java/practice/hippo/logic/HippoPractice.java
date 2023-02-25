@@ -23,17 +23,19 @@ import practice.hippo.events.player.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.UUID;
 
-public class PluginMain extends JavaPlugin implements Listener {
+public class HippoPractice extends JavaPlugin implements Listener {
 
     public static final int VOID_LEVEL = 83;
-    public static MapInformation currentMap = null;
-    public static SchematicPaster schematicPaster = null;
-    public MapInformation getCurrentMap() { return currentMap; }
+    public static SchematicLogic schematicPaster = null;
     public HashSet<Block> recordedBlocks = new HashSet<>();
-    private World world;
+    public World world;
     public static ArrayList<String> maps = new ArrayList<>();
+    public ScoreboardLogic scoreboardLogic = null;
+    public HashMap<UUID, MapLogic> playerMap = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -41,12 +43,12 @@ public class PluginMain extends JavaPlugin implements Listener {
         PluginManager pluginManager = this.getServer().getPluginManager();
         registerEventListeners(pluginManager);
         setDefaultGameRules();
-        currentMap = new MapInformation(Bukkit.getWorld("world"));
-        schematicPaster = new SchematicPaster(this, Bukkit.getWorld("world"));
+        schematicPaster = new SchematicLogic(this, Bukkit.getWorld("world"));
         PaperCommandManager manager = new PaperCommandManager(this);
         manager.registerCommand(new HippoPracticeCommand(this));
         maps.add("aquatica"); maps.add("boo");
         manager.getCommandCompletions().registerCompletion("mapNames", c -> maps);
+        scoreboardLogic = new ScoreboardLogic();
     }
 
     private void registerEventListeners(PluginManager pluginManager) {
@@ -91,14 +93,10 @@ public class PluginMain extends JavaPlugin implements Listener {
         player.setHealth(20);
         player.setFoodLevel(20);
         player.setSaturation(20);
-        Inventory.setDefaultInventory(player);
+        InventoryLogic.setDefaultInventory(player);
     }
 
-    public World getWorld() {
-        return world;
-    }
-
-    public SchematicPaster getSchematicPaster() {
+    public SchematicLogic getSchematicPaster() {
         return schematicPaster;
     }
 
@@ -132,23 +130,27 @@ public class PluginMain extends JavaPlugin implements Listener {
     }
 
     public void changeMap(String mapName, CommandSender sender) throws IOException {
-        schematicPaster.loadMap(mapName);
-        currentMap.updateMapValues(mapName);
         if (sender instanceof Player) {
-            resetPlayerAndSendToSpawn((Player) sender);
+            schematicPaster.loadMap(mapName);
+            Player player = (Player) sender;
+            MapLogic mapLogic = new MapLogic(world, mapName, player.getUniqueId());
+            playerMap.replace(player.getUniqueId(), mapLogic);
+            resetPlayerAndSendToSpawn(player);
         }
     }
 
     public void teleportToSpawnLocation(Player player) {
-        player.teleport(currentMap.getBlueSpawnPoint());
+        MapLogic mapLogic = playerMap.get(player.getUniqueId());
+        player.teleport(mapLogic.getBlueSpawnPoint());
     }
 
     public void teleportToViewLocation(Player player) {
-        player.teleport(MapInformation.getViewLocation());
+        player.teleport(MapLogic.getViewLocation());
     }
 
     public void teleportToCenterLocation(Player player) {
-        player.teleport(currentMap.getMapCenter());
+        MapLogic mapLogic = playerMap.get(player.getUniqueId());
+        player.teleport(mapLogic.getMapCenter());
     }
 
 

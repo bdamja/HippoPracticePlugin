@@ -3,15 +3,15 @@ package practice.hippo.events.player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import practice.hippo.logic.PluginMain;
+import practice.hippo.logic.HippoPractice;
 
 import java.io.IOException;
 
 public class PlayerRespawnHandler implements Listener {
 
-    private final PluginMain parentPlugin;
+    private final HippoPractice parentPlugin;
 
-    public PlayerRespawnHandler(PluginMain parentPlugin) {
+    public PlayerRespawnHandler(HippoPractice parentPlugin) {
         this.parentPlugin = parentPlugin;
     }
 

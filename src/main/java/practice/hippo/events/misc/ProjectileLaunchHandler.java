@@ -1,21 +1,19 @@
 package practice.hippo.events.misc;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
-import practice.hippo.logic.PluginMain;
+import practice.hippo.logic.HippoPractice;
 
 import java.io.IOException;
 
 public class ProjectileLaunchHandler implements Listener {
 
-    private final PluginMain parentPlugin;
+    private final HippoPractice parentPlugin;
 
-    public ProjectileLaunchHandler(PluginMain parentPlugin) {
+    public ProjectileLaunchHandler(HippoPractice parentPlugin) {
         this.parentPlugin = parentPlugin;
     }
 
@@ -40,7 +38,7 @@ public class ProjectileLaunchHandler implements Listener {
     }
 
     private void killProjectiles() {
-        for (Entity entity : parentPlugin.getWorld().getEntities()) {
+        for (Entity entity : parentPlugin.world.getEntities()) {
             if (entity instanceof Projectile) {
                 entity.remove();
             }
