@@ -34,7 +34,8 @@ public class BlockPlaceHandler implements Listener {
                 if (!mapLogic.hasFinishedHippo) {
                     mapLogic.hasFinishedHippo = checkCompleteStructure(block, mapLogic);
                     if (mapLogic.hasFinishedHippo) {
-                        player.sendMessage("Pog!");
+                        long ms = mapLogic.getTimer().computeTime();
+                        player.sendMessage("You completed the " + mapLogic.getMapName() + " structure in " + ms + "ms!");
                     }
                 }
             } else {

@@ -104,6 +104,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         String mapName = playerMap.get(player.getUniqueId()).getMapName();
         MapLogic mapLogic = new MapLogic(world, mapName, player.getUniqueId());
         playerMap.replace(player.getUniqueId(), mapLogic);
+        mapLogic.getTimer().setStartTime();
     }
 
     public void removeAllBlocksPlacedByPlayer(Player player) {

@@ -24,6 +24,7 @@ public class MapLogic {
     private BoundingBox bridgeDimensions;
     private HashSet<Block> recordedBlocks;
     private ArrayList<Location> hippoBlocks;
+    private Timer timer;
     public boolean hasFinishedHippo;
 
     public MapLogic(World world, String mapName, UUID playerUUID) throws FileNotFoundException {
@@ -36,6 +37,7 @@ public class MapLogic {
         this.bridgeDimensions = new BoundingBox(-20, 84, -0, 20, 92, 0);
         this.recordedBlocks = new HashSet<>();
         this.hasFinishedHippo = false;
+        this.timer = new Timer();
         updateMapValues(mapName);
     }
 
@@ -69,6 +71,10 @@ public class MapLogic {
 
     public HashSet<Block> getRecordedBlocks() {
         return recordedBlocks;
+    }
+
+    public Timer getTimer() {
+        return this.timer;
     }
 
     public Location getMapCenter() {
