@@ -1,5 +1,6 @@
 package practice.hippo.events;
 
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,7 +20,7 @@ public class PlayerMoveHandler implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) throws IOException {
         Player player = event.getPlayer();
-        if (player.getLocation().getY() < PluginMain.VOID_LEVEL) {
+        if (player.getLocation().getY() < PluginMain.VOID_LEVEL && player.getGameMode() != GameMode.CREATIVE) {
             parentPlugin.refreshPlayerAttributes(player);
         }
     }

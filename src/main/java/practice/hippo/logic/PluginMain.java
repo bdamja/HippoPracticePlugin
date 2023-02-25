@@ -42,6 +42,7 @@ public class PluginMain extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new PlayerDropItemHandler(), this);
         pluginManager.registerEvents(new BlockPlaceHandler(this), this);
         pluginManager.registerEvents(new BlockBreakHandler(this), this);
+        pluginManager.registerEvents(new PlayerRespawnHandler(this), this);
         pluginManager.registerEvents(new PlayerChatHandler(), this);
         pluginManager.registerEvents(new WeatherChangeHandler(), this);
     }
@@ -55,7 +56,6 @@ public class PluginMain extends JavaPlugin implements Listener {
     }
 
     public void refreshPlayerAttributes(Player player) throws IOException {
-        System.out.println(currentMap);
         player.teleport(currentMap.getBlueSpawnPoint());
         player.setGameMode(GameMode.SURVIVAL);
         player.setHealth(20);
@@ -97,7 +97,6 @@ public class PluginMain extends JavaPlugin implements Listener {
     public void pasteSchematic(String schematicName, Location loc, boolean noAir) {
         EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(new BukkitWorld(world), -1);
         File file = new File(getDataFolder() + File.separator + "schematics" + File.separator + schematicName + ".schematic");
-        System.out.println(file.toPath());
         if (!file.exists()) {
             System.out.println("Could not find file");
             return;

@@ -10,7 +10,9 @@ public class EntityDamageHandler implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
-        event.setCancelled(true);
+        if (event.getCause() != EntityDamageEvent.DamageCause.VOID) {
+            event.setCancelled(true);
+        }
     }
 
 }
