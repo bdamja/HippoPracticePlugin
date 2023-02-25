@@ -1,5 +1,6 @@
 package practice.hippo.logic;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -13,6 +14,7 @@ public class Inventory {
         player.getInventory().setItem(2, getPickaxeItemStack());
         player.getInventory().setItem(3, getBlocksItemStack());
         player.getInventory().setItem(4, getBlocksItemStack());
+        player.getInventory().setItem(5, getSnowballItemStack());
     }
 
     private static ItemStack getPickaxeItemStack() {
@@ -30,7 +32,14 @@ public class Inventory {
         return(block);
     }
 
-    private static void hardInventoryClear(Player player){
+    private static ItemStack getSnowballItemStack() {
+        ItemStack snowball = new ItemStack(Material.SNOW_BALL, 1);
+        ItemMeta itemMetaSnowball = snowball.getItemMeta();
+        itemMetaSnowball.setDisplayName("" + ChatColor.RED + ChatColor.BOLD + "Reset Map");
+        return(snowball);
+    }
+
+    public static void hardInventoryClear(Player player){
         player.getInventory().clear();
         ItemStack clear = new ItemStack(Material.AIR);
         player.getOpenInventory().setCursor(clear);

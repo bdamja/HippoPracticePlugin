@@ -1,4 +1,4 @@
-package practice.hippo.events;
+package practice.hippo.events.block;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;

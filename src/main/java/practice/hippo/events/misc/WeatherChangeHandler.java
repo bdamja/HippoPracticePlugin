@@ -1,4 +1,4 @@
-package practice.hippo.events;
+package practice.hippo.events.misc;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

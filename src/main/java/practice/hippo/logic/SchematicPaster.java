@@ -4,8 +4,7 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.schematic.MCEditSchematicFormat;
 import com.sk89q.worldedit.world.DataException;
-import org.bukkit.*;
-import org.bukkit.Location;
+import org.bukkit.World;
 
 import java.io.File;
 import java.io.IOException;

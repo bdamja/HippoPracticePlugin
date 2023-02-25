@@ -1,4 +1,4 @@
-package practice.hippo.events;
+package practice.hippo.events.player;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,7 +17,7 @@ public class PlayerRespawnHandler implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) throws IOException {
-        parentPlugin.refreshPlayerAttributes(event.getPlayer());
+        parentPlugin.resetPlayerAndSendToSpawn(event.getPlayer());
     }
 
 }

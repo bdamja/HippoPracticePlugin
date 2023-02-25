@@ -14,7 +14,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import practice.hippo.commands.HippoPracticeCommand;
-import practice.hippo.events.*;
+import practice.hippo.events.block.BlockBreakHandler;
+import practice.hippo.events.block.BlockPlaceHandler;
+import practice.hippo.events.entity.EntityDamageHandler;
+import practice.hippo.events.misc.ProjectileLaunchHandler;
+import practice.hippo.events.misc.WeatherChangeHandler;
+import practice.hippo.events.player.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +33,7 @@ public class PluginMain extends JavaPlugin implements Listener {
     public MapInformation getCurrentMap() { return currentMap; }
     public HashSet<Block> recordedBlocks = new HashSet<>();
     private World world;
-    public static ArrayList<String> maps = new ArrayList<String>();
+    public static ArrayList<String> maps = new ArrayList<>();
 
     @Override
     public void onEnable() {
@@ -53,6 +58,7 @@ public class PluginMain extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new BlockPlaceHandler(this), this);
         pluginManager.registerEvents(new BlockBreakHandler(this), this);
         pluginManager.registerEvents(new PlayerRespawnHandler(this), this);
+        pluginManager.registerEvents(new ProjectileLaunchHandler(this), this);
         pluginManager.registerEvents(new PlayerChatHandler(), this);
         pluginManager.registerEvents(new WeatherChangeHandler(), this);
     }
@@ -65,14 +71,27 @@ public class PluginMain extends JavaPlugin implements Listener {
         world.setGameRuleValue("randomTickSpeed", "0");
     }
 
+    public void resetPlayerAndSendToSpawn(Player player) throws IOException {
+        teleportToSpawnLocation(player);
+        refreshPlayerAttributes(player);
+    }
+
+    public void resetPlayerAndSendToView(Player player) throws IOException {
+        teleportToViewLocation(player);
+        refreshPlayerAttributes(player);
+    }
+
+    public void resetPlayerAndSendToCenter(Player player) throws IOException {
+        teleportToCenterLocation(player);
+        refreshPlayerAttributes(player);
+    }
+
     public void refreshPlayerAttributes(Player player) throws IOException {
-        player.teleport(currentMap.getBlueSpawnPoint());
         player.setGameMode(GameMode.SURVIVAL);
         player.setHealth(20);
         player.setFoodLevel(20);
         player.setSaturation(20);
         Inventory.setDefaultInventory(player);
-        resetMap();
     }
 
     public World getWorld() {
@@ -116,14 +135,21 @@ public class PluginMain extends JavaPlugin implements Listener {
         schematicPaster.loadMap(mapName);
         currentMap.updateMapValues(mapName);
         if (sender instanceof Player) {
-            teleportToViewLocation((Player)sender);
+            resetPlayerAndSendToSpawn((Player) sender);
         }
+    }
+
+    public void teleportToSpawnLocation(Player player) {
+        player.teleport(currentMap.getBlueSpawnPoint());
     }
 
     public void teleportToViewLocation(Player player) {
         player.teleport(MapInformation.getViewLocation());
     }
 
-    
+    public void teleportToCenterLocation(Player player) {
+        player.teleport(currentMap.getMapCenter());
+    }
+
 
 }

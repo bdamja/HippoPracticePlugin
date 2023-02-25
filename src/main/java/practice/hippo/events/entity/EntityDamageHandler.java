@@ -1,4 +1,4 @@
-package practice.hippo.events;
+package practice.hippo.events.entity;
 
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.EventHandler;

@@ -1,5 +1,8 @@
-package practice.hippo.events;
+package practice.hippo.events.player;
 
+import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
+import practice.hippo.logic.Inventory;
 import practice.hippo.logic.PluginMain;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,7 +21,14 @@ public class PlayerJoinHandler implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) throws IOException {
         event.setJoinMessage("");
-        parentPlugin.refreshPlayerAttributes(event.getPlayer());
+        parentPlugin.getSchematicPaster().loadMap("viewbox");
+        Player player = event.getPlayer();
+        player.setHealth(20);
+        player.setFoodLevel(20);
+        player.setSaturation(20);
+        event.getPlayer().setGameMode(GameMode.ADVENTURE);
+        Inventory.hardInventoryClear(player);
+        parentPlugin.teleportToCenterLocation(player);
     }
 
 }
