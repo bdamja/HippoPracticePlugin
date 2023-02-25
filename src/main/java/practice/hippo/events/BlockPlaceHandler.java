@@ -39,7 +39,7 @@ public class BlockPlaceHandler implements Listener {
     private boolean isBlockWithinLimits(Block block) {
         MapInformation currentMap = parentPlugin.getCurrentMap();
         Location location = block.getLocation();
-        return currentMap.getBuildLimits().contains(location.getX(), location.getY(), location.getZ());
+        return false;
     }
 
 }

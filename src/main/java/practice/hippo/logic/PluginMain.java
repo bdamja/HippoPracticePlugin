@@ -1,8 +1,11 @@
 package practice.hippo.logic;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.bukkit.BukkitWorld;
+import com.sk89q.worldedit.schematic.MCEditSchematicFormat;
+import com.sk89q.worldedit.world.DataException;
+import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -10,6 +13,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import practice.hippo.events.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 
 public class PluginMain extends JavaPlugin implements Listener {
@@ -18,6 +23,7 @@ public class PluginMain extends JavaPlugin implements Listener {
     public static MapInformation currentMap = null;
     public MapInformation getCurrentMap() { return currentMap; }
     public HashSet<Block> recordedBlocks = new HashSet<>();
+    private World world;
 
     @Override
     public void onEnable() {
@@ -25,7 +31,7 @@ public class PluginMain extends JavaPlugin implements Listener {
         PluginManager pluginManager = this.getServer().getPluginManager();
         registerEventListeners(pluginManager);
         setDefaultGameRules();
-        currentMap = new MapInformation();
+        currentMap = new MapInformation(Bukkit.getWorld("world"));
     }
 
     private void registerEventListeners(PluginManager pluginManager) {
@@ -37,17 +43,20 @@ public class PluginMain extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new BlockPlaceHandler(this), this);
         pluginManager.registerEvents(new BlockBreakHandler(this), this);
         pluginManager.registerEvents(new PlayerChatHandler(), this);
+        pluginManager.registerEvents(new WeatherChangeHandler(), this);
     }
 
-    private static void setDefaultGameRules() {
-        Bukkit.getWorld("world").setGameRuleValue("keepInventory", "true");
-        Bukkit.getWorld("world").setGameRuleValue("naturalRegeneration", "false");
-        Bukkit.getWorld("world").setGameRuleValue("doDaylightCycle", "false");
-        Bukkit.getWorld("world").setGameRuleValue("randomTickSpeed", "0");
+    private void setDefaultGameRules() {
+        world = Bukkit.getWorld("world");
+        world.setGameRuleValue("keepInventory", "true");
+        world.setGameRuleValue("naturalRegeneration", "false");
+        world.setGameRuleValue("doDaylightCycle", "false");
+        world.setGameRuleValue("randomTickSpeed", "0");
     }
 
-    public void refreshPlayerAttributes(Player player) {
-        player.teleport(MapInformation.getMapCenter());
+    public void refreshPlayerAttributes(Player player) throws IOException {
+        System.out.println(currentMap);
+        player.teleport(currentMap.getBlueSpawnPoint());
         player.setGameMode(GameMode.SURVIVAL);
         player.setHealth(20);
         player.setFoodLevel(20);
@@ -56,12 +65,20 @@ public class PluginMain extends JavaPlugin implements Listener {
         resetMap();
     }
 
-    @Override
-    public void onDisable() {
-        resetMap();
+    public World getWorld() {
+        return world;
     }
 
-    public void resetMap() {
+    @Override
+    public void onDisable() {
+        try {
+            resetMap();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void resetMap() throws IOException {
         removeAllBlocksPlacedByPlayers();
         resetBridge();
     }
@@ -73,7 +90,24 @@ public class PluginMain extends JavaPlugin implements Listener {
     }
 
     public void resetBridge() {
+        pasteSchematic("bluebridge", new Location(world, 0, 93, 0, 0, 0), true);
+    }
 
+    @SuppressWarnings("deprecation") // worldedit's just like that yk
+    public void pasteSchematic(String schematicName, Location loc, boolean noAir) {
+        EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(new BukkitWorld(world), -1);
+        File file = new File(getDataFolder() + File.separator + "schematics" + File.separator + schematicName + ".schematic");
+        System.out.println(file.toPath());
+        if (!file.exists()) {
+            System.out.println("Could not find file");
+            return;
+        }
+        try {
+            CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(file).load(file);
+            clipboard.paste(editSession, new Vector(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), noAir);
+        } catch (DataException | IOException | MaxChangedBlocksException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -35,7 +35,7 @@ public class BlockBreakHandler implements Listener {
     private boolean isBlockPartOfTheBridge(Block block) {
         MapInformation currentMap = parentPlugin.getCurrentMap();
         Location location = block.getLocation();
-        return currentMap.getBridgeDimensions().contains(location.getX(), location.getY(), location.getZ());
+        return false;
     }
 
     private boolean wasBlockPlacedByPlayer(Block block) {

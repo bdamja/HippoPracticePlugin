@@ -5,6 +5,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import java.io.IOException;
+
 public class PlayerJoinHandler implements Listener {
 
     private final PluginMain parentPlugin;
@@ -14,7 +16,7 @@ public class PlayerJoinHandler implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(PlayerJoinEvent event) throws IOException {
         event.setJoinMessage("");
         parentPlugin.refreshPlayerAttributes(event.getPlayer());
     }

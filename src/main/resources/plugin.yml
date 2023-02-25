@@ -1,4 +1,5 @@
-name: TheBridge
+name: HippoPractice
 version: ${project.version}
 main: practice.hippo.logic.PluginMain
 api-version: 1.8
+depend: [WorldEdit]
