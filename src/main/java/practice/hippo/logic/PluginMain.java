@@ -95,9 +95,9 @@ public class PluginMain extends JavaPlugin implements Listener {
             return false;
         }
         try {
-            EditSession editSession = ClipboardFormat.;
-//                    .load(file)
-//                    .paste((com.sk89q.worldedit.world.World) Bukkit.getWorld("world"), BlockVector3.at(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+            EditSession editSession = ClipboardFormats.findByFile(file)
+                    .load(file)
+                    .paste((com.sk89q.worldedit.world.World) Bukkit.getWorld("world"), BlockVector3.at(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
             System.out.println("pog");
         } catch (IOException e) {
             e.printStackTrace();
