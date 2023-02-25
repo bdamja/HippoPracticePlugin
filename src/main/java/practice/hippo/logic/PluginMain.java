@@ -1,8 +1,10 @@
 package practice.hippo.logic;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
+import com.sk89q.worldedit.math.BlockVector3;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -10,6 +12,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import practice.hippo.events.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 
 public class PluginMain extends JavaPlugin implements Listener {
@@ -37,6 +41,7 @@ public class PluginMain extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new BlockPlaceHandler(this), this);
         pluginManager.registerEvents(new BlockBreakHandler(this), this);
         pluginManager.registerEvents(new PlayerChatHandler(), this);
+        pluginManager.registerEvents(new WeatherChangeHandler(), this);
     }
 
     private static void setDefaultGameRules() {
@@ -46,7 +51,7 @@ public class PluginMain extends JavaPlugin implements Listener {
         Bukkit.getWorld("world").setGameRuleValue("randomTickSpeed", "0");
     }
 
-    public void refreshPlayerAttributes(Player player) {
+    public void refreshPlayerAttributes(Player player) throws IOException {
         player.teleport(MapInformation.getMapCenter());
         player.setGameMode(GameMode.SURVIVAL);
         player.setHealth(20);
@@ -58,10 +63,14 @@ public class PluginMain extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        resetMap();
+        try {
+            resetMap();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void resetMap() {
+    public void resetMap() throws IOException {
         removeAllBlocksPlacedByPlayers();
         resetBridge();
     }
@@ -72,8 +81,29 @@ public class PluginMain extends JavaPlugin implements Listener {
         }
     }
 
-    public void resetBridge() {
+    public void resetBridge() throws IOException {
+        World world = Bukkit.getWorld("world");
+        pasteSchematic("bluebridge", new Location(world, 0, 92, 0, 0, 0), true);
+    }
 
+    public boolean pasteSchematic(String schematicName, Location loc, boolean noAir) throws IOException {
+
+        File file = new File(getDataFolder() + File.separator + "schematics" + File.separator + schematicName + ".schematic");
+        System.out.println(file.toPath());
+        if (!file.exists()) {
+            System.out.println("Could not find file");
+            return false;
+        }
+        try {
+            EditSession editSession = ClipboardFormat.;
+//                    .load(file)
+//                    .paste((com.sk89q.worldedit.world.World) Bukkit.getWorld("world"), BlockVector3.at(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+            System.out.println("pog");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
 }

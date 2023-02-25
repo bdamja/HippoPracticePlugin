@@ -6,6 +6,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import practice.hippo.logic.PluginMain;
 
+import java.io.IOException;
+
 public class PlayerMoveHandler implements Listener {
 
     private final PluginMain parentPlugin;
@@ -15,7 +17,7 @@ public class PlayerMoveHandler implements Listener {
     }
 
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
+    public void onPlayerMove(PlayerMoveEvent event) throws IOException {
         Player player = event.getPlayer();
         if (player.getLocation().getY() < PluginMain.VOID_LEVEL) {
             parentPlugin.refreshPlayerAttributes(player);
