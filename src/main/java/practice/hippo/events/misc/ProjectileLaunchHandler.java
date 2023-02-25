@@ -28,7 +28,7 @@ public class ProjectileLaunchHandler implements Listener {
                     killProjectiles();
                     try {
                         parentPlugin.resetPlayerAndSendToSpawn(shooter);
-                        parentPlugin.resetMap();
+                        parentPlugin.resetMap(shooter);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

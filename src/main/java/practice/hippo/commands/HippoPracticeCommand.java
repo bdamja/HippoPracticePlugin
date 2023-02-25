@@ -3,15 +3,17 @@ package practice.hippo.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 import practice.hippo.logic.HippoPractice;
 import practice.hippo.logic.MapLogic;
-import practice.hippo.util.BoundingBox;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashSet;
 
 @CommandAlias("hp|hippo")
 public class HippoPracticeCommand extends BaseCommand {
@@ -47,19 +49,18 @@ public class HippoPracticeCommand extends BaseCommand {
 
     @Subcommand("export")
     @Description("exports the current map setup to a hippo file")
-    public void onExport(CommandSender sender) {
+    public void onExport(CommandSender sender) throws FileNotFoundException {
         Player player = (Player) sender;
         MapLogic mapLogic = parentPlugin.playerMap.get(player.getUniqueId());
-        BoundingBox buildLimits = mapLogic.getBuildLimits();
-        for (double x = buildLimits.getMinX(); x <= buildLimits.getMaxX(); x++) {
-            for (double y = buildLimits.getMinY(); y <= buildLimits.getMaxY(); y++) {
-                for (double z = buildLimits.getMinZ(); z <= buildLimits.getMaxZ(); z++) {
-                    if (parentPlugin.world.getBlockAt(new Location(parentPlugin.world, x, y, z)).hasMetadata("placed by player")) {
-                        System.out.println("x,y,z");
-                    }
-                }
-            }
+        HashSet<Block> allBlocks = parentPlugin.getAllBlocksPlacedByPlayer(player);
+        File file = new File("./plugins/HippoPractice/hippos/" + mapLogic.getMapName() + ".txt");
+        PrintWriter output = new PrintWriter(file);
+        for (Block block : allBlocks) {
+            output.write(block.getX() + " " + block.getY() + " " + block.getZ() + "\n");
         }
+        sender.sendMessage(ChatColor.YELLOW + "Set the hippo for " + mapLogic.getMapName());
+        output.close();
+        mapLogic.updateMapValues(mapLogic.getMapName());
     }
 
 }

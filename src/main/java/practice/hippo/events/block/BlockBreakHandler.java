@@ -26,9 +26,11 @@ public class BlockBreakHandler implements Listener {
         Block block = event.getBlock();
         MapLogic mapLogic = parentPlugin.playerMap.get(player.getUniqueId());
         if (player.getGameMode() != GameMode.CREATIVE) {
-            if (!isBlockPartOfTheBridge(block, mapLogic) && !wasBlockPlacedByPlayer(block)) {
+            if (!isBlockPartOfTheBridge(block, mapLogic) && !wasBlockPlacedByPlayer(block, player.getName())) {
                 player.sendMessage(ChatColor.RED + "You can't break that block!");
                 event.setCancelled(true);
+            } else if (wasBlockPlacedByPlayer(block, player.getName())) {
+                mapLogic.getRecordedBlocks().remove(block);
             }
         }
     }
@@ -39,8 +41,8 @@ public class BlockBreakHandler implements Listener {
         return bridgeDimensions.containsInclusive(location.toVector());
     }
 
-    private boolean wasBlockPlacedByPlayer(Block block) {
-        return block.hasMetadata("placed by player");
+    private boolean wasBlockPlacedByPlayer(Block block, String playerName) {
+        return block.hasMetadata("placed by " + playerName);
     }
 
 }

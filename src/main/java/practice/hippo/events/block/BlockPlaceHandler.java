@@ -29,8 +29,14 @@ public class BlockPlaceHandler implements Listener {
         if (player.getGameMode() != GameMode.CREATIVE) {
             if (isBlockWithinLimits(block, mapLogic)) {
                 // the server will remember which blocks were placed by players
-                block.setMetadata("placed by player", new FixedMetadataValue(parentPlugin, ""));
-                parentPlugin.recordedBlocks.add(block);
+                block.setMetadata("placed by " + player.getName(), new FixedMetadataValue(parentPlugin, ""));
+                mapLogic.getRecordedBlocks().add(block);
+                if (!mapLogic.hasFinishedHippo) {
+                    mapLogic.hasFinishedHippo = checkCompleteStructure(block, mapLogic);
+                    if (mapLogic.hasFinishedHippo) {
+                        player.sendMessage("Pog!");
+                    }
+                }
             } else {
                 player.sendMessage(ChatColor.RED + "You can't place blocks there!");
                 event.setCancelled(true);
@@ -42,6 +48,11 @@ public class BlockPlaceHandler implements Listener {
         Location location = block.getLocation();
         BoundingBox buildLimits = mapLogic.getBuildLimits();
         return buildLimits.containsInclusive(location.toVector());
+    }
+
+    private boolean checkCompleteStructure(Block block, MapLogic mapLogic) {
+        mapLogic.getHippoBlocks().remove(block.getLocation());
+        return mapLogic.getHippoBlocks().isEmpty();
     }
 
 }

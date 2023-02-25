@@ -1,10 +1,7 @@
 package practice.hippo.logic;
 
 import co.aikar.commands.PaperCommandManager;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -31,7 +28,6 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     public static final int VOID_LEVEL = 83;
     public static SchematicLogic schematicPaster = null;
-    public HashSet<Block> recordedBlocks = new HashSet<>();
     public World world;
     public static ArrayList<String> maps = new ArrayList<>();
     public ScoreboardLogic scoreboardLogic = null;
@@ -100,25 +96,28 @@ public class HippoPractice extends JavaPlugin implements Listener {
         return schematicPaster;
     }
 
-    @Override
-    public void onDisable() {
-        try {
-            resetMap();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void resetMap() throws IOException {
-        removeAllBlocksPlacedByPlayers();
+    public void resetMap(Player player) throws IOException {
+        removeAllBlocksPlacedByPlayer(player);
         schematicPaster.loadMainBridge();
         killItems();
+        playerMap.get(player.getUniqueId()).hasFinishedHippo = false;
+        String mapName = playerMap.get(player.getUniqueId()).getMapName();
+        MapLogic mapLogic = new MapLogic(world, mapName, player.getUniqueId());
+        playerMap.replace(player.getUniqueId(), mapLogic);
     }
 
-    public void removeAllBlocksPlacedByPlayers() {
+    public void removeAllBlocksPlacedByPlayer(Player player) {
+        MapLogic mapLogic = playerMap.get(player.getUniqueId());
+        HashSet<Block> recordedBlocks = mapLogic.getRecordedBlocks();
         for (Block block : recordedBlocks) {
             block.setType(Material.AIR);
         }
+        recordedBlocks.clear();
+    }
+
+    public HashSet<Block> getAllBlocksPlacedByPlayer(Player player) {
+        MapLogic mapLogic = playerMap.get(player.getUniqueId());
+        return mapLogic.getRecordedBlocks();
     }
 
     private void killItems() {
@@ -131,10 +130,12 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     public void changeMap(String mapName, CommandSender sender) throws IOException {
         if (sender instanceof Player) {
-            schematicPaster.loadMap(mapName);
             Player player = (Player) sender;
+            removeAllBlocksPlacedByPlayer(player);
+            schematicPaster.loadMap(mapName);
             MapLogic mapLogic = new MapLogic(world, mapName, player.getUniqueId());
             playerMap.replace(player.getUniqueId(), mapLogic);
+            resetMap(player);
             resetPlayerAndSendToSpawn(player);
         }
     }
