@@ -1,32 +1,34 @@
 package practice.hippo.logic;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.bukkit.BukkitWorld;
-import com.sk89q.worldedit.schematic.MCEditSchematicFormat;
-import com.sk89q.worldedit.world.DataException;
-import org.bukkit.Location;
-import org.bukkit.*;
+import co.aikar.commands.PaperCommandManager;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import practice.hippo.commands.HippoPracticeCommand;
 import practice.hippo.events.*;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 
 public class PluginMain extends JavaPlugin implements Listener {
 
     public static final int VOID_LEVEL = 83;
     public static MapInformation currentMap = null;
+    public static SchematicPaster schematicPaster = null;
     public MapInformation getCurrentMap() { return currentMap; }
     public HashSet<Block> recordedBlocks = new HashSet<>();
     private World world;
+    public static ArrayList<String> maps = new ArrayList<String>();
 
     @Override
     public void onEnable() {
@@ -35,6 +37,11 @@ public class PluginMain extends JavaPlugin implements Listener {
         registerEventListeners(pluginManager);
         setDefaultGameRules();
         currentMap = new MapInformation(Bukkit.getWorld("world"));
+        schematicPaster = new SchematicPaster(this, Bukkit.getWorld("world"));
+        PaperCommandManager manager = new PaperCommandManager(this);
+        manager.registerCommand(new HippoPracticeCommand(this));
+        maps.add("aquatica"); maps.add("boo");
+        manager.getCommandCompletions().registerCompletion("mapNames", c -> maps);
     }
 
     private void registerEventListeners(PluginManager pluginManager) {
@@ -66,11 +73,14 @@ public class PluginMain extends JavaPlugin implements Listener {
         player.setSaturation(20);
         Inventory.setDefaultInventory(player);
         resetMap();
-
     }
 
     public World getWorld() {
         return world;
+    }
+
+    public SchematicPaster getSchematicPaster() {
+        return schematicPaster;
     }
 
     @Override
@@ -84,7 +94,7 @@ public class PluginMain extends JavaPlugin implements Listener {
 
     public void resetMap() throws IOException {
         removeAllBlocksPlacedByPlayers();
-        resetBridge();
+        schematicPaster.loadMainBridge();
         killItems();
     }
 
@@ -94,34 +104,26 @@ public class PluginMain extends JavaPlugin implements Listener {
         }
     }
 
-    private void resetBridge() {
-        pasteSchematic("mainbridge", new Location(world, 0, 93, 0, 0, 0), true);
-    }
-
-    @SuppressWarnings("deprecation")
-    private void pasteSchematic(String schematicName, Location loc, boolean noAir) {
-        EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(new BukkitWorld(world), -1);
-        File file = new File(getDataFolder() + File.separator + "schematics" + File.separator + schematicName + ".schematic");
-        if (!file.exists()) {
-            System.out.println("Could not find file");
-            return;
-        }
-        try {
-            CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(file).load(file);
-            System.out.println("format: " + MCEditSchematicFormat.getFormat(file).toString());
-            clipboard.paste(editSession, new Vector(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), noAir);
-        } catch (DataException | IOException | MaxChangedBlocksException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void killItems() {
-        for (Iterator<Entity> entityIterator = world.getEntities().iterator(); entityIterator.hasNext();) {
-            Entity entity = entityIterator.next();
+        for (Entity entity : world.getEntities()) {
             if (entity instanceof Item) {
                 entity.remove();
             }
         }
     }
+
+    public void changeMap(String mapName, CommandSender sender) throws IOException {
+        schematicPaster.loadMap(mapName);
+        currentMap.updateMapValues(mapName);
+        if (sender instanceof Player) {
+            teleportToViewLocation((Player)sender);
+        }
+    }
+
+    public void teleportToViewLocation(Player player) {
+        player.teleport(MapInformation.getViewLocation());
+    }
+
+    
 
 }
