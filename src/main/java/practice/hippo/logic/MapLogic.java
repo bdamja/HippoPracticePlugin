@@ -1,6 +1,7 @@
 package practice.hippo.logic;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -17,6 +18,7 @@ public class MapLogic {
 
     private World world;
     private String mapName;
+    private String mapNameColor;
     private UUID playerUUID;
     private Location redSpawnPoint;
     private Location blueSpawnPoint;
@@ -38,6 +40,7 @@ public class MapLogic {
         this.recordedBlocks = new HashSet<>();
         this.hasFinishedHippo = false;
         this.timer = new Timer();
+        this.mapNameColor = "";
         updateMapValues(mapName);
     }
 
@@ -47,6 +50,10 @@ public class MapLogic {
 
     public String getMapName() {
         return mapName;
+    }
+
+    public String getMapNameColor() {
+        return mapNameColor;
     }
 
     public UUID getPlayerUUID() {
@@ -104,12 +111,20 @@ public class MapLogic {
             this.redSpawnPoint = new Location(Bukkit.getWorld("world"), 29.5, 98.0, 0.5, 90, 0);
             this.blueSpawnPoint = new Location(Bukkit.getWorld("world"), -28.5, 98.0, 0.5, -90, 0);
             this.buildLimits = new BoundingBox(-25, 84, -20, 0, 99, 20);
+            mapNameColor = "" + ChatColor.DARK_AQUA;
+
         } else if (mapName.equals("boo")) {
             this.redSpawnPoint = new Location(Bukkit.getWorld("world"), 31.5, 103.0, 0.5, 90, 0);
             this.blueSpawnPoint = new Location(Bukkit.getWorld("world"), -30.5, 103.0, 0.5, -90, 0);
             this.buildLimits = new BoundingBox(-23, 84, -20, 0, 99, 20);
+            mapNameColor = "" + ChatColor.DARK_PURPLE;
         }
         this.hippoBlocks = setHippoBlocks(mapName);
+    }
+
+    public String mapText() {
+        String mapNameStr = mapName.substring(0, 1).toUpperCase() + mapName.substring(1);
+        return this.mapNameColor + ChatColor.BOLD + mapNameStr + ChatColor.RESET;
     }
 
     public ArrayList<Location> getHippoBlocks() {

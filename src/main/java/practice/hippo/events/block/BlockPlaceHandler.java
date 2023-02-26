@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import practice.hippo.logic.ChatLogic;
 import practice.hippo.logic.MapLogic;
 import practice.hippo.logic.HippoPractice;
 import practice.hippo.util.BoundingBox;
@@ -34,8 +35,7 @@ public class BlockPlaceHandler implements Listener {
                 if (!mapLogic.hasFinishedHippo) {
                     mapLogic.hasFinishedHippo = checkCompleteStructure(block, mapLogic);
                     if (mapLogic.hasFinishedHippo) {
-                        long ms = mapLogic.getTimer().computeTime();
-                        player.sendMessage("You completed the " + mapLogic.getMapName() + " structure in " + ms + "ms!");
+                        parentPlugin.completeHippo(mapLogic, player);
                     }
                 }
             } else {

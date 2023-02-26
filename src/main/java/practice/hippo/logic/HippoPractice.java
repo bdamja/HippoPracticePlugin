@@ -1,9 +1,12 @@
 package practice.hippo.logic;
 
 import co.aikar.commands.PaperCommandManager;
+import net.minecraft.server.v1_8_R3.EnumParticle;
+import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -19,14 +22,13 @@ import practice.hippo.events.misc.WeatherChangeHandler;
 import practice.hippo.events.player.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 
 public class HippoPractice extends JavaPlugin implements Listener {
 
     public static final int VOID_LEVEL = 83;
+    private static final int NUM_PARTICLES = 350;
+
     public static SchematicLogic schematicPaster = null;
     public World world;
     public static ArrayList<String> maps = new ArrayList<>();
@@ -155,5 +157,36 @@ public class HippoPractice extends JavaPlugin implements Listener {
         player.teleport(mapLogic.getMapCenter());
     }
 
+    public void completeHippo(MapLogic mapLogic, Player player) {
+        long ms = mapLogic.getTimer().computeTime();
+        ChatLogic.sendHippoCompletion(mapLogic, ms, player);
+        player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 0.8f);
+        summonParticles(player);
+    }
+
+    private void summonParticles(Player player) {
+        double x = player.getLocation().getX();
+        double y = player.getLocation().getY() + 1;
+        double z = player.getLocation().getZ();
+        PacketPlayOutWorldParticles particles;
+        for (int i = 0; i < NUM_PARTICLES; i++) {
+            Location location = getRandLocationInBox(x, y, z, 5, 3, 5, new Random());
+            particles = new PacketPlayOutWorldParticles(EnumParticle.VILLAGER_HAPPY, true, (float) location.getX(), (float) location.getY(), (float) location.getZ(), 0, 0, 0, (float) 255, 0, 10);
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(particles);
+        }
+    }
+
+    public Location getRandLocationInBox(double x, double y, double z, double xd, double yd, double zd, Random random) {
+        double minX = x - xd;
+        double minY = y - yd;
+        double minZ = z - zd;
+        double maxX = x + xd;
+        double maxY = y + yd;
+        double maxZ = z + zd;
+        double randomX = minX + (maxX - minX) * random.nextDouble();
+        double randomY = minY + (maxY - minY) * random.nextDouble();
+        double randomZ = minZ + (maxZ - minZ) * random.nextDouble();
+        return new Location(world, randomX, randomY, randomZ);
+    }
 
 }

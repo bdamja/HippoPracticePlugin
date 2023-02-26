@@ -3,9 +3,11 @@ package practice.hippo.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import practice.hippo.logic.ChatLogic;
 import practice.hippo.logic.HippoPractice;
 import practice.hippo.logic.MapLogic;
 
@@ -26,7 +28,7 @@ public class HippoPracticeCommand extends BaseCommand {
 
     @Default
     public void onDefault(CommandSender sender) {
-        sender.sendMessage("List of Hippo Practice Commands\n- hp\n- hp loadmap <map>");
+        ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "List of Hippo Practice Commands\n- hp\n- hp loadmap <map>", (Player) sender);
     }
 
     @Subcommand("loadmap")
@@ -37,13 +39,13 @@ public class HippoPracticeCommand extends BaseCommand {
         if (args.length > 0) {
             String mapName = args[0];
             if (HippoPractice.maps.contains(mapName)) {
-                sender.sendMessage(ChatColor.GREEN + "Loading map " + mapName + "...");
+                ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Loading map " + mapName + "...", (Player) sender);
                 parentPlugin.changeMap(mapName, sender);
             } else {
-                sender.sendMessage(ChatColor.RED + "Map not found. Do /hp maps to see a list of all maps");
+                ChatLogic.sendMessageToPlayer(ChatColor.RED + "Map not found. Do /hp maps to see a list of all maps", (Player) sender);
             }
         } else {
-            sender.sendMessage(ChatColor.RED + "Usage: /hp loadmap <map>");
+            ChatLogic.sendMessageToPlayer(ChatColor.RED + "Usage: /hp loadmap <map>", (Player) sender);
         }
     }
 
@@ -58,9 +60,10 @@ public class HippoPracticeCommand extends BaseCommand {
         for (Block block : allBlocks) {
             output.write(block.getX() + " " + block.getY() + " " + block.getZ() + "\n");
         }
-        sender.sendMessage(ChatColor.YELLOW + "Set the hippo for " + mapLogic.getMapName());
+        ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Exported new hippo for " + mapLogic.mapText(), (Player) sender);
         output.close();
         mapLogic.updateMapValues(mapLogic.getMapName());
+        player.playSound(player.getLocation(), Sound.ANVIL_USE, 1.0f, 0.8f);
     }
 
 }
