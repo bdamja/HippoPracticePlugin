@@ -12,6 +12,8 @@ import practice.hippo.logic.MapLogic;
 import practice.hippo.logic.HippoPractice;
 import practice.hippo.util.BoundingBox;
 
+import java.io.FileNotFoundException;
+
 public class BlockBreakHandler implements Listener {
 
     private final HippoPractice parentPlugin;
@@ -21,7 +23,7 @@ public class BlockBreakHandler implements Listener {
     }
 
     @EventHandler
-    public void onBlockBreak(BlockBreakEvent event) {
+    public void onBlockBreak(BlockBreakEvent event) throws FileNotFoundException {
         Player player = event.getPlayer();
         Block block = event.getBlock();
         MapLogic mapLogic = parentPlugin.playerMap.get(player.getUniqueId());
@@ -31,6 +33,9 @@ public class BlockBreakHandler implements Listener {
                 event.setCancelled(true);
             } else if (wasBlockPlacedByPlayer(block, player.getName())) {
                 mapLogic.getRecordedBlocks().remove(block);
+                if (mapLogic.isBlockLocationPartOfHippo(block.getLocation())) {
+                    mapLogic.getHippoBlocks().add(block.getLocation());
+                }
             }
         }
     }

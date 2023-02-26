@@ -88,7 +88,7 @@ public class MapLogic {
         return new Location(this.world, 0.5, 94.0, 0.5, -90, 0);
     }
 
-    private ArrayList<Location> setHippoBlocks(String mapName) throws FileNotFoundException {
+    private ArrayList<Location> getLocationFromHippoFile(String mapName) throws FileNotFoundException {
         File file = new File("./plugins/HippoPractice/hippos/" + mapName + ".txt");
         Scanner input = new Scanner(file);
         ArrayList<Location> allHippoBlocks = new ArrayList<>();
@@ -119,7 +119,7 @@ public class MapLogic {
             this.buildLimits = new BoundingBox(-23, 84, -20, 0, 99, 20);
             mapNameColor = "" + ChatColor.DARK_PURPLE;
         }
-        this.hippoBlocks = setHippoBlocks(mapName);
+        this.hippoBlocks = getLocationFromHippoFile(mapName);
     }
 
     public String mapText() {
@@ -129,6 +129,11 @@ public class MapLogic {
 
     public ArrayList<Location> getHippoBlocks() {
         return hippoBlocks;
+    }
+
+    public boolean isBlockLocationPartOfHippo(Location location) throws FileNotFoundException {
+        ArrayList<Location> allHippoBlocks = getLocationFromHippoFile(mapName);
+        return allHippoBlocks.contains(location);
     }
 
     public static Location getViewLocation() {
