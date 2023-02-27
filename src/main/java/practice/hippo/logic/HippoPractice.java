@@ -113,14 +113,14 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     public void removeAllBlocksPlacedByPlayer(Player player) {
         MapLogic mapLogic = playerMap.get(player.getUniqueId());
-        HashSet<Block> recordedBlocks = mapLogic.getRecordedBlocks();
+        Queue<Block> recordedBlocks = mapLogic.getRecordedBlocks();
         for (Block block : recordedBlocks) {
             block.setType(Material.AIR);
         }
         recordedBlocks.clear();
     }
 
-    public HashSet<Block> getAllBlocksPlacedByPlayer(Player player) {
+    public Queue<Block> getAllBlocksPlacedByPlayer(Player player) {
         MapLogic mapLogic = playerMap.get(player.getUniqueId());
         return mapLogic.getRecordedBlocks();
     }

@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashSet;
+import java.util.Queue;
 
 @CommandAlias("hp|hippo")
 public class HippoPracticeCommand extends BaseCommand {
@@ -49,12 +50,20 @@ public class HippoPracticeCommand extends BaseCommand {
         }
     }
 
+    @Subcommand("showhippo")
+    @Description("Shows the current hippo to build")
+    public void onShowHippo(CommandSender sender) throws FileNotFoundException {
+        Player player = (Player) sender;
+        ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Showing the current structure to build", player);
+        parentPlugin.playerMap.get(player.getUniqueId()).placeHippoBlocks(parentPlugin.world);
+    }
+
     @Subcommand("export")
     @Description("exports the current map setup to a hippo file")
     public void onExport(CommandSender sender) throws FileNotFoundException {
         Player player = (Player) sender;
         MapLogic mapLogic = parentPlugin.playerMap.get(player.getUniqueId());
-        HashSet<Block> allBlocks = parentPlugin.getAllBlocksPlacedByPlayer(player);
+        Queue<Block> allBlocks = parentPlugin.getAllBlocksPlacedByPlayer(player);
         File file = new File("./plugins/HippoPractice/hippos/" + mapLogic.getMapName() + ".txt");
         PrintWriter output = new PrintWriter(file);
         for (Block block : allBlocks) {

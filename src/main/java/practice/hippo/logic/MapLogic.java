@@ -1,11 +1,9 @@
 package practice.hippo.logic;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
@@ -13,10 +11,7 @@ import practice.hippo.util.BoundingBox;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.UUID;
+import java.util.*;
 
 public class MapLogic {
 
@@ -29,7 +24,7 @@ public class MapLogic {
     private Location blueSpawnPoint;
     private BoundingBox buildLimits;
     private BoundingBox bridgeDimensions;
-    private HashSet<Block> recordedBlocks;
+    private Queue<Block> recordedBlocks;
     private ArrayList<Location> hippoBlocks;
     private Timer timer;
     private BukkitTask visualTimer;
@@ -44,7 +39,7 @@ public class MapLogic {
         this.blueSpawnPoint = getViewLocation();
         this.buildLimits = new BoundingBox(0, 0, 0, 0, 0, 0);
         this.bridgeDimensions = new BoundingBox(-20, 84, -0, 20, 92, 0);
-        this.recordedBlocks = new HashSet<>();
+        this.recordedBlocks = new LinkedList<>();
         this.hasFinishedHippo = false;
         this.timer = new Timer();
         this.mapNameColor = "";
@@ -84,7 +79,7 @@ public class MapLogic {
         return bridgeDimensions;
     }
 
-    public HashSet<Block> getRecordedBlocks() {
+    public Queue<Block> getRecordedBlocks() {
         return recordedBlocks;
     }
 
@@ -183,6 +178,29 @@ public class MapLogic {
         if (mapLogic.getVisualTimer() != null) {
             mapLogic.getVisualTimer().cancel();
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    public void placeHippoBlocks(World world) throws FileNotFoundException {
+        Player player = Bukkit.getPlayer(playerUUID);
+        parentPlugin.removeAllBlocksPlacedByPlayer(player);
+        ArrayList<Location> allHippoBlocks = getLocationFromHippoFile(this.mapName);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!allHippoBlocks.isEmpty()) {
+                    Location location = allHippoBlocks.remove(0);
+                    Block block = world.getBlockAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+                    block.setType(Material.STAINED_CLAY);
+                    block.setData((byte) 5);
+                    block.setMetadata("placed by " + player.getName(), new FixedMetadataValue(parentPlugin, ""));
+                    parentPlugin.playerMap.get(playerUUID).getRecordedBlocks().add(block);
+                    player.playSound(block.getLocation(), Sound.DIG_STONE, 1.0f, 1.0f);
+                } else {
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(parentPlugin, 3, 3);
     }
 
 }
