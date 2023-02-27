@@ -37,7 +37,6 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        System.out.println("Hippo Practice is loading...");
         PluginManager pluginManager = this.getServer().getPluginManager();
         registerEventListeners(pluginManager);
         setDefaultGameRules();
@@ -46,7 +45,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         manager.registerCommand(new HippoPracticeCommand(this));
         maps.add("aquatica"); maps.add("boo");
         manager.getCommandCompletions().registerCompletion("mapNames", c -> maps);
-        scoreboardLogic = new ScoreboardLogic();
+        scoreboardLogic = new ScoreboardLogic(this);
     }
 
     private void registerEventListeners(PluginManager pluginManager) {
@@ -102,11 +101,14 @@ public class HippoPractice extends JavaPlugin implements Listener {
         removeAllBlocksPlacedByPlayer(player);
         schematicPaster.loadMainBridge();
         killItems();
-        playerMap.get(player.getUniqueId()).hasFinishedHippo = false;
-        String mapName = playerMap.get(player.getUniqueId()).getMapName();
-        MapLogic mapLogic = new MapLogic(world, mapName, player.getUniqueId());
+        MapLogic mapLogic = playerMap.get(player.getUniqueId());
+        String mapName = mapLogic.getMapName();
+        MapLogic.cancelTimerTaskIfPresent(mapLogic);
+        mapLogic = new MapLogic(world, mapName, player.getUniqueId(), this);
         playerMap.replace(player.getUniqueId(), mapLogic);
         mapLogic.getTimer().setStartTime();
+        mapLogic.resetVisualTimer();
+
     }
 
     public void removeAllBlocksPlacedByPlayer(Player player) {
@@ -136,10 +138,12 @@ public class HippoPractice extends JavaPlugin implements Listener {
             Player player = (Player) sender;
             removeAllBlocksPlacedByPlayer(player);
             schematicPaster.loadMap(mapName);
-            MapLogic mapLogic = new MapLogic(world, mapName, player.getUniqueId());
+            MapLogic.cancelTimerTaskIfPresent(playerMap.get(player.getUniqueId()));
+            MapLogic mapLogic = new MapLogic(world, mapName, player.getUniqueId(), this);
             playerMap.replace(player.getUniqueId(), mapLogic);
             resetMap(player);
             resetPlayerAndSendToSpawn(player);
+            scoreboardLogic.updateMapName(player, mapLogic.mapText());
         }
     }
 
@@ -162,6 +166,9 @@ public class HippoPractice extends JavaPlugin implements Listener {
         ChatLogic.sendHippoCompletion(mapLogic, ms, player);
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 0.8f);
         summonParticles(player);
+        mapLogic.hasFinishedHippo = true;
+        mapLogic.stopVisualTimer();
+        mapLogic.updateVisualTimer(player.getScoreboard(), Timer.computeTimeFormatted(ms));
     }
 
     private void summonParticles(Player player) {

@@ -13,7 +13,8 @@ public class ChatLogic {
     }
 
     public static void sendHippoCompletion(MapLogic mapLogic, long ms, Player player) {
-        String msg = ChatColor.GRAY + "You completed the " + mapLogic.mapText() + ChatColor.GRAY + " structure in " + ChatColor.AQUA + ms + ChatColor.GRAY + " ms!";
+        String msg = ChatColor.GRAY + "You completed the " + mapLogic.mapText() + ChatColor.GRAY + " structure in "
+                + ChatColor.AQUA + Timer.computeTimeFormatted(ms) + ChatColor.GRAY + "!";
         sendMessageToPlayer(msg, player);
     }
 }

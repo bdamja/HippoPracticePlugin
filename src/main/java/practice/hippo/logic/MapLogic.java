@@ -5,6 +5,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scoreboard.Scoreboard;
 import practice.hippo.util.BoundingBox;
 
 import java.io.File;
@@ -16,6 +20,7 @@ import java.util.UUID;
 
 public class MapLogic {
 
+    private final HippoPractice parentPlugin;
     private World world;
     private String mapName;
     private String mapNameColor;
@@ -27,9 +32,11 @@ public class MapLogic {
     private HashSet<Block> recordedBlocks;
     private ArrayList<Location> hippoBlocks;
     private Timer timer;
+    private BukkitTask visualTimer;
     public boolean hasFinishedHippo;
+    public boolean isRunning;
 
-    public MapLogic(World world, String mapName, UUID playerUUID) throws FileNotFoundException {
+    public MapLogic(World world, String mapName, UUID playerUUID, HippoPractice parentPlugin) throws FileNotFoundException {
         this.world = world;
         this.mapName = mapName;
         this.playerUUID = playerUUID;
@@ -41,6 +48,7 @@ public class MapLogic {
         this.hasFinishedHippo = false;
         this.timer = new Timer();
         this.mapNameColor = "";
+        this.parentPlugin = parentPlugin;
         updateMapValues(mapName);
     }
 
@@ -82,6 +90,10 @@ public class MapLogic {
 
     public Timer getTimer() {
         return this.timer;
+    }
+
+    public BukkitTask getVisualTimer() {
+        return this.visualTimer;
     }
 
     public Location getMapCenter() {
@@ -138,6 +150,39 @@ public class MapLogic {
 
     public static Location getViewLocation() {
         return new Location(Bukkit.getWorld("world"), -6.5, 93, 0.5, 90, -6);
+    }
+
+    public void resetVisualTimer() {
+        stopVisualTimer();
+        Player player = Bukkit.getPlayer(playerUUID);
+        Scoreboard board = player.getScoreboard();
+        board.getTeam("timeName").setPrefix(ChatColor.GRAY + "0.000");
+        startVisualTimer(board);
+    }
+
+    public void startVisualTimer(Scoreboard board) {
+        this.visualTimer = new BukkitRunnable() {
+            @Override
+            public void run() {
+                updateVisualTimer(board, Timer.computeTimeFormatted(timer.computeTime()));
+            }
+        }.runTaskTimer(parentPlugin, 0, 3);
+    }
+
+    public void stopVisualTimer() {
+        if (visualTimer != null) {
+            visualTimer.cancel();
+        }
+    }
+
+    public void updateVisualTimer(Scoreboard board, String timeFormatted) {
+        board.getTeam("timeName").setPrefix(ChatColor.GRAY + timeFormatted);
+    }
+
+    public static void cancelTimerTaskIfPresent(MapLogic mapLogic) {
+        if (mapLogic.getVisualTimer() != null) {
+            mapLogic.getVisualTimer().cancel();
+        }
     }
 
 }

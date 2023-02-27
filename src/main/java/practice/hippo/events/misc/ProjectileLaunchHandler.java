@@ -18,7 +18,7 @@ public class ProjectileLaunchHandler implements Listener {
     }
 
     @EventHandler
-    public void onProjectileLaunch(ProjectileLaunchEvent event) throws IOException {
+    public void onProjectileLaunch(ProjectileLaunchEvent event) {
         Entity projectile = event.getEntity();
         if (projectile instanceof Snowball) {
             new BukkitRunnable() {

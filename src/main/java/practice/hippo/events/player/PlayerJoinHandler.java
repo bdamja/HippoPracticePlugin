@@ -29,7 +29,7 @@ public class PlayerJoinHandler implements Listener {
         player.setSaturation(20);
         event.getPlayer().setGameMode(GameMode.ADVENTURE);
         InventoryLogic.hardInventoryClear(player);
-        parentPlugin.playerMap.put(player.getUniqueId(), new MapLogic(parentPlugin.world, "no_map", player.getUniqueId()));
+        parentPlugin.playerMap.put(player.getUniqueId(), new MapLogic(parentPlugin.world, "no_map", player.getUniqueId(), parentPlugin));
         parentPlugin.teleportToCenterLocation(player);
         parentPlugin.scoreboardLogic.makeBoard(player);
     }

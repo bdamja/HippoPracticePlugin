@@ -12,7 +12,7 @@ import practice.hippo.logic.MapLogic;
 import practice.hippo.logic.HippoPractice;
 import practice.hippo.util.BoundingBox;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class BlockBreakHandler implements Listener {
 
@@ -23,7 +23,7 @@ public class BlockBreakHandler implements Listener {
     }
 
     @EventHandler
-    public void onBlockBreak(BlockBreakEvent event) throws FileNotFoundException {
+    public void onBlockBreak(BlockBreakEvent event) throws IOException {
         Player player = event.getPlayer();
         Block block = event.getBlock();
         MapLogic mapLogic = parentPlugin.playerMap.get(player.getUniqueId());
