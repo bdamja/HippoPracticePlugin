@@ -9,9 +9,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-import practice.hippo.logic.ChatLogic;
-import practice.hippo.logic.MapLogic;
 import practice.hippo.logic.HippoPractice;
+import practice.hippo.logic.MapLogic;
 import practice.hippo.util.BoundingBox;
 
 public class BlockPlaceHandler implements Listener {

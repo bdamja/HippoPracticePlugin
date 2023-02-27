@@ -24,6 +24,9 @@ import practice.hippo.events.player.*;
 import java.io.IOException;
 import java.util.*;
 
+import static practice.hippo.util.Side.BLUE;
+import static practice.hippo.util.Side.RED;
+
 public class HippoPractice extends JavaPlugin implements Listener {
 
     public static final int VOID_LEVEL = 83;
@@ -32,6 +35,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public static SchematicLogic schematicPaster = null;
     public World world;
     public static ArrayList<String> maps = new ArrayList<>();
+    private static final ArrayList<Plot> plots = new ArrayList<>();
     public ScoreboardLogic scoreboardLogic = null;
     public HashMap<UUID, MapLogic> playerMap = new HashMap<>();
 
@@ -102,9 +106,10 @@ public class HippoPractice extends JavaPlugin implements Listener {
         schematicPaster.loadMainBridge();
         killItems();
         MapLogic mapLogic = playerMap.get(player.getUniqueId());
+        Plot plot = mapLogic.getPlot();
         String mapName = mapLogic.getMapName();
         MapLogic.cancelTimerTaskIfPresent(mapLogic);
-        mapLogic = new MapLogic(world, mapName, player.getUniqueId(), this);
+        mapLogic = new MapLogic(plot, world, mapName, player.getUniqueId(), this);
         playerMap.replace(player.getUniqueId(), mapLogic);
         mapLogic.getTimer().setStartTime();
         mapLogic.resetVisualTimer();
@@ -113,11 +118,13 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     public void removeAllBlocksPlacedByPlayer(Player player) {
         MapLogic mapLogic = playerMap.get(player.getUniqueId());
-        Queue<Block> recordedBlocks = mapLogic.getRecordedBlocks();
-        for (Block block : recordedBlocks) {
-            block.setType(Material.AIR);
+        if (mapLogic != null) {
+            Queue<Block> recordedBlocks = mapLogic.getRecordedBlocks();
+            for (Block block : recordedBlocks) {
+                block.setType(Material.AIR);
+            }
+            recordedBlocks.clear();
         }
-        recordedBlocks.clear();
     }
 
     public Queue<Block> getAllBlocksPlacedByPlayer(Player player) {
@@ -139,7 +146,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
             removeAllBlocksPlacedByPlayer(player);
             schematicPaster.loadMap(mapName);
             MapLogic.cancelTimerTaskIfPresent(playerMap.get(player.getUniqueId()));
-            MapLogic mapLogic = new MapLogic(world, mapName, player.getUniqueId(), this);
+            MapLogic mapLogic = new MapLogic(playerMap.get(player.getUniqueId()).getPlot(), world, mapName, player.getUniqueId(), this);
             playerMap.replace(player.getUniqueId(), mapLogic);
             resetMap(player);
             resetPlayerAndSendToSpawn(player);
@@ -194,6 +201,23 @@ public class HippoPractice extends JavaPlugin implements Listener {
         double randomY = minY + (maxY - minY) * random.nextDouble();
         double randomZ = minZ + (maxZ - minZ) * random.nextDouble();
         return new Location(world, randomX, randomY, randomZ);
+    }
+
+    public final void setPlotList() {
+        plots.add(new Plot(this, new Location(world, 0, 92, 2), RED));
+        plots.add(new Plot(this, new Location(world, 41, 92, 2), RED));
+        plots.add(new Plot(this, new Location(world, 82, 92, 2), RED));
+        plots.add(new Plot(this, new Location(world, 123, 92, 2), RED));
+        plots.add(new Plot(this, new Location(world, 164, 92, 2), RED));
+        plots.add(new Plot(this, new Location(world, 0, 92, -2), BLUE));
+        plots.add(new Plot(this, new Location(world, 41, 92, -2), BLUE));
+        plots.add(new Plot(this, new Location(world, 82, 92, -2), BLUE));
+        plots.add(new Plot(this, new Location(world, 123, 92, -2), BLUE));
+        plots.add(new Plot(this, new Location(world, 164, 92, -2), BLUE));
+    }
+
+    public ArrayList<Plot> getPlotList() {
+        return plots;
     }
 
 }

@@ -16,6 +16,7 @@ import java.util.*;
 public class MapLogic {
 
     private final HippoPractice parentPlugin;
+    private Plot plot;
     private World world;
     private String mapName;
     private String mapNameColor;
@@ -29,9 +30,9 @@ public class MapLogic {
     private Timer timer;
     private BukkitTask visualTimer;
     public boolean hasFinishedHippo;
-    public boolean isRunning;
 
-    public MapLogic(World world, String mapName, UUID playerUUID, HippoPractice parentPlugin) throws FileNotFoundException {
+    public MapLogic(Plot plot, World world, String mapName, UUID playerUUID, HippoPractice parentPlugin) throws FileNotFoundException {
+        this.plot = plot;
         this.world = world;
         this.mapName = mapName;
         this.playerUUID = playerUUID;
@@ -45,6 +46,14 @@ public class MapLogic {
         this.mapNameColor = "";
         this.parentPlugin = parentPlugin;
         updateMapValues(mapName);
+    }
+
+    public Plot getPlot() {
+        return plot;
+    }
+
+    public void setPlot(Plot plot) {
+        this.plot = plot;
     }
 
     public World getWorld() {
@@ -175,8 +184,10 @@ public class MapLogic {
     }
 
     public static void cancelTimerTaskIfPresent(MapLogic mapLogic) {
-        if (mapLogic.getVisualTimer() != null) {
-            mapLogic.getVisualTimer().cancel();
+        if (mapLogic != null) {
+            if (mapLogic.getVisualTimer() != null) {
+                mapLogic.getVisualTimer().cancel();
+            }
         }
     }
 
