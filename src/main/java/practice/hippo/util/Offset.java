@@ -18,7 +18,7 @@ public class Offset {
         float offsetYaw = location.getYaw();
         if (plot.getSide() == Side.blue) {
             offsetX *= -1;
-            offsetZ *= -1;
+            offsetZ = plot.z - (offsetZ - plot.z);
             if (!isBlockLocation) {
                 offsetX += 1;
                 offsetZ += 1;
@@ -33,7 +33,7 @@ public class Offset {
         double offsetZ = z + plot.z;
         if (plot.getSide() == Side.blue) {
             offsetX *= -1;
-            offsetZ *= -1;
+            offsetZ = plot.z - (offsetZ - plot.z);
             if (!isBlockLocation) {
                 offsetX += 1;
                 offsetZ += 1;
@@ -48,7 +48,7 @@ public class Offset {
         float offsetYaw = yaw;
         if (plot.getSide() == Side.blue) {
             offsetX *= -1;
-            offsetZ *= -1;
+            offsetZ = plot.z - (offsetZ - plot.z);
             if (!isBlockLocation) {
                 offsetX += 1;
                 offsetZ += 1;
@@ -63,7 +63,7 @@ public class Offset {
         double offsetZ = vector.getZ() + plot.z;
         if (plot.getSide() == Side.blue) {
             offsetX *= -1;
-            offsetZ *= -1;
+            offsetZ = plot.z - (offsetZ - plot.z);
             if (!isBlockLocation) {
                 offsetX += 1;
                 offsetZ += 1;
@@ -77,7 +77,7 @@ public class Offset {
         double offsetZ = z + plot.z;
         if (plot.getSide() == Side.blue) {
             offsetX *= -1;
-            offsetZ *= -1;
+            offsetZ = plot.z - (offsetZ - plot.z);
             if (!isBlockLocation) {
                 offsetX += 1;
                 offsetZ += 1;
@@ -94,13 +94,9 @@ public class Offset {
         if (plot.getSide() == Side.blue) {
             offsetX1 *= -1;
             offsetX2 *= -1;
-            offsetZ2 *= -1;
-            offsetZ2 *= -1;
             if (!isBlockLocation) {
                 offsetX1 += 1;
                 offsetX2 += 1;
-                offsetZ1 += 1;
-                offsetZ2 += 1;
             }
         }
         return new BoundingBox(Math.min(offsetX1, offsetX2), boundingBox.getMinY(), offsetZ1, Math.max(offsetX1, offsetX2), boundingBox.getMaxY(), offsetZ2);
@@ -114,13 +110,9 @@ public class Offset {
         if (plot.getSide() == Side.blue) {
             offsetX1 *= -1;
             offsetX2 *= -1;
-            offsetZ2 *= -1;
-            offsetZ2 *= -1;
             if (!isBlockLocation) {
                 offsetX1 += 1;
                 offsetX2 += 1;
-                offsetZ1 += 1;
-                offsetZ2 += 1;
             }
         }
         return new BoundingBox(Math.min(offsetX1, offsetX2), y1, offsetZ1, Math.max(offsetX1, offsetX2), y2, offsetZ2);
@@ -135,7 +127,6 @@ public class Offset {
             int offsetZ = block.getZ() - (int) plot.z;
             if (plot.getSide() == Side.blue) {
                 offsetX *= -1;
-                offsetZ *= -1;
             }
             originalBlockPositions.offer(new Location(Bukkit.getWorld("world"), offsetX, block.getY(), offsetZ));
         }

@@ -208,7 +208,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         double randomX = minX + (maxX - minX) * random.nextDouble();
         double randomY = minY + (maxY - minY) * random.nextDouble();
         double randomZ = minZ + (maxZ - minZ) * random.nextDouble();
-        return Offset.location(plot, world, randomX, randomY, randomZ, true);
+        return new Location(world, randomX, randomY, randomZ);
     }
 
     public final void setPlotList() {
