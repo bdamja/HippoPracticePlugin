@@ -37,6 +37,9 @@ public class BlockPlaceHandler implements Listener {
                         parentPlugin.completeHippo(mapLogic, player);
                     }
                 }
+                if (mapLogic.awaitingLeftClick) {
+                    parentPlugin.revertGlassToClay(mapLogic);
+                }
             } else {
                 player.sendMessage(ChatColor.RED + "You can't place blocks there!");
                 event.setCancelled(true);

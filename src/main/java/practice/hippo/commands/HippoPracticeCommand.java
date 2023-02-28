@@ -69,6 +69,14 @@ public class HippoPracticeCommand extends BaseCommand {
         parentPlugin.getMapLogic(player).placeHippoBlocks(parentPlugin.world);
     }
 
+    @Subcommand("showmissing")
+    @Description("Shows what blocks are missing for the current hippo")
+    public void onShowMissing(CommandSender sender) throws FileNotFoundException {
+        Player player = (Player) sender;
+        ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Showing what blocks are missing", player);
+        parentPlugin.showMissingBlocks(parentPlugin.getMapLogic(player));
+    }
+
     @CommandPermission("op")
     @Subcommand("export")
     @Description("exports the current map setup to a hippo file")

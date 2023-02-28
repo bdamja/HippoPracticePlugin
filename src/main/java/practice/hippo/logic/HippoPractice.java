@@ -15,6 +15,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import practice.hippo.commands.HippoPracticeCommand;
 import practice.hippo.events.block.BlockBreakHandler;
+import practice.hippo.events.block.BlockDamageHandler;
 import practice.hippo.events.block.BlockPlaceHandler;
 import practice.hippo.events.entity.EntityDamageHandler;
 import practice.hippo.events.misc.ProjectileLaunchHandler;
@@ -62,6 +63,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new PlayerDropItemHandler(), this);
         pluginManager.registerEvents(new BlockPlaceHandler(this), this);
         pluginManager.registerEvents(new BlockBreakHandler(this), this);
+        pluginManager.registerEvents(new BlockDamageHandler(this), this);
         pluginManager.registerEvents(new PlayerRespawnHandler(this), this);
         pluginManager.registerEvents(new ProjectileLaunchHandler(this), this);
         pluginManager.registerEvents(new PlayerChatHandler(), this);
@@ -111,12 +113,11 @@ public class HippoPractice extends JavaPlugin implements Listener {
         removeAllBlocksPlacedByPlayer(player);
         killItems();
         schematicPaster.loadMainBridge(plot);
-        MapLogic.cancelTimerTaskIfPresent(mapLogic);
+        MapLogic.cancelTasksIfPresent(mapLogic);
         mapLogic = new MapLogic(plot, world, mapName, player, this);
         playerMap.replace(player.getUniqueId(), mapLogic);
         mapLogic.getTimer().setStartTime();
         mapLogic.resetVisualTimer();
-
     }
 
     public void removeAllBlocksPlacedByPlayer(Player player) {
@@ -149,7 +150,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
             MapLogic mapLogic = getMapLogic(player);
             Plot plot = mapLogic.getPlot();
             removeAllBlocksPlacedByPlayer(player);
-            MapLogic.cancelTimerTaskIfPresent(getMapLogic(player));
+            MapLogic.cancelTasksIfPresent(getMapLogic(player));
             mapLogic = new MapLogic(getMapLogic(player).getPlot(), world, mapName, player, this);
             playerMap.replace(player.getUniqueId(), mapLogic);
             schematicPaster.loadMap(plot, mapLogic.getMapName());
@@ -178,13 +179,13 @@ public class HippoPractice extends JavaPlugin implements Listener {
         long ms = mapLogic.getTimer().computeTime();
         ChatLogic.sendHippoCompletion(mapLogic, ms, player);
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 0.8f);
-        summonParticles(player);
+        summonCompletionParticles(player);
         mapLogic.hasFinishedHippo = true;
         mapLogic.stopVisualTimer();
         mapLogic.updateVisualTimer(player.getScoreboard(), Timer.computeTimeFormatted(ms));
     }
 
-    private void summonParticles(Player player) {
+    private void summonCompletionParticles(Player player) {
         double x = player.getLocation().getX();
         double y = player.getLocation().getY() + 1;
         double z = player.getLocation().getZ();
@@ -192,7 +193,9 @@ public class HippoPractice extends JavaPlugin implements Listener {
         Plot plot = getMapLogic(player).getPlot();
         for (int i = 0; i < NUM_PARTICLES; i++) {
             Location location = getRandLocationInBox(plot, x, y, z, 5, 3, 5, new Random());
-            particles = new PacketPlayOutWorldParticles(EnumParticle.VILLAGER_HAPPY, true, (float) location.getX(), (float) location.getY(), (float) location.getZ(), 0, 0, 0, (float) 255, 0, 10);
+            particles = new PacketPlayOutWorldParticles(EnumParticle.VILLAGER_HAPPY, true,
+                    (float) location.getX(), (float) location.getY(), (float) location.getZ(),
+                    0, 0, 0, (float) 255, 0, 10);
             ((CraftPlayer) player).getHandle().playerConnection.sendPacket(particles);
         }
     }
@@ -245,6 +248,44 @@ public class HippoPractice extends JavaPlugin implements Listener {
             }
         }
         return isOccupied;
+    }
+
+    @SuppressWarnings("deprecation")
+    public void showMissingBlocks(MapLogic mapLogic) {
+        for (Block block : mapLogic.getRecordedBlocks()) {
+            block.setType(Material.STAINED_GLASS);
+            block.setData(mapLogic.getColorData());
+        }
+        mapLogic.awaitingLeftClick = true;
+        showMissingParticles(mapLogic);
+    }
+
+    @SuppressWarnings("deprecation")
+    public void revertGlassToClay(MapLogic mapLogic) {
+        for (Block block : mapLogic.getRecordedBlocks()) {
+            block.setType(Material.STAINED_CLAY);
+            block.setData(mapLogic.getColorData());
+        }
+        mapLogic.awaitingLeftClick = false;
+        mapLogic.stopParticleSummoning();
+    }
+
+    private void showMissingParticles(MapLogic mapLogic) {
+        ArrayList<Location> missingParticleLocations = getMissingBlockLocations(mapLogic);
+        mapLogic.startParticleSummoning(missingParticleLocations, 25);
+    }
+
+    private ArrayList<Location> getMissingBlockLocations(MapLogic mapLogic) {
+        ArrayList<Location> missingBlockLocations = new ArrayList<>();
+        for (Location location : mapLogic.getHippoBlocks()) {
+            if (world.getBlockAt(location).getType().equals(Material.AIR)) {
+                double centerX = location.getX() + 0.5;
+                double centerY = location.getY() + 0.5;
+                double centerZ = location.getZ() + 0.5;
+                missingBlockLocations.add(new Location(world, centerX, centerY, centerZ));
+            }
+        }
+        return missingBlockLocations;
     }
 
 }

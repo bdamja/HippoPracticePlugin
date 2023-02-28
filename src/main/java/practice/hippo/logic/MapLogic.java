@@ -1,7 +1,10 @@
 package practice.hippo.logic;
 
+import net.minecraft.server.v1_8_R3.EnumParticle;
+import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -31,8 +34,10 @@ public class MapLogic {
     private ArrayList<Location> hippoBlocks;
     private Timer timer;
     private BukkitTask visualTimer;
+    private BukkitTask particleSummoner;
     public boolean hasFinishedHippo;
     public boolean awaitingMove;
+    public boolean awaitingLeftClick;
 
     public MapLogic(Plot plot, World world, String mapName, Player player, HippoPractice parentPlugin) throws FileNotFoundException {
         this.plot = plot;
@@ -49,6 +54,7 @@ public class MapLogic {
         this.mapNameColor = "";
         this.parentPlugin = parentPlugin;
         this.awaitingMove = true;
+        this.awaitingLeftClick = false;
         updateMapValues(mapName);
     }
 
@@ -114,6 +120,10 @@ public class MapLogic {
 
     public BukkitTask getVisualTimer() {
         return this.visualTimer;
+    }
+
+    public BukkitTask getParticleSummoner() {
+        return this.particleSummoner;
     }
 
     public Location getMapCenter() {
@@ -194,21 +204,45 @@ public class MapLogic {
         }
     }
 
+    public void startParticleSummoning(ArrayList<Location> missingParticleLocations, long period) {
+        stopParticleSummoning();
+        this.particleSummoner = new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Location location : missingParticleLocations) {
+                    PacketPlayOutWorldParticles particles = new PacketPlayOutWorldParticles(EnumParticle.BARRIER, true,
+                            (float) location.getX(), (float) location.getY(), (float) location.getZ(),
+                            0, 0, 0, (float) 255, 0, 10);
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(particles);
+                }
+            }
+        }.runTaskTimer(parentPlugin, 0, period);
+    }
+
+    public void stopParticleSummoning() {
+        if (particleSummoner != null) {
+            particleSummoner.cancel();
+        }
+    }
+
     public void updateVisualTimer(Scoreboard board, String timeFormatted) {
         board.getTeam("timeName").setPrefix(ChatColor.GRAY + timeFormatted);
     }
 
-    public static void cancelTimerTaskIfPresent(MapLogic mapLogic) {
+    public static void cancelTasksIfPresent(MapLogic mapLogic) {
         if (mapLogic != null) {
             if (mapLogic.getVisualTimer() != null) {
                 mapLogic.getVisualTimer().cancel();
+            }
+            if (mapLogic.getParticleSummoner() != null) {
+                mapLogic.getParticleSummoner().cancel();
             }
         }
     }
 
     @SuppressWarnings("deprecation")
     public void placeHippoBlocks(World world) throws FileNotFoundException {
-        byte color = (this.plot.getSide() == Side.red) ? (byte) 14 : (byte) 11;
+        byte color = getColorData();
         parentPlugin.removeAllBlocksPlacedByPlayer(player);
         ArrayList<Location> allHippoBlocks = getLocationFromHippoFile(this.mapName);
         new BukkitRunnable() {
@@ -227,6 +261,10 @@ public class MapLogic {
                 }
             }
         }.runTaskTimer(parentPlugin, 3, 3);
+    }
+
+    public byte getColorData() {
+        return (this.plot.getSide() == Side.red) ? (byte) 14 : (byte) 11;
     }
 
 }
