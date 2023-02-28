@@ -18,13 +18,37 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
+import static org.bukkit.ChatColor.RESET;
+import static org.bukkit.ChatColor.BOLD;
+import static org.bukkit.ChatColor.STRIKETHROUGH;
+import static org.bukkit.ChatColor.UNDERLINE;
+import static org.bukkit.ChatColor.ITALIC;
+import static org.bukkit.ChatColor.MAGIC;
+import static org.bukkit.ChatColor.BLACK;
+import static org.bukkit.ChatColor.DARK_AQUA;
+import static org.bukkit.ChatColor.DARK_GREEN;
+import static org.bukkit.ChatColor.DARK_PURPLE;
+import static org.bukkit.ChatColor.DARK_GRAY;
+import static org.bukkit.ChatColor.DARK_BLUE;
+import static org.bukkit.ChatColor.DARK_RED;
+import static org.bukkit.ChatColor.GOLD;
+import static org.bukkit.ChatColor.GRAY;
+import static org.bukkit.ChatColor.BLUE;
+import static org.bukkit.ChatColor.GREEN;
+import static org.bukkit.ChatColor.AQUA;
+import static org.bukkit.ChatColor.RED;
+import static org.bukkit.ChatColor.LIGHT_PURPLE;
+import static org.bukkit.ChatColor.YELLOW;
+import static org.bukkit.ChatColor.WHITE;
+
+
 public class MapLogic {
 
     private final HippoPractice parentPlugin;
     private Plot plot;
     private World world;
     private String mapName;
-    private String mapNameColor;
+    private ScoreboardLogic scoreboardLogic;
     private Player player;
     private Location redSpawnPoint;
     private Location blueSpawnPoint;
@@ -51,10 +75,10 @@ public class MapLogic {
         this.recordedBlocks = new LinkedList<>();
         this.hasFinishedHippo = false;
         this.timer = new Timer();
-        this.mapNameColor = "";
         this.parentPlugin = parentPlugin;
         this.awaitingMove = true;
         this.awaitingLeftClick = false;
+        setScoreboardLogic(WHITE, GRAY, DARK_GREEN, GRAY, DARK_GREEN, GRAY, GOLD, GRAY);
         updateMapValues(mapName);
     }
 
@@ -74,8 +98,8 @@ public class MapLogic {
         return mapName;
     }
 
-    public String getMapNameColor() {
-        return mapNameColor;
+    public ScoreboardLogic getScoreboardLogic() {
+        return scoreboardLogic;
     }
 
     public UUID getPlayerUUID() {
@@ -153,20 +177,25 @@ public class MapLogic {
             this.redSpawnPoint = new Location(this.world, 29.5, 98.0, 0.5, 90, 0);
             this.blueSpawnPoint = redSpawnPoint;
             this.buildLimits = new BoundingBox(25, 84, -20, 1, 99, 20);
-            mapNameColor = "" + ChatColor.DARK_AQUA;
+            setScoreboardLogic(WHITE, DARK_GRAY, DARK_GREEN, GOLD, DARK_GREEN, DARK_GRAY, GOLD, DARK_GRAY);
 
         } else if (mapName.equals("boo")) {
             this.redSpawnPoint = new Location(this.world, 31.5, 103.0, 0.5, 90, 0);
             this.blueSpawnPoint = redSpawnPoint;
             this.buildLimits = new BoundingBox(23, 84, -20, 1, 99, 20);
-            mapNameColor = "" + ChatColor.DARK_PURPLE;
+            setScoreboardLogic(WHITE, DARK_GRAY, DARK_GREEN, GOLD, DARK_GREEN, DARK_GRAY, GOLD, DARK_GRAY);
         }
         this.hippoBlocks = getLocationFromHippoFile(mapName);
     }
 
+    private void setScoreboardLogic(ChatColor headerColor, ChatColor barColor, ChatColor mapLabelColor, ChatColor mapNameColor, ChatColor
+            pbLabelColor, ChatColor pbTimeColor, ChatColor timeLabelColor, ChatColor timerColor) {
+        this.scoreboardLogic = new ScoreboardLogic(parentPlugin, new ChatColor[]{headerColor,barColor,mapLabelColor,mapNameColor,pbLabelColor,pbTimeColor,timeLabelColor,timerColor});
+    }
+
     public String mapText() {
         String mapNameStr = mapName.substring(0, 1).toUpperCase() + mapName.substring(1);
-        return this.mapNameColor + ChatColor.BOLD + mapNameStr + ChatColor.RESET;
+        return this.scoreboardLogic.getScoreboardColors()[4] + mapNameStr;
     }
 
     public ArrayList<Location> getHippoBlocks() {

@@ -38,7 +38,6 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public World world;
     public static ArrayList<String> maps = new ArrayList<>();
     private static final ArrayList<Plot> plots = new ArrayList<>();
-    public ScoreboardLogic scoreboardLogic = null;
     public HashMap<UUID, MapLogic> playerMap = new HashMap<>();
 
     @Override
@@ -51,7 +50,6 @@ public class HippoPractice extends JavaPlugin implements Listener {
         manager.registerCommand(new HippoPracticeCommand(this));
         maps.add("aquatica"); maps.add("boo");
         manager.getCommandCompletions().registerCompletion("mapNames", c -> maps);
-        scoreboardLogic = new ScoreboardLogic(this);
         setPlotList();
     }
 
@@ -156,7 +154,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
             schematicPaster.loadMap(plot, mapLogic.getMapName());
             resetMap(player);
             resetPlayerAndSendToSpawn(player);
-            scoreboardLogic.updateMapName(player, mapLogic.mapText());
+            mapLogic.getScoreboardLogic().update(player, mapLogic.mapText());
         }
     }
 

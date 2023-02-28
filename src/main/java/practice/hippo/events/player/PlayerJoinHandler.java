@@ -30,7 +30,7 @@ public class PlayerJoinHandler implements Listener {
         parentPlugin.playerMap.put(player.getUniqueId(), new MapLogic(plot, parentPlugin.world, "no_map", player, parentPlugin));
         parentPlugin.getSchematicPaster().loadViewBox(plot);
         parentPlugin.teleportToCenterLocation(player);
-        parentPlugin.scoreboardLogic.makeBoard(player);
+        parentPlugin.getMapLogic(player).getScoreboardLogic().makeBoard(player);
         ChatLogic.sendWelcomeMessage(player);
     }
 
