@@ -46,6 +46,7 @@ public class Plot {
     private Plot selectAvailablePlot(ArrayList<Plot> plotList) {
         boolean found = false;
         int i = 0;
+        Collections.shuffle(plotList);
         Plot plot = plotList.get(0);
         while (!found && i < plotList.size()) {
             plot = plotList.get(i);
