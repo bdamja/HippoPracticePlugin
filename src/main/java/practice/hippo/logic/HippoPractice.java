@@ -79,6 +79,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public void resetPlayerAndSendToSpawn(Player player) throws IOException {
         teleportToSpawnLocation(player);
         refreshPlayerAttributes(player);
+        getMapLogic(player).awaitingMove = true;
     }
 
     public void resetPlayerAndSendToView(Player player) throws IOException {

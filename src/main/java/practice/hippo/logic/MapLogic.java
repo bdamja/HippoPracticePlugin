@@ -32,6 +32,7 @@ public class MapLogic {
     private Timer timer;
     private BukkitTask visualTimer;
     public boolean hasFinishedHippo;
+    public boolean awaitingMove;
 
     public MapLogic(Plot plot, World world, String mapName, Player player, HippoPractice parentPlugin) throws FileNotFoundException {
         this.plot = plot;
@@ -47,6 +48,7 @@ public class MapLogic {
         this.timer = new Timer();
         this.mapNameColor = "";
         this.parentPlugin = parentPlugin;
+        this.awaitingMove = true;
         updateMapValues(mapName);
     }
 
