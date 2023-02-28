@@ -3,6 +3,7 @@ package practice.hippo.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -10,6 +11,7 @@ import org.bukkit.entity.Player;
 import practice.hippo.logic.ChatLogic;
 import practice.hippo.logic.HippoPractice;
 import practice.hippo.logic.MapLogic;
+import practice.hippo.util.Offset;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -54,19 +56,21 @@ public class HippoPracticeCommand extends BaseCommand {
     public void onShowHippo(CommandSender sender) throws FileNotFoundException {
         Player player = (Player) sender;
         ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Showing the current structure to build", player);
-        parentPlugin.playerMap.get(player.getUniqueId()).placeHippoBlocks(parentPlugin.world);
+        parentPlugin.getMapLogic(player).placeHippoBlocks(parentPlugin.world);
     }
 
+    @CommandPermission("op")
     @Subcommand("export")
     @Description("exports the current map setup to a hippo file")
     public void onExport(CommandSender sender) throws FileNotFoundException {
         Player player = (Player) sender;
-        MapLogic mapLogic = parentPlugin.playerMap.get(player.getUniqueId());
+        MapLogic mapLogic = parentPlugin.getMapLogic(player);
         Queue<Block> allBlocks = parentPlugin.getAllBlocksPlacedByPlayer(player);
+        Queue<Location> allBlocksOffset = Offset.blockQueueToOriginal(mapLogic.getPlot(), allBlocks);
         File file = new File("./plugins/HippoPractice/hippos/" + mapLogic.getMapName() + ".txt");
         PrintWriter output = new PrintWriter(file);
-        for (Block block : allBlocks) {
-            output.write(block.getX() + " " + block.getY() + " " + block.getZ() + "\n");
+        for (Location location : allBlocksOffset) {
+            output.write(location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "\n");
         }
         ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Exported new hippo for " + mapLogic.mapText(), (Player) sender);
         output.close();

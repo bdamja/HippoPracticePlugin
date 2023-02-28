@@ -25,7 +25,7 @@ public class BlockPlaceHandler implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        MapLogic mapLogic = parentPlugin.playerMap.get(player.getUniqueId());
+        MapLogic mapLogic = parentPlugin.getMapLogic(player);
         if (player.getGameMode() != GameMode.CREATIVE) {
             if (isBlockWithinLimits(block, mapLogic)) {
                 // the server will remember which blocks were placed by players
@@ -51,6 +51,8 @@ public class BlockPlaceHandler implements Listener {
     }
 
     private boolean checkCompleteStructure(Block block, MapLogic mapLogic) {
+        System.out.println("actual block location: " + block.getLocation());
+        System.out.println("mapLogic.getHippoBlocks(): " + mapLogic.getHippoBlocks());
         mapLogic.getHippoBlocks().remove(block.getLocation());
         return mapLogic.getHippoBlocks().isEmpty();
     }

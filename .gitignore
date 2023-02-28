@@ -9,7 +9,6 @@ banned-ips.json
 banned-players.json
 ops.json
 help.yml
-server.properties
 usercache.json
 whitelist.json
 logs/

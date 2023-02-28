@@ -20,12 +20,13 @@ import practice.hippo.events.entity.EntityDamageHandler;
 import practice.hippo.events.misc.ProjectileLaunchHandler;
 import practice.hippo.events.misc.WeatherChangeHandler;
 import practice.hippo.events.player.*;
+import practice.hippo.util.Offset;
 
 import java.io.IOException;
 import java.util.*;
 
-import static practice.hippo.util.Side.BLUE;
-import static practice.hippo.util.Side.RED;
+import static practice.hippo.util.Side.blue;
+import static practice.hippo.util.Side.red;
 
 public class HippoPractice extends JavaPlugin implements Listener {
 
@@ -50,6 +51,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         maps.add("aquatica"); maps.add("boo");
         manager.getCommandCompletions().registerCompletion("mapNames", c -> maps);
         scoreboardLogic = new ScoreboardLogic(this);
+        setPlotList();
     }
 
     private void registerEventListeners(PluginManager pluginManager) {
@@ -102,14 +104,14 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     public void resetMap(Player player) throws IOException {
-        removeAllBlocksPlacedByPlayer(player);
-        schematicPaster.loadMainBridge();
-        killItems();
-        MapLogic mapLogic = playerMap.get(player.getUniqueId());
+        MapLogic mapLogic = getMapLogic(player);
         Plot plot = mapLogic.getPlot();
         String mapName = mapLogic.getMapName();
+        removeAllBlocksPlacedByPlayer(player);
+        killItems();
+        schematicPaster.loadMainBridge(plot);
         MapLogic.cancelTimerTaskIfPresent(mapLogic);
-        mapLogic = new MapLogic(plot, world, mapName, player.getUniqueId(), this);
+        mapLogic = new MapLogic(plot, world, mapName, player, this);
         playerMap.replace(player.getUniqueId(), mapLogic);
         mapLogic.getTimer().setStartTime();
         mapLogic.resetVisualTimer();
@@ -117,7 +119,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     public void removeAllBlocksPlacedByPlayer(Player player) {
-        MapLogic mapLogic = playerMap.get(player.getUniqueId());
+        MapLogic mapLogic = getMapLogic(player);
         if (mapLogic != null) {
             Queue<Block> recordedBlocks = mapLogic.getRecordedBlocks();
             for (Block block : recordedBlocks) {
@@ -128,7 +130,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     public Queue<Block> getAllBlocksPlacedByPlayer(Player player) {
-        MapLogic mapLogic = playerMap.get(player.getUniqueId());
+        MapLogic mapLogic = getMapLogic(player);
         return mapLogic.getRecordedBlocks();
     }
 
@@ -143,11 +145,13 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public void changeMap(String mapName, CommandSender sender) throws IOException {
         if (sender instanceof Player) {
             Player player = (Player) sender;
+            MapLogic mapLogic = getMapLogic(player);
+            Plot plot = mapLogic.getPlot();
             removeAllBlocksPlacedByPlayer(player);
-            schematicPaster.loadMap(mapName);
-            MapLogic.cancelTimerTaskIfPresent(playerMap.get(player.getUniqueId()));
-            MapLogic mapLogic = new MapLogic(playerMap.get(player.getUniqueId()).getPlot(), world, mapName, player.getUniqueId(), this);
+            MapLogic.cancelTimerTaskIfPresent(getMapLogic(player));
+            mapLogic = new MapLogic(getMapLogic(player).getPlot(), world, mapName, player, this);
             playerMap.replace(player.getUniqueId(), mapLogic);
+            schematicPaster.loadMap(plot, mapLogic.getMapName());
             resetMap(player);
             resetPlayerAndSendToSpawn(player);
             scoreboardLogic.updateMapName(player, mapLogic.mapText());
@@ -155,17 +159,20 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     public void teleportToSpawnLocation(Player player) {
-        MapLogic mapLogic = playerMap.get(player.getUniqueId());
-        player.teleport(mapLogic.getBlueSpawnPoint());
+        MapLogic mapLogic = getMapLogic(player);
+        System.out.println(mapLogic.getPlot().getSide());
+        System.out.println(mapLogic.getSpawnPoint());
+        player.teleport(mapLogic.getSpawnPoint());
     }
 
     public void teleportToViewLocation(Player player) {
-        player.teleport(MapLogic.getViewLocation());
+        MapLogic mapLogic = getMapLogic(player);
+        player.teleport(Offset.location(mapLogic.getPlot(), mapLogic.getViewLocation(), false));
     }
 
     public void teleportToCenterLocation(Player player) {
-        MapLogic mapLogic = playerMap.get(player.getUniqueId());
-        player.teleport(mapLogic.getMapCenter());
+        MapLogic mapLogic = getMapLogic(player);
+        player.teleport(Offset.location(mapLogic.getPlot(), mapLogic.getMapCenter(), false));
     }
 
     public void completeHippo(MapLogic mapLogic, Player player) {
@@ -183,14 +190,15 @@ public class HippoPractice extends JavaPlugin implements Listener {
         double y = player.getLocation().getY() + 1;
         double z = player.getLocation().getZ();
         PacketPlayOutWorldParticles particles;
+        Plot plot = getMapLogic(player).getPlot();
         for (int i = 0; i < NUM_PARTICLES; i++) {
-            Location location = getRandLocationInBox(x, y, z, 5, 3, 5, new Random());
+            Location location = getRandLocationInBox(plot, x, y, z, 5, 3, 5, new Random());
             particles = new PacketPlayOutWorldParticles(EnumParticle.VILLAGER_HAPPY, true, (float) location.getX(), (float) location.getY(), (float) location.getZ(), 0, 0, 0, (float) 255, 0, 10);
             ((CraftPlayer) player).getHandle().playerConnection.sendPacket(particles);
         }
     }
 
-    public Location getRandLocationInBox(double x, double y, double z, double xd, double yd, double zd, Random random) {
+    public Location getRandLocationInBox(Plot plot, double x, double y, double z, double xd, double yd, double zd, Random random) {
         double minX = x - xd;
         double minY = y - yd;
         double minZ = z - zd;
@@ -200,24 +208,28 @@ public class HippoPractice extends JavaPlugin implements Listener {
         double randomX = minX + (maxX - minX) * random.nextDouble();
         double randomY = minY + (maxY - minY) * random.nextDouble();
         double randomZ = minZ + (maxZ - minZ) * random.nextDouble();
-        return new Location(world, randomX, randomY, randomZ);
+        return Offset.location(plot, world, randomX, randomY, randomZ, true);
     }
 
     public final void setPlotList() {
-        plots.add(new Plot(this, new Location(world, 0, 92, 2), RED));
-        plots.add(new Plot(this, new Location(world, 41, 92, 2), RED));
-        plots.add(new Plot(this, new Location(world, 82, 92, 2), RED));
-        plots.add(new Plot(this, new Location(world, 123, 92, 2), RED));
-        plots.add(new Plot(this, new Location(world, 164, 92, 2), RED));
-        plots.add(new Plot(this, new Location(world, 0, 92, -2), BLUE));
-        plots.add(new Plot(this, new Location(world, 41, 92, -2), BLUE));
-        plots.add(new Plot(this, new Location(world, 82, 92, -2), BLUE));
-        plots.add(new Plot(this, new Location(world, 123, 92, -2), BLUE));
-        plots.add(new Plot(this, new Location(world, 164, 92, -2), BLUE));
+        plots.add(new Plot(this, new Location(world, 0, 0, 0), red));
+        plots.add(new Plot(this, new Location(world, 0, 0, 41), red));
+        plots.add(new Plot(this, new Location(world, 0, 0, 82), red));
+        plots.add(new Plot(this, new Location(world, 0, 0, 123), red));
+        plots.add(new Plot(this, new Location(world, 0, 0, 164), red));
+        plots.add(new Plot(this, new Location(world, 0, 0, 0), blue));
+        plots.add(new Plot(this, new Location(world, 0, 0, 41), blue));
+        plots.add(new Plot(this, new Location(world, 0, 0, 82), blue));
+        plots.add(new Plot(this, new Location(world, 0, 0, 123), blue));
+        plots.add(new Plot(this, new Location(world, 0, 0, 164), blue));
     }
 
     public ArrayList<Plot> getPlotList() {
         return plots;
+    }
+
+    public MapLogic getMapLogic(Player player) {
+        return playerMap.get(player.getUniqueId());
     }
 
 }

@@ -8,6 +8,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import practice.hippo.util.BoundingBox;
+import practice.hippo.util.Offset;
+import practice.hippo.util.Side;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,7 +22,7 @@ public class MapLogic {
     private World world;
     private String mapName;
     private String mapNameColor;
-    private UUID playerUUID;
+    private Player player;
     private Location redSpawnPoint;
     private Location blueSpawnPoint;
     private BoundingBox buildLimits;
@@ -31,13 +33,13 @@ public class MapLogic {
     private BukkitTask visualTimer;
     public boolean hasFinishedHippo;
 
-    public MapLogic(Plot plot, World world, String mapName, UUID playerUUID, HippoPractice parentPlugin) throws FileNotFoundException {
+    public MapLogic(Plot plot, World world, String mapName, Player player, HippoPractice parentPlugin) throws FileNotFoundException {
         this.plot = plot;
         this.world = world;
         this.mapName = mapName;
-        this.playerUUID = playerUUID;
-        this.redSpawnPoint = getViewLocation();
-        this.blueSpawnPoint = getViewLocation();
+        this.player = player;
+        this.redSpawnPoint = getMapCenter();
+        this.blueSpawnPoint = getMapCenter();
         this.buildLimits = new BoundingBox(0, 0, 0, 0, 0, 0);
         this.bridgeDimensions = new BoundingBox(-20, 84, -0, 20, 92, 0);
         this.recordedBlocks = new LinkedList<>();
@@ -69,23 +71,35 @@ public class MapLogic {
     }
 
     public UUID getPlayerUUID() {
-        return playerUUID;
+        return player.getUniqueId();
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public Location getSpawnPoint() {
+        if (this.plot.getSide() == Side.red) {
+            return getRedSpawnPoint();
+        } else {
+            return getBlueSpawnPoint();
+        }
     }
 
     public Location getRedSpawnPoint() {
-        return redSpawnPoint;
+        return Offset.location(this.plot, redSpawnPoint, false);
     }
 
     public Location getBlueSpawnPoint() {
-        return blueSpawnPoint;
+        return Offset.location(this.plot, blueSpawnPoint, false);
     }
 
     public BoundingBox getBuildLimits() {
-        return buildLimits;
+        return Offset.boundingBox(this.plot, buildLimits, true);
     }
 
     public BoundingBox getBridgeDimensions() {
-        return bridgeDimensions;
+        return Offset.boundingBox(this.plot, bridgeDimensions, true);
     }
 
     public Queue<Block> getRecordedBlocks() {
@@ -101,7 +115,7 @@ public class MapLogic {
     }
 
     public Location getMapCenter() {
-        return new Location(this.world, 0.5, 94.0, 0.5, -90, 0);
+        return new Location(this.world, 2.5, 93.0, 0.5, -90, 0);
     }
 
     private ArrayList<Location> getLocationFromHippoFile(String mapName) throws FileNotFoundException {
@@ -114,7 +128,7 @@ public class MapLogic {
             int x = Integer.parseInt(coords[0]);
             int y = Integer.parseInt(coords[1]);
             int z = Integer.parseInt(coords[2]);
-            allHippoBlocks.add(new Location(world, x, y, z));
+            allHippoBlocks.add(Offset.location(this.plot, this.world, x, y, z, true));
         }
         input.close();
         return allHippoBlocks;
@@ -124,15 +138,15 @@ public class MapLogic {
     public void updateMapValues(String mapName) throws FileNotFoundException {
         this.mapName = mapName;
         if (mapName.equals("aquatica")) {
-            this.redSpawnPoint = new Location(Bukkit.getWorld("world"), 29.5, 98.0, 0.5, 90, 0);
-            this.blueSpawnPoint = new Location(Bukkit.getWorld("world"), -28.5, 98.0, 0.5, -90, 0);
-            this.buildLimits = new BoundingBox(-25, 84, -20, 0, 99, 20);
+            this.redSpawnPoint = new Location(this.world, 29.5, 98.0, 0.5, 90, 0);
+            this.blueSpawnPoint = redSpawnPoint;
+            this.buildLimits = new BoundingBox(25, 84, -20, 1, 99, 20);
             mapNameColor = "" + ChatColor.DARK_AQUA;
 
         } else if (mapName.equals("boo")) {
-            this.redSpawnPoint = new Location(Bukkit.getWorld("world"), 31.5, 103.0, 0.5, 90, 0);
-            this.blueSpawnPoint = new Location(Bukkit.getWorld("world"), -30.5, 103.0, 0.5, -90, 0);
-            this.buildLimits = new BoundingBox(-23, 84, -20, 0, 99, 20);
+            this.redSpawnPoint = new Location(this.world, 31.5, 103.0, 0.5, 90, 0);
+            this.blueSpawnPoint = redSpawnPoint;
+            this.buildLimits = new BoundingBox(23, 84, -20, 1, 99, 20);
             mapNameColor = "" + ChatColor.DARK_PURPLE;
         }
         this.hippoBlocks = getLocationFromHippoFile(mapName);
@@ -152,13 +166,12 @@ public class MapLogic {
         return allHippoBlocks.contains(location);
     }
 
-    public static Location getViewLocation() {
-        return new Location(Bukkit.getWorld("world"), -6.5, 93, 0.5, 90, -6);
+    public Location getViewLocation() {
+        return new Location(this.world, 6.5, 93, 0.5, 90, -6);
     }
 
     public void resetVisualTimer() {
         stopVisualTimer();
-        Player player = Bukkit.getPlayer(playerUUID);
         Scoreboard board = player.getScoreboard();
         board.getTeam("timeName").setPrefix(ChatColor.GRAY + "0.000");
         startVisualTimer(board);
@@ -193,7 +206,6 @@ public class MapLogic {
 
     @SuppressWarnings("deprecation")
     public void placeHippoBlocks(World world) throws FileNotFoundException {
-        Player player = Bukkit.getPlayer(playerUUID);
         parentPlugin.removeAllBlocksPlacedByPlayer(player);
         ArrayList<Location> allHippoBlocks = getLocationFromHippoFile(this.mapName);
         new BukkitRunnable() {
@@ -205,7 +217,7 @@ public class MapLogic {
                     block.setType(Material.STAINED_CLAY);
                     block.setData((byte) 5);
                     block.setMetadata("placed by " + player.getName(), new FixedMetadataValue(parentPlugin, ""));
-                    parentPlugin.playerMap.get(playerUUID).getRecordedBlocks().add(block);
+                    parentPlugin.playerMap.get(getPlayerUUID()).getRecordedBlocks().add(block);
                     player.playSound(block.getLocation(), Sound.DIG_STONE, 1.0f, 1.0f);
                 } else {
                     this.cancel();

@@ -11,6 +11,9 @@ public class Plot {
     private final HippoPractice parentPlugin;
     private final Location location;
     private final Side side;
+    public final double x;
+    public final double y;
+    public final double z;
 
     public Plot(HippoPractice parentPlugin) {
         ArrayList<Plot> plotList = parentPlugin.getPlotList();
@@ -19,12 +22,18 @@ public class Plot {
         this.side = randomPlot.side;
         this.location = randomPlot.location;
         this.parentPlugin = parentPlugin;
+        this.x = location.getX();
+        this.y = location.getY();
+        this.z = location.getZ();
     }
 
     public Plot(HippoPractice parentPlugin, Location location, Side side) {
         this.parentPlugin = parentPlugin;
         this.location = location;
         this.side = side;
+        this.x = location.getX();
+        this.y = location.getY();
+        this.z = location.getZ();
     }
 
     public Location getLocation() {
