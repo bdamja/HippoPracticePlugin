@@ -30,7 +30,17 @@ public class HippoPracticeCommand extends BaseCommand {
 
     @Default
     public void onDefault(CommandSender sender) {
-        ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "List of Hippo Practice Commands\n- hp\n- hp loadmap <map>", (Player) sender);
+        ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "List of Hippo Practice Commands\n- hp\n- hp loadmap <map>\n- hp maps\n- hp showhippo", (Player) sender);
+    }
+
+    @Subcommand("maps")
+    @Description("Displays a list of all the maps")
+    public void onMaps(CommandSender sender) {
+        String msg = ChatColor.GRAY + "List of available maps: ";
+        for (String map : HippoPractice.maps) {
+            msg = msg.concat("\n" + ChatColor.GRAY + "      - " + map);
+        }
+        ChatLogic.sendMessageToPlayer(msg, (Player) sender);
     }
 
     @Subcommand("loadmap")
