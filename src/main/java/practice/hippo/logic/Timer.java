@@ -14,6 +14,7 @@ public class Timer {
 
     public static String computeTimeFormatted(long time) {
         long ms = time % 1000;
+        ms = 50 * (ms / 50);
         long seconds = (time - ms) / 1000;
         String msStr = "" + ms;
         if (ms == 0) {

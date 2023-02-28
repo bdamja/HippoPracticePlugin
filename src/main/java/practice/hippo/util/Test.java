@@ -2,9 +2,8 @@ package practice.hippo.util;
 
 public class Test {
     public static void main(String[] args) {
-        double plotZ = 164; //plot.z
-        double z = 168;
-        z = plotZ - (z - plotZ);
-        System.out.println(z);
+        long ms = 123;
+        ms = 50 * (ms / 50);
+        System.out.println(ms);
     }
 }
