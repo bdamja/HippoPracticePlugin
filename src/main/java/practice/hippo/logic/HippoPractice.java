@@ -92,12 +92,12 @@ public class HippoPractice extends JavaPlugin implements Listener {
         refreshPlayerAttributes(player);
     }
 
-    public void refreshPlayerAttributes(Player player) throws IOException {
+    public void refreshPlayerAttributes(Player player) {
         player.setGameMode(GameMode.SURVIVAL);
         player.setHealth(20);
         player.setFoodLevel(20);
         player.setSaturation(20);
-        InventoryLogic.setDefaultInventory(player);
+        InventoryLogic.setDefaultInventory(player, getMapLogic(player).getPlot().getSide());
     }
 
     public SchematicLogic getSchematicPaster() {

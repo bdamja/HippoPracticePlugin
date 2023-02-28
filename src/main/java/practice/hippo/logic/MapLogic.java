@@ -208,6 +208,7 @@ public class MapLogic {
 
     @SuppressWarnings("deprecation")
     public void placeHippoBlocks(World world) throws FileNotFoundException {
+        byte color = (this.plot.getSide() == Side.red) ? (byte) 14 : (byte) 11;
         parentPlugin.removeAllBlocksPlacedByPlayer(player);
         ArrayList<Location> allHippoBlocks = getLocationFromHippoFile(this.mapName);
         new BukkitRunnable() {
@@ -217,7 +218,7 @@ public class MapLogic {
                     Location location = allHippoBlocks.remove(0);
                     Block block = world.getBlockAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
                     block.setType(Material.STAINED_CLAY);
-                    block.setData((byte) 5);
+                    block.setData(color);
                     block.setMetadata("placed by " + player.getName(), new FixedMetadataValue(parentPlugin, ""));
                     parentPlugin.playerMap.get(getPlayerUUID()).getRecordedBlocks().add(block);
                     player.playSound(block.getLocation(), Sound.DIG_STONE, 1.0f, 1.0f);

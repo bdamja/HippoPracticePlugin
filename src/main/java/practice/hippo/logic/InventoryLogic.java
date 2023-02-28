@@ -6,14 +6,15 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import practice.hippo.util.Side;
 
 public class InventoryLogic {
 
-    public static void setDefaultInventory(Player player) {
+    public static void setDefaultInventory(Player player, Side side) {
         hardInventoryClear(player);
         player.getInventory().setItem(2, getPickaxeItemStack());
-        player.getInventory().setItem(3, getBlocksItemStack());
-        player.getInventory().setItem(4, getBlocksItemStack());
+        player.getInventory().setItem(3, getBlocksItemStack(side));
+        player.getInventory().setItem(4, getBlocksItemStack(side));
         player.getInventory().setItem(5, getSnowballItemStack());
     }
 
@@ -26,9 +27,13 @@ public class InventoryLogic {
         return pick;
     }
 
-    private static ItemStack getBlocksItemStack() {
+    private static ItemStack getBlocksItemStack(Side side) {
         ItemStack block = new ItemStack(Material.STAINED_CLAY, 64);
-        block.setDurability((short) 5);
+        if (side == Side.red) {
+            block.setDurability((short) 14);
+        } else if (side == Side.blue) {
+            block.setDurability((short) 11);
+        }
         return(block);
     }
 
