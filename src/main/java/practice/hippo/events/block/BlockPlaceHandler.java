@@ -51,8 +51,6 @@ public class BlockPlaceHandler implements Listener {
     }
 
     private boolean checkCompleteStructure(Block block, MapLogic mapLogic) {
-        System.out.println("actual block location: " + block.getLocation());
-        System.out.println("mapLogic.getHippoBlocks(): " + mapLogic.getHippoBlocks());
         mapLogic.getHippoBlocks().remove(block.getLocation());
         return mapLogic.getHippoBlocks().isEmpty();
     }

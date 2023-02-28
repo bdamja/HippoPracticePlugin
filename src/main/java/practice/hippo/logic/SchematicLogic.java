@@ -26,14 +26,18 @@ public class SchematicLogic {
     }
 
     public void loadViewBox(Plot plot) {
-        pasteSchematic("air", Offset.worldeditVector(plot, 2, 93, 0, true), false);
+        loadAir(plot);
         pasteSchematic("viewbox", Offset.worldeditVector(plot, 2, 93, 0, true), false);
     }
 
     public void loadMap(Plot plot, String mapName) {
+        loadAir(plot);
         String schematicName = mapName + "_" + plot.getSide();
-        pasteSchematic("air", Offset.worldeditVector(plot, 0, 93, 0, true), false);
         pasteSchematic(schematicName, Offset.worldeditVector(plot, 0, 93, 0, true), false);
+    }
+
+    public void loadAir(Plot plot) {
+        pasteSchematic("air_" + plot.getSide(), Offset.worldeditVector(plot, 0, 93, 0, true), false);
     }
 
     @SuppressWarnings("deprecation")
@@ -46,7 +50,6 @@ public class SchematicLogic {
             try {
                 CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(file).load(file);
                 clipboard.paste(editSession, locationVector, noAir);
-                System.out.println("pasted at "+ locationVector);
             } catch (DataException | IOException | MaxChangedBlocksException e) {
                 e.printStackTrace();
             }

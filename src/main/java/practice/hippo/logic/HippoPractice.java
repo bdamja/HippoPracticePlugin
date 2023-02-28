@@ -160,8 +160,6 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     public void teleportToSpawnLocation(Player player) {
         MapLogic mapLogic = getMapLogic(player);
-        System.out.println(mapLogic.getPlot().getSide());
-        System.out.println(mapLogic.getSpawnPoint());
         player.teleport(mapLogic.getSpawnPoint());
     }
 
@@ -230,6 +228,22 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     public MapLogic getMapLogic(Player player) {
         return playerMap.get(player.getUniqueId());
+    }
+
+    public boolean isPlotOccupied(Plot plot) {
+        boolean isOccupied = false;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            MapLogic mapLogic = getMapLogic(player);
+            if (mapLogic != null) {
+                Plot occupiedPlot = mapLogic.getPlot();
+                if (occupiedPlot != null) {
+                    if (occupiedPlot.z == plot.z && occupiedPlot.getSide() == plot.getSide()) {
+                        isOccupied = true;
+                    }
+                }
+            }
+        }
+        return isOccupied;
     }
 
 }

@@ -16,12 +16,11 @@ public class Plot {
     public final double z;
 
     public Plot(HippoPractice parentPlugin) {
+        this.parentPlugin = parentPlugin;
         ArrayList<Plot> plotList = parentPlugin.getPlotList();
-        Collections.shuffle(plotList);
-        Plot randomPlot = plotList.get(0);
+        Plot randomPlot = selectAvailablePlot(plotList);
         this.side = randomPlot.side;
         this.location = randomPlot.location;
-        this.parentPlugin = parentPlugin;
         this.x = location.getX();
         this.y = location.getY();
         this.z = location.getZ();
@@ -42,6 +41,24 @@ public class Plot {
 
     public Side getSide() {
         return side;
+    }
+
+    private Plot selectAvailablePlot(ArrayList<Plot> plotList) {
+        boolean found = false;
+        int i = 0;
+        Collections.shuffle(plotList);
+        Plot plot = plotList.get(0);
+        while (!found && i < plotList.size()) {
+            plot = plotList.get(i);
+            if (!parentPlugin.isPlotOccupied(plot)) {
+                found = true;
+            }
+            i++;
+        }
+        if (!found) {
+            parentPlugin.getLogger().severe("No plots were available, so multiple players may have the same plot");
+        }
+        return plot;
     }
 
 }
