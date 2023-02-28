@@ -42,6 +42,7 @@ public class SchematicLogic {
 
     @SuppressWarnings("deprecation")
     private void pasteSchematic(String schematicName, Vector locationVector, boolean noAir) {
+        System.out.println("asdasdasdasdsad");
         EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(new BukkitWorld(world), -1);
         File file = new File(parentPlugin.getDataFolder() + File.separator + "schematics" + File.separator + schematicName + ".schematic");
         if (!file.exists()) {

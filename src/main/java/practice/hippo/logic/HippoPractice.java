@@ -36,7 +36,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     public static SchematicLogic schematicPaster = null;
     public World world;
-    public static ArrayList<String> maps = new ArrayList<>();
+    public static Queue<String> maps = new LinkedList<>();
     private static final ArrayList<Plot> plots = new ArrayList<>();
     public ScoreboardLogic scoreboardLogic = null;
     public HashMap<UUID, MapLogic> playerMap = new HashMap<>();
@@ -49,7 +49,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         schematicPaster = new SchematicLogic(this, Bukkit.getWorld("world"));
         PaperCommandManager manager = new PaperCommandManager(this);
         manager.registerCommand(new HippoPracticeCommand(this));
-        maps.add("aquatica"); maps.add("boo");
+        maps.add("aquatica"); maps.add("boo"); maps.add("chronon"); maps.add("condo"); maps.add("dojo"); maps.add("fortress"); maps.add("galaxy"); maps.add("sorcery"); maps.add("treehouse"); maps.add("urban");
         manager.getCommandCompletions().registerCompletion("mapNames", c -> maps);
         scoreboardLogic = new ScoreboardLogic(this);
         setPlotList();
@@ -81,7 +81,6 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public void resetPlayerAndSendToSpawn(Player player) throws IOException {
         teleportToSpawnLocation(player);
         refreshPlayerAttributes(player);
-        getMapLogic(player).awaitingMove = true;
     }
 
     public void resetPlayerAndSendToView(Player player) throws IOException {
@@ -116,7 +115,6 @@ public class HippoPractice extends JavaPlugin implements Listener {
         MapLogic.cancelTasksIfPresent(mapLogic);
         mapLogic = new MapLogic(plot, world, mapName, player, this);
         playerMap.replace(player.getUniqueId(), mapLogic);
-        mapLogic.getTimer().setStartTime();
         mapLogic.resetVisualTimer();
     }
 
