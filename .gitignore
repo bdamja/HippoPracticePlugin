@@ -3,8 +3,7 @@ target/
 .idea
 *.iml
 
-world.tar.xz
-
+server.properties
 banned-ips.json
 banned-players.json
 ops.json
