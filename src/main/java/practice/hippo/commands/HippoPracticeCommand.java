@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import practice.hippo.logic.ChatLogic;
 import practice.hippo.logic.HippoPractice;
-import practice.hippo.logic.MapLogic;
+import practice.hippo.logic.HippoPlayer;
 import practice.hippo.util.Offset;
 
 import java.io.File;
@@ -82,17 +82,17 @@ public class HippoPracticeCommand extends BaseCommand {
     @Description("exports the current map setup to a hippo file")
     public void onExport(CommandSender sender) throws FileNotFoundException {
         Player player = (Player) sender;
-        MapLogic mapLogic = parentPlugin.getMapLogic(player);
+        HippoPlayer hippoPlayer = parentPlugin.getMapLogic(player);
         Queue<Block> allBlocks = parentPlugin.getAllBlocksPlacedByPlayer(player);
-        Queue<Location> allBlocksOffset = Offset.blockQueueToOriginal(mapLogic.getPlot(), allBlocks);
-        File file = new File("./plugins/HippoPractice/hippos/" + mapLogic.getMapName() + ".txt");
+        Queue<Location> allBlocksOffset = Offset.blockQueueToOriginal(hippoPlayer.getPlot(), allBlocks);
+        File file = new File("./plugins/HippoPractice/hippos/" + hippoPlayer.getMapName() + ".txt");
         PrintWriter output = new PrintWriter(file);
         for (Location location : allBlocksOffset) {
             output.write(location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "\n");
         }
-        ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Exported new hippo for " + mapLogic.mapText(), (Player) sender);
+        ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Exported new hippo for " + hippoPlayer.mapText(), (Player) sender);
         output.close();
-        mapLogic.updateMapValues(mapLogic.getMapName());
+        hippoPlayer.updateMapValues(hippoPlayer.getMapName());
         player.playSound(player.getLocation(), Sound.ANVIL_USE, 1.0f, 0.8f);
     }
 

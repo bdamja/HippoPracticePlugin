@@ -39,7 +39,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public static Queue<String> maps = new LinkedList<>();
     private static final ArrayList<Plot> plots = new ArrayList<>();
     public ScoreboardLogic scoreboardLogic = null;
-    public HashMap<UUID, MapLogic> playerMap = new HashMap<>();
+    public HashMap<UUID, HippoPlayer> playerMap = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -106,22 +106,22 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     public void resetMap(Player player) throws IOException {
-        MapLogic mapLogic = getMapLogic(player);
-        Plot plot = mapLogic.getPlot();
-        String mapName = mapLogic.getMapName();
+        HippoPlayer hippoPlayer = getMapLogic(player);
+        Plot plot = hippoPlayer.getPlot();
+        String mapName = hippoPlayer.getMapName();
         removeAllBlocksPlacedByPlayer(player);
         killItems();
         schematicPaster.loadMainBridge(plot);
-        MapLogic.cancelTasksIfPresent(mapLogic);
-        mapLogic = new MapLogic(plot, world, mapName, player, this);
-        playerMap.replace(player.getUniqueId(), mapLogic);
-        mapLogic.resetVisualTimer();
+        HippoPlayer.cancelTasksIfPresent(hippoPlayer);
+        hippoPlayer = new HippoPlayer(plot, world, mapName, player, this);
+        playerMap.replace(player.getUniqueId(), hippoPlayer);
+        hippoPlayer.resetVisualTimer();
     }
 
     public void removeAllBlocksPlacedByPlayer(Player player) {
-        MapLogic mapLogic = getMapLogic(player);
-        if (mapLogic != null) {
-            Queue<Block> recordedBlocks = mapLogic.getRecordedBlocks();
+        HippoPlayer hippoPlayer = getMapLogic(player);
+        if (hippoPlayer != null) {
+            Queue<Block> recordedBlocks = hippoPlayer.getRecordedBlocks();
             for (Block block : recordedBlocks) {
                 block.setType(Material.AIR);
             }
@@ -130,8 +130,8 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     public Queue<Block> getAllBlocksPlacedByPlayer(Player player) {
-        MapLogic mapLogic = getMapLogic(player);
-        return mapLogic.getRecordedBlocks();
+        HippoPlayer hippoPlayer = getMapLogic(player);
+        return hippoPlayer.getRecordedBlocks();
     }
 
     private void killItems() {
@@ -145,42 +145,42 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public void changeMap(String mapName, CommandSender sender) throws IOException {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            MapLogic mapLogic = getMapLogic(player);
-            Plot plot = mapLogic.getPlot();
+            HippoPlayer hippoPlayer = getMapLogic(player);
+            Plot plot = hippoPlayer.getPlot();
             removeAllBlocksPlacedByPlayer(player);
-            MapLogic.cancelTasksIfPresent(getMapLogic(player));
-            mapLogic = new MapLogic(getMapLogic(player).getPlot(), world, mapName, player, this);
-            playerMap.replace(player.getUniqueId(), mapLogic);
-            schematicPaster.loadMap(plot, mapLogic.getMapName());
+            HippoPlayer.cancelTasksIfPresent(getMapLogic(player));
+            hippoPlayer = new HippoPlayer(getMapLogic(player).getPlot(), world, mapName, player, this);
+            playerMap.replace(player.getUniqueId(), hippoPlayer);
+            schematicPaster.loadMap(plot, hippoPlayer.getMapName());
             resetMap(player);
             resetPlayerAndSendToSpawn(player);
-            scoreboardLogic.updateMapName(player, mapLogic.mapText());
+            scoreboardLogic.updateMapName(player, hippoPlayer.mapText());
         }
     }
 
     public void teleportToSpawnLocation(Player player) {
-        MapLogic mapLogic = getMapLogic(player);
-        player.teleport(mapLogic.getSpawnPoint());
+        HippoPlayer hippoPlayer = getMapLogic(player);
+        player.teleport(hippoPlayer.getSpawnPoint());
     }
 
     public void teleportToViewLocation(Player player) {
-        MapLogic mapLogic = getMapLogic(player);
-        player.teleport(Offset.location(mapLogic.getPlot(), mapLogic.getViewLocation(), false));
+        HippoPlayer hippoPlayer = getMapLogic(player);
+        player.teleport(Offset.location(hippoPlayer.getPlot(), hippoPlayer.getViewLocation(), false));
     }
 
     public void teleportToCenterLocation(Player player) {
-        MapLogic mapLogic = getMapLogic(player);
-        player.teleport(Offset.location(mapLogic.getPlot(), mapLogic.getMapCenter(), false));
+        HippoPlayer hippoPlayer = getMapLogic(player);
+        player.teleport(Offset.location(hippoPlayer.getPlot(), hippoPlayer.getMapCenter(), false));
     }
 
-    public void completeHippo(MapLogic mapLogic, Player player) {
-        long ms = mapLogic.getTimer().computeTime();
-        ChatLogic.sendHippoCompletion(mapLogic, ms, player);
+    public void completeHippo(HippoPlayer hippoPlayer, Player player) {
+        long ms = hippoPlayer.getTimer().computeTime();
+        ChatLogic.sendHippoCompletion(hippoPlayer, ms, player);
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 0.8f);
         summonCompletionParticles(player);
-        mapLogic.hasFinishedHippo = true;
-        mapLogic.stopVisualTimer();
-        mapLogic.updateVisualTimer(player.getScoreboard(), Timer.computeTimeFormatted(ms));
+        hippoPlayer.hasFinishedHippo = true;
+        hippoPlayer.stopVisualTimer();
+        hippoPlayer.updateVisualTimer(player.getScoreboard(), Timer.computeTimeFormatted(ms));
     }
 
     private void summonCompletionParticles(Player player) {
@@ -228,16 +228,16 @@ public class HippoPractice extends JavaPlugin implements Listener {
         return plots;
     }
 
-    public MapLogic getMapLogic(Player player) {
+    public HippoPlayer getMapLogic(Player player) {
         return playerMap.get(player.getUniqueId());
     }
 
     public boolean isPlotOccupied(Plot plot) {
         boolean isOccupied = false;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            MapLogic mapLogic = getMapLogic(player);
-            if (mapLogic != null) {
-                Plot occupiedPlot = mapLogic.getPlot();
+            HippoPlayer hippoPlayer = getMapLogic(player);
+            if (hippoPlayer != null) {
+                Plot occupiedPlot = hippoPlayer.getPlot();
                 if (occupiedPlot != null) {
                     if (occupiedPlot.z == plot.z && occupiedPlot.getSide() == plot.getSide()) {
                         isOccupied = true;
@@ -249,33 +249,33 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     @SuppressWarnings("deprecation")
-    public void showMissingBlocks(MapLogic mapLogic) {
-        for (Block block : mapLogic.getRecordedBlocks()) {
+    public void showMissingBlocks(HippoPlayer hippoPlayer) {
+        for (Block block : hippoPlayer.getRecordedBlocks()) {
             block.setType(Material.STAINED_GLASS);
-            block.setData(mapLogic.getColorData());
+            block.setData(hippoPlayer.getColorData());
         }
-        mapLogic.awaitingLeftClick = true;
-        showMissingParticles(mapLogic);
+        hippoPlayer.awaitingLeftClick = true;
+        showMissingParticles(hippoPlayer);
     }
 
     @SuppressWarnings("deprecation")
-    public void revertGlassToClay(MapLogic mapLogic) {
-        for (Block block : mapLogic.getRecordedBlocks()) {
+    public void revertGlassToClay(HippoPlayer hippoPlayer) {
+        for (Block block : hippoPlayer.getRecordedBlocks()) {
             block.setType(Material.STAINED_CLAY);
-            block.setData(mapLogic.getColorData());
+            block.setData(hippoPlayer.getColorData());
         }
-        mapLogic.awaitingLeftClick = false;
-        mapLogic.stopParticleSummoning();
+        hippoPlayer.awaitingLeftClick = false;
+        hippoPlayer.stopParticleSummoning();
     }
 
-    private void showMissingParticles(MapLogic mapLogic) {
-        ArrayList<Location> missingParticleLocations = getMissingBlockLocations(mapLogic);
-        mapLogic.startParticleSummoning(missingParticleLocations, 25);
+    private void showMissingParticles(HippoPlayer hippoPlayer) {
+        ArrayList<Location> missingParticleLocations = getMissingBlockLocations(hippoPlayer);
+        hippoPlayer.startParticleSummoning(missingParticleLocations, 25);
     }
 
-    private ArrayList<Location> getMissingBlockLocations(MapLogic mapLogic) {
+    private ArrayList<Location> getMissingBlockLocations(HippoPlayer hippoPlayer) {
         ArrayList<Location> missingBlockLocations = new ArrayList<>();
-        for (Location location : mapLogic.getHippoBlocks()) {
+        for (Location location : hippoPlayer.getHippoBlocks()) {
             if (world.getBlockAt(location).getType().equals(Material.AIR)) {
                 double centerX = location.getX() + 0.5;
                 double centerY = location.getY() + 0.5;

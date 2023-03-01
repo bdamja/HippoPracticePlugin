@@ -3,8 +3,8 @@ package practice.hippo.events.block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDamageEvent;
+import practice.hippo.logic.HippoPlayer;
 import practice.hippo.logic.HippoPractice;
-import practice.hippo.logic.MapLogic;
 
 public class BlockDamageHandler implements Listener {
 
@@ -16,9 +16,9 @@ public class BlockDamageHandler implements Listener {
 
     @EventHandler
     public void onBlockDamage(BlockDamageEvent event) {
-        MapLogic mapLogic = parentPlugin.getMapLogic(event.getPlayer());
-        if (mapLogic.awaitingLeftClick) {
-            parentPlugin.revertGlassToClay(mapLogic);
+        HippoPlayer hippoPlayer = parentPlugin.getMapLogic(event.getPlayer());
+        if (hippoPlayer.awaitingLeftClick) {
+            parentPlugin.revertGlassToClay(hippoPlayer);
         }
     }
 }

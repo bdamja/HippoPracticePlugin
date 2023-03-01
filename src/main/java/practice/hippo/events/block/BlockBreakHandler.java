@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import practice.hippo.logic.MapLogic;
+import practice.hippo.logic.HippoPlayer;
 import practice.hippo.logic.HippoPractice;
 import practice.hippo.util.BoundingBox;
 
@@ -26,23 +26,23 @@ public class BlockBreakHandler implements Listener {
     public void onBlockBreak(BlockBreakEvent event) throws IOException {
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        MapLogic mapLogic = parentPlugin.getMapLogic(player);
+        HippoPlayer hippoPlayer = parentPlugin.getMapLogic(player);
         if (player.getGameMode() != GameMode.CREATIVE) {
-            if (!isBlockPartOfTheBridge(block, mapLogic) && !wasBlockPlacedByPlayer(block, player.getName())) {
+            if (!isBlockPartOfTheBridge(block, hippoPlayer) && !wasBlockPlacedByPlayer(block, player.getName())) {
                 player.sendMessage(ChatColor.RED + "You can't break that block!");
                 event.setCancelled(true);
             } else if (wasBlockPlacedByPlayer(block, player.getName())) {
-                mapLogic.getRecordedBlocks().remove(block);
-                if (mapLogic.isBlockLocationPartOfHippo(block.getLocation())) {
-                    mapLogic.getHippoBlocks().add(block.getLocation());
+                hippoPlayer.getRecordedBlocks().remove(block);
+                if (hippoPlayer.isBlockLocationPartOfHippo(block.getLocation())) {
+                    hippoPlayer.getHippoBlocks().add(block.getLocation());
                 }
             }
         }
     }
 
-    private boolean isBlockPartOfTheBridge(Block block, MapLogic mapLogic) {
+    private boolean isBlockPartOfTheBridge(Block block, HippoPlayer hippoPlayer) {
         Location location = block.getLocation();
-        BoundingBox bridgeDimensions = mapLogic.getBridgeDimensions();
+        BoundingBox bridgeDimensions = hippoPlayer.getBridgeDimensions();
         return bridgeDimensions.containsInclusive(location.toVector());
     }
 

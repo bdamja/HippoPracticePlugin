@@ -18,7 +18,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-public class MapLogic {
+public class HippoPlayer {
+
+    private static final String HIPPOS_DIRECTORY = "./plugins/HippoPractice/hippos/";
+    private static final String MAPDATA_DIRECTORY = "./plugins/HippoPractice/mapdata/";
 
     private final HippoPractice parentPlugin;
     private Plot plot;
@@ -39,7 +42,7 @@ public class MapLogic {
     public boolean awaitingMove;
     public boolean awaitingLeftClick;
 
-    public MapLogic(Plot plot, World world, String mapName, Player player, HippoPractice parentPlugin) throws FileNotFoundException {
+    public HippoPlayer(Plot plot, World world, String mapName, Player player, HippoPractice parentPlugin) throws FileNotFoundException {
         this.plot = plot;
         this.world = world;
         this.mapName = mapName;
@@ -131,18 +134,22 @@ public class MapLogic {
     }
 
     private ArrayList<Location> getLocationFromHippoFile(String mapName) throws FileNotFoundException {
-        File file = new File("./plugins/HippoPractice/hippos/" + mapName + ".txt");
-        Scanner input = new Scanner(file);
+        File file = new File(HIPPOS_DIRECTORY + mapName + ".txt");
         ArrayList<Location> allHippoBlocks = new ArrayList<>();
-        while (input.hasNext()) {
-            String line = input.nextLine();
-            String[] coords = line.split(" ");
-            int x = Integer.parseInt(coords[0]);
-            int y = Integer.parseInt(coords[1]);
-            int z = Integer.parseInt(coords[2]);
-            allHippoBlocks.add(Offset.location(this.plot, this.world, x, y, z, true));
+        if (file.exists()) {
+            Scanner input = new Scanner(file);
+            while (input.hasNext()) {
+                String line = input.nextLine();
+                String[] coords = line.split(" ");
+                int x = Integer.parseInt(coords[0]);
+                int y = Integer.parseInt(coords[1]);
+                int z = Integer.parseInt(coords[2]);
+                allHippoBlocks.add(Offset.location(this.plot, this.world, x, y, z, true));
+            }
+            input.close();
+        } else {
+            parentPlugin.getLogger().severe("Error when trying to load hippo: Could not find file: " + file);
         }
-        input.close();
         return allHippoBlocks;
     }
 
@@ -268,13 +275,13 @@ public class MapLogic {
         board.getTeam("timeName").setPrefix(ChatColor.GRAY + timeFormatted);
     }
 
-    public static void cancelTasksIfPresent(MapLogic mapLogic) {
-        if (mapLogic != null) {
-            if (mapLogic.getVisualTimer() != null) {
-                mapLogic.getVisualTimer().cancel();
+    public static void cancelTasksIfPresent(HippoPlayer hippoPlayer) {
+        if (hippoPlayer != null) {
+            if (hippoPlayer.getVisualTimer() != null) {
+                hippoPlayer.getVisualTimer().cancel();
             }
-            if (mapLogic.getParticleSummoner() != null) {
-                mapLogic.getParticleSummoner().cancel();
+            if (hippoPlayer.getParticleSummoner() != null) {
+                hippoPlayer.getParticleSummoner().cancel();
             }
         }
     }

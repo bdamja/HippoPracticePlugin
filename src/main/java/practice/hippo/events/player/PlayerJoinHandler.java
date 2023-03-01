@@ -27,7 +27,7 @@ public class PlayerJoinHandler implements Listener {
         event.getPlayer().setGameMode(GameMode.ADVENTURE);
         InventoryLogic.hardInventoryClear(player);
         Plot plot = new Plot(parentPlugin);
-        parentPlugin.playerMap.put(player.getUniqueId(), new MapLogic(plot, parentPlugin.world, "no_map", player, parentPlugin));
+        parentPlugin.playerMap.put(player.getUniqueId(), new HippoPlayer(plot, parentPlugin.world, "no_map", player, parentPlugin));
         parentPlugin.getSchematicPaster().loadViewBox(plot);
         parentPlugin.teleportToCenterLocation(player);
         parentPlugin.scoreboardLogic.makeBoard(player);

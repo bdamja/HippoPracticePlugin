@@ -10,7 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import practice.hippo.logic.HippoPractice;
-import practice.hippo.logic.MapLogic;
+import practice.hippo.logic.HippoPlayer;
 import practice.hippo.util.BoundingBox;
 
 public class BlockPlaceHandler implements Listener {
@@ -25,20 +25,20 @@ public class BlockPlaceHandler implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        MapLogic mapLogic = parentPlugin.getMapLogic(player);
+        HippoPlayer hippoPlayer = parentPlugin.getMapLogic(player);
         if (player.getGameMode() != GameMode.CREATIVE) {
-            if (isBlockWithinLimits(block, mapLogic)) {
+            if (isBlockWithinLimits(block, hippoPlayer)) {
                 // the server will remember which blocks were placed by players
                 block.setMetadata("placed by " + player.getName(), new FixedMetadataValue(parentPlugin, ""));
-                mapLogic.getRecordedBlocks().add(block);
-                if (!mapLogic.hasFinishedHippo) {
-                    mapLogic.hasFinishedHippo = checkCompleteStructure(block, mapLogic);
-                    if (mapLogic.hasFinishedHippo) {
-                        parentPlugin.completeHippo(mapLogic, player);
+                hippoPlayer.getRecordedBlocks().add(block);
+                if (!hippoPlayer.hasFinishedHippo) {
+                    hippoPlayer.hasFinishedHippo = checkCompleteStructure(block, hippoPlayer);
+                    if (hippoPlayer.hasFinishedHippo) {
+                        parentPlugin.completeHippo(hippoPlayer, player);
                     }
                 }
-                if (mapLogic.awaitingLeftClick) {
-                    parentPlugin.revertGlassToClay(mapLogic);
+                if (hippoPlayer.awaitingLeftClick) {
+                    parentPlugin.revertGlassToClay(hippoPlayer);
                 }
             } else {
                 player.sendMessage(ChatColor.RED + "You can't place blocks there!");
@@ -47,15 +47,15 @@ public class BlockPlaceHandler implements Listener {
         }
     }
 
-    private boolean isBlockWithinLimits(Block block, MapLogic mapLogic) {
+    private boolean isBlockWithinLimits(Block block, HippoPlayer hippoPlayer) {
         Location location = block.getLocation();
-        BoundingBox buildLimits = mapLogic.getBuildLimits();
+        BoundingBox buildLimits = hippoPlayer.getBuildLimits();
         return buildLimits.containsInclusive(location.toVector());
     }
 
-    private boolean checkCompleteStructure(Block block, MapLogic mapLogic) {
-        mapLogic.getHippoBlocks().remove(block.getLocation());
-        return mapLogic.getHippoBlocks().isEmpty();
+    private boolean checkCompleteStructure(Block block, HippoPlayer hippoPlayer) {
+        hippoPlayer.getHippoBlocks().remove(block.getLocation());
+        return hippoPlayer.getHippoBlocks().isEmpty();
     }
 
 }
