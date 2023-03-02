@@ -26,7 +26,7 @@ public class BlockBreakHandler implements Listener {
     public void onBlockBreak(BlockBreakEvent event) throws IOException {
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        HippoPlayer hippoPlayer = parentPlugin.getMapLogic(player);
+        HippoPlayer hippoPlayer = parentPlugin.getHippoPlayer(player);
         if (player.getGameMode() != GameMode.CREATIVE) {
             if (!isBlockPartOfTheBridge(block, hippoPlayer) && !wasBlockPlacedByPlayer(block, player.getName())) {
                 player.sendMessage(ChatColor.RED + "You can't break that block!");

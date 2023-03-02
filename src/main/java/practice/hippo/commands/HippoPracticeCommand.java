@@ -66,7 +66,7 @@ public class HippoPracticeCommand extends BaseCommand {
     public void onShowHippo(CommandSender sender) throws FileNotFoundException {
         Player player = (Player) sender;
         ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Showing the current structure to build", player);
-        parentPlugin.getMapLogic(player).placeHippoBlocks(parentPlugin.world);
+        parentPlugin.getHippoPlayer(player).placeHippoBlocks(parentPlugin.world);
     }
 
     @Subcommand("showmissing")
@@ -74,7 +74,7 @@ public class HippoPracticeCommand extends BaseCommand {
     public void onShowMissing(CommandSender sender) throws FileNotFoundException {
         Player player = (Player) sender;
         ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Showing what blocks are missing", player);
-        parentPlugin.showMissingBlocks(parentPlugin.getMapLogic(player));
+        parentPlugin.showMissingBlocks(parentPlugin.getHippoPlayer(player));
     }
 
     @CommandPermission("op")
@@ -82,7 +82,7 @@ public class HippoPracticeCommand extends BaseCommand {
     @Description("exports the current map setup to a hippo file")
     public void onExport(CommandSender sender) throws FileNotFoundException {
         Player player = (Player) sender;
-        HippoPlayer hippoPlayer = parentPlugin.getMapLogic(player);
+        HippoPlayer hippoPlayer = parentPlugin.getHippoPlayer(player);
         Queue<Block> allBlocks = parentPlugin.getAllBlocksPlacedByPlayer(player);
         Queue<Location> allBlocksOffset = Offset.blockQueueToOriginal(hippoPlayer.getPlot(), allBlocks);
         File file = new File("./plugins/HippoPractice/hippos/" + hippoPlayer.getMapName() + ".txt");

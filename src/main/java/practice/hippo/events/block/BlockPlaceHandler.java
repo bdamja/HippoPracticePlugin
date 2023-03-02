@@ -25,7 +25,7 @@ public class BlockPlaceHandler implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        HippoPlayer hippoPlayer = parentPlugin.getMapLogic(player);
+        HippoPlayer hippoPlayer = parentPlugin.getHippoPlayer(player);
         if (player.getGameMode() != GameMode.CREATIVE) {
             if (isBlockWithinLimits(block, hippoPlayer)) {
                 // the server will remember which blocks were placed by players

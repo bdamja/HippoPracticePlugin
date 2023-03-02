@@ -1,5 +1,7 @@
 package practice.hippo.logic;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.*;
@@ -14,25 +16,19 @@ import practice.hippo.util.BoundingBox;
 import practice.hippo.util.Offset;
 import practice.hippo.util.Side;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.*;
 
 public class HippoPlayer {
 
-    private static final String HIPPOS_DIRECTORY = "./plugins/HippoPractice/hippos/";
-    private static final String MAPDATA_DIRECTORY = "./plugins/HippoPractice/mapdata/";
-
     private final HippoPractice parentPlugin;
     private Plot plot;
     private World world;
-    private String mapName;
-    private String mapNameColor;
+    private MapData mapData;
     private Player player;
-    private Location redSpawnPoint;
-    private Location blueSpawnPoint;
-    private BoundingBox buildLimits;
-    private BoundingBox bridgeDimensions;
     private Queue<Block> recordedBlocks;
     private ArrayList<Location> hippoBlocks;
     private Timer timer;
@@ -45,20 +41,29 @@ public class HippoPlayer {
     public HippoPlayer(Plot plot, World world, String mapName, Player player, HippoPractice parentPlugin) throws FileNotFoundException {
         this.plot = plot;
         this.world = world;
-        this.mapName = mapName;
+        this.mapData = new MapData();
         this.player = player;
-        this.redSpawnPoint = getMapCenter();
-        this.blueSpawnPoint = getMapCenter();
-        this.buildLimits = new BoundingBox(0, 0, 0, 0, 0, 0);
-        this.bridgeDimensions = new BoundingBox(-20, 84, -0, 20, 92, 0);
         this.recordedBlocks = new LinkedList<>();
         this.hasFinishedHippo = false;
         this.timer = new Timer();
-        this.mapNameColor = "";
         this.parentPlugin = parentPlugin;
         this.awaitingMove = true;
         this.awaitingLeftClick = false;
-        updateMapValues(mapName);
+        this.hippoBlocks = getLocationFromHippoFile(mapName);
+        readMapData(mapName);
+    }
+
+    private void readMapData(String mapName) throws FileNotFoundException {
+        if (!mapName.equals("no_map")) {
+            File mapDataFile = new File(parentPlugin.getPluginsDirSubdir("mapdata") + File.separator + mapName + ".json");
+            if (mapDataFile.exists()) {
+                Gson gson = new Gson();
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(mapDataFile));
+                mapData = gson.fromJson(bufferedReader, MapData.class);
+            } else {
+                parentPlugin.getLogger().severe("Error when trying to load map data: Could not find file: " + mapDataFile);
+            }
+        }
     }
 
     public Plot getPlot() {
@@ -73,12 +78,16 @@ public class HippoPlayer {
         return world;
     }
 
-    public String getMapName() {
-        return mapName;
+    public MapData getMapData() {
+        return mapData;
     }
 
-    public String getMapNameColor() {
-        return mapNameColor;
+    public String getMapName() {
+        return mapData.getMapName();
+    }
+
+    public ChatColor getMapColor() {
+        return mapData.getMapColor();
     }
 
     public UUID getPlayerUUID() {
@@ -98,19 +107,19 @@ public class HippoPlayer {
     }
 
     public Location getRedSpawnPoint() {
-        return Offset.location(this.plot, redSpawnPoint, false);
+        return Offset.location(this.plot, mapData.getSpawnPoint(), false);
     }
 
     public Location getBlueSpawnPoint() {
-        return Offset.location(this.plot, blueSpawnPoint, false);
+        return Offset.location(this.plot, mapData.getSpawnPoint(), false);
     }
 
     public BoundingBox getBuildLimits() {
-        return Offset.boundingBox(this.plot, buildLimits, true);
+        return Offset.boundingBox(this.plot, mapData.getBuildLimits(), true);
     }
 
     public BoundingBox getBridgeDimensions() {
-        return Offset.boundingBox(this.plot, bridgeDimensions, true);
+        return Offset.boundingBox(this.plot, mapData.getBridgeDimensions(), true);
     }
 
     public Queue<Block> getRecordedBlocks() {
@@ -134,7 +143,7 @@ public class HippoPlayer {
     }
 
     private ArrayList<Location> getLocationFromHippoFile(String mapName) throws FileNotFoundException {
-        File file = new File(HIPPOS_DIRECTORY + mapName + ".txt");
+        File file = new File(parentPlugin.getPluginsDirSubdir("hippos") + File.separator + mapName + ".txt");
         ArrayList<Location> allHippoBlocks = new ArrayList<>();
         if (file.exists()) {
             Scanner input = new Scanner(file);
@@ -155,64 +164,63 @@ public class HippoPlayer {
 
     // going to change this eventually, this is just temporary
     public void updateMapValues(String mapName) throws FileNotFoundException {
-        this.mapName = mapName;
-        if (mapName.equals("aquatica")) {
-            this.redSpawnPoint = new Location(this.world, 29.5, 98.5, 0.5, 90, 0);
-            this.blueSpawnPoint = redSpawnPoint;
-            this.buildLimits = new BoundingBox(25, 84, -20, 1, 99, 20);
-            mapNameColor = "" + ChatColor.DARK_AQUA;
-        } else if (mapName.equals("boo")) {
-            this.redSpawnPoint = new Location(this.world, 31.5, 103.0, 0.5, 90, 0);
-            this.blueSpawnPoint = redSpawnPoint;
-            this.buildLimits = new BoundingBox(23, 84, -20, 1, 99, 20);
-            mapNameColor = "" + ChatColor.DARK_PURPLE;
-        } else if (mapName.equals("chronon")) {
-            this.redSpawnPoint = new Location(this.world, 26.5, 101.0, 0.5, 90, 0);
-            this.blueSpawnPoint = redSpawnPoint;
-            this.buildLimits = new BoundingBox(23, 84, -20, 1, 99, 20);
-            mapNameColor = "" + ChatColor.RED;
-        } else if (mapName.equals("condo")) {
-            this.redSpawnPoint = new Location(this.world, 34.5, 99.0, 0.5, 90, 0);
-            this.blueSpawnPoint = redSpawnPoint;
-            this.buildLimits = new BoundingBox(25, 84, -20, 1, 99, 20);
-            mapNameColor = "" + ChatColor.GRAY;
-        } else if (mapName.equals("dojo")) {
-            this.redSpawnPoint = new Location(this.world, 30.5, 100.0, 0.5, 90, 0);
-            this.blueSpawnPoint = redSpawnPoint;
-            this.buildLimits = new BoundingBox(25, 84, -20, 1, 99, 20);
-            mapNameColor = "" + ChatColor.DARK_RED;
-        } else if (mapName.equals("fortress")) {
-            this.redSpawnPoint = new Location(this.world, 31.5, 101.0, 0.5, 90, 0);
-            this.blueSpawnPoint = redSpawnPoint;
-            this.buildLimits = new BoundingBox(23, 84, -20, 1, 99, 20);
-            mapNameColor = "" + ChatColor.DARK_GRAY;
-        } else if (mapName.equals("galaxy")) {
-            this.redSpawnPoint = new Location(this.world, 32.5, 102.0, 0.5, 90, 0);
-            this.blueSpawnPoint = redSpawnPoint;
-            this.buildLimits = new BoundingBox(22, 84, -20, 1, 99, 20);
-            mapNameColor = "" + ChatColor.WHITE;
-        } else if (mapName.equals("sorcery")) {
-            this.redSpawnPoint = new Location(this.world, 31.5, 103.0, 0.5, 90, 0);
-            this.blueSpawnPoint = redSpawnPoint;
-            this.buildLimits = new BoundingBox(23, 84, -20, 1, 99, 20);
-            mapNameColor = "" + ChatColor.DARK_GREEN;
-        } else if (mapName.equals("treehouse")) {
-            this.redSpawnPoint = new Location(this.world, 28.5, 100.0, 0.5, 90, 0);
-            this.blueSpawnPoint = redSpawnPoint;
-            this.buildLimits = new BoundingBox(22, 84, -20, 1, 99, 20);
-            mapNameColor = "" + ChatColor.YELLOW;
-        } else if (mapName.equals("urban")) {
-            this.redSpawnPoint = new Location(this.world, 30.5, 97.0, 0.5, 90, 0);
-            this.blueSpawnPoint = redSpawnPoint;
-            this.buildLimits = new BoundingBox(26, 84, -20, 1, 99, 20);
-            mapNameColor = "" + ChatColor.RED;
-        }
-        this.hippoBlocks = getLocationFromHippoFile(mapName);
+        readMapData(mapName);
+//        if (mapName.equals("aquatica")) {
+//            this.redSpawnPoint = new Location(this.world, 29.5, 98.5, 0.5, 90, 0);
+//            this.blueSpawnPoint = redSpawnPoint;
+//            this.buildLimits = new BoundingBox(25, 84, -20, 1, 99, 20);
+//            mapNameColor = "" + ChatColor.DARK_AQUA;
+//        } else if (mapName.equals("boo")) {
+//            this.redSpawnPoint = new Location(this.world, 31.5, 103.0, 0.5, 90, 0);
+//            this.blueSpawnPoint = redSpawnPoint;
+//            this.buildLimits = new BoundingBox(23, 84, -20, 1, 99, 20);
+//            mapNameColor = "" + ChatColor.DARK_PURPLE;
+//        } else if (mapName.equals("chronon")) {
+//            this.redSpawnPoint = new Location(this.world, 26.5, 101.0, 0.5, 90, 0);
+//            this.blueSpawnPoint = redSpawnPoint;
+//            this.buildLimits = new BoundingBox(23, 84, -20, 1, 99, 20);
+//            mapNameColor = "" + ChatColor.RED;
+//        } else if (mapName.equals("condo")) {
+//            this.redSpawnPoint = new Location(this.world, 34.5, 99.0, 0.5, 90, 0);
+//            this.blueSpawnPoint = redSpawnPoint;
+//            this.buildLimits = new BoundingBox(25, 84, -20, 1, 99, 20);
+//            mapNameColor = "" + ChatColor.GRAY;
+//        } else if (mapName.equals("dojo")) {
+//            this.redSpawnPoint = new Location(this.world, 30.5, 100.0, 0.5, 90, 0);
+//            this.blueSpawnPoint = redSpawnPoint;
+//            this.buildLimits = new BoundingBox(25, 84, -20, 1, 99, 20);
+//            mapNameColor = "" + ChatColor.DARK_RED;
+//        } else if (mapName.equals("fortress")) {
+//            this.redSpawnPoint = new Location(this.world, 31.5, 101.0, 0.5, 90, 0);
+//            this.blueSpawnPoint = redSpawnPoint;
+//            this.buildLimits = new BoundingBox(23, 84, -20, 1, 99, 20);
+//            mapNameColor = "" + ChatColor.DARK_GRAY;
+//        } else if (mapName.equals("galaxy")) {
+//            this.redSpawnPoint = new Location(this.world, 32.5, 102.0, 0.5, 90, 0);
+//            this.blueSpawnPoint = redSpawnPoint;
+//            this.buildLimits = new BoundingBox(22, 84, -20, 1, 99, 20);
+//            mapNameColor = "" + ChatColor.WHITE;
+//        } else if (mapName.equals("sorcery")) {
+//            this.redSpawnPoint = new Location(this.world, 31.5, 103.0, 0.5, 90, 0);
+//            this.blueSpawnPoint = redSpawnPoint;
+//            this.buildLimits = new BoundingBox(23, 84, -20, 1, 99, 20);
+//            mapNameColor = "" + ChatColor.DARK_GREEN;
+//        } else if (mapName.equals("treehouse")) {
+//            this.redSpawnPoint = new Location(this.world, 28.5, 100.0, 0.5, 90, 0);
+//            this.blueSpawnPoint = redSpawnPoint;
+//            this.buildLimits = new BoundingBox(22, 84, -20, 1, 99, 20);
+//            mapNameColor = "" + ChatColor.YELLOW;
+//        } else if (mapName.equals("urban")) {
+//            this.redSpawnPoint = new Location(this.world, 30.5, 97.0, 0.5, 90, 0);
+//            this.blueSpawnPoint = redSpawnPoint;
+//            this.buildLimits = new BoundingBox(26, 84, -20, 1, 99, 20);
+//            mapNameColor = "" + ChatColor.RED;
+//        }
+
     }
 
     public String mapText() {
-        String mapNameStr = mapName.substring(0, 1).toUpperCase() + mapName.substring(1);
-        return this.mapNameColor + ChatColor.BOLD + mapNameStr + ChatColor.RESET;
+        return mapData.getMapText();
     }
 
     public ArrayList<Location> getHippoBlocks() {
@@ -220,7 +228,7 @@ public class HippoPlayer {
     }
 
     public boolean isBlockLocationPartOfHippo(Location location) throws FileNotFoundException {
-        ArrayList<Location> allHippoBlocks = getLocationFromHippoFile(mapName);
+        ArrayList<Location> allHippoBlocks = getLocationFromHippoFile(mapData.getMapName());
         return allHippoBlocks.contains(location);
     }
 
@@ -290,7 +298,7 @@ public class HippoPlayer {
     public void placeHippoBlocks(World world) throws FileNotFoundException {
         byte color = getColorData();
         parentPlugin.removeAllBlocksPlacedByPlayer(player);
-        ArrayList<Location> allHippoBlocks = getLocationFromHippoFile(this.mapName);
+        ArrayList<Location> allHippoBlocks = getLocationFromHippoFile(mapData.getMapName());
         new BukkitRunnable() {
             @Override
             public void run() {

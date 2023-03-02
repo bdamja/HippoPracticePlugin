@@ -21,7 +21,7 @@ public class PlayerMoveHandler implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) throws IOException {
         Player player = event.getPlayer();
-        HippoPlayer hippoPlayer = parentPlugin.getMapLogic(player);
+        HippoPlayer hippoPlayer = parentPlugin.getHippoPlayer(player);
         if (hippoPlayer != null) {
             if (hippoPlayer.awaitingMove) {
                 hippoPlayer.getTimer().setStartTime();

@@ -12,8 +12,6 @@ import java.io.IOException;
 
 public class SchematicLogic {
 
-    private static final String SCHEMATICS_DIRECTORY = "./plugins/HippoPractice/schematics/";
-
     private final HippoPractice parentPlugin;
     private final World world;
 
@@ -45,7 +43,8 @@ public class SchematicLogic {
     @SuppressWarnings("deprecation")
     private void pasteSchematic(String schematicName, Vector locationVector, boolean noAir) {
         EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(new BukkitWorld(world), -1);
-        File file = new File(SCHEMATICS_DIRECTORY + schematicName + ".schematic");
+        schematicName = schematicName.concat(".schematic");
+        File file = new File(parentPlugin.getPluginsDirSubdir("schematics") + File.separator + schematicName);
         if (!file.exists()) {
             parentPlugin.getLogger().severe("Error when trying to paste schematic: Could not find file: " + file);
         } else {

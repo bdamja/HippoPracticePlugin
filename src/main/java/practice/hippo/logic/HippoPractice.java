@@ -23,6 +23,7 @@ import practice.hippo.events.misc.WeatherChangeHandler;
 import practice.hippo.events.player.*;
 import practice.hippo.util.Offset;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -32,7 +33,7 @@ import static practice.hippo.util.Side.red;
 public class HippoPractice extends JavaPlugin implements Listener {
 
     public static final int VOID_LEVEL = 83;
-    private static final int NUM_PARTICLES = 350;
+    public static final int NUM_PARTICLES = 350;
 
     public static SchematicLogic schematicPaster = null;
     public World world;
@@ -49,7 +50,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         schematicPaster = new SchematicLogic(this, Bukkit.getWorld("world"));
         PaperCommandManager manager = new PaperCommandManager(this);
         manager.registerCommand(new HippoPracticeCommand(this));
-        maps.add("aquatica"); maps.add("boo"); maps.add("chronon"); maps.add("condo"); maps.add("dojo"); maps.add("fortress"); maps.add("galaxy"); maps.add("sorcery"); maps.add("treehouse"); maps.add("urban");
+        addMapsToQueue();
         manager.getCommandCompletions().registerCompletion("mapNames", c -> maps);
         scoreboardLogic = new ScoreboardLogic(this);
         setPlotList();
@@ -78,6 +79,24 @@ public class HippoPractice extends JavaPlugin implements Listener {
         world.setGameRuleValue("randomTickSpeed", "0");
     }
 
+    public File getPluginsDirSubdir(String subdir) {
+        return new File(getDataFolder() + File.separator + subdir);
+    }
+
+    private void addMapsToQueue() {
+        File mapDataDirectory = getPluginsDirSubdir("mapdata");
+        if (!mapDataDirectory.exists()) {
+            getLogger().severe("Error when trying to load mapdata directory: Could not find file: " + mapDataDirectory);
+        } else {
+            for (File mapDataFile : mapDataDirectory.listFiles()) {
+                String path = mapDataFile.toString().replace("\\", "/");
+                String[] directories = path.split("/");
+                String mapName = directories[directories.length - 1].replace(".json", "");
+                maps.add(mapName);
+            }
+        }
+    }
+
     public void resetPlayerAndSendToSpawn(Player player) throws IOException {
         teleportToSpawnLocation(player);
         refreshPlayerAttributes(player);
@@ -98,7 +117,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         player.setHealth(20);
         player.setFoodLevel(20);
         player.setSaturation(20);
-        InventoryLogic.setDefaultInventory(player, getMapLogic(player).getPlot().getSide());
+        InventoryLogic.setDefaultInventory(player, getHippoPlayer(player).getPlot().getSide());
     }
 
     public SchematicLogic getSchematicPaster() {
@@ -106,7 +125,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     public void resetMap(Player player) throws IOException {
-        HippoPlayer hippoPlayer = getMapLogic(player);
+        HippoPlayer hippoPlayer = getHippoPlayer(player);
         Plot plot = hippoPlayer.getPlot();
         String mapName = hippoPlayer.getMapName();
         removeAllBlocksPlacedByPlayer(player);
@@ -119,7 +138,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     public void removeAllBlocksPlacedByPlayer(Player player) {
-        HippoPlayer hippoPlayer = getMapLogic(player);
+        HippoPlayer hippoPlayer = getHippoPlayer(player);
         if (hippoPlayer != null) {
             Queue<Block> recordedBlocks = hippoPlayer.getRecordedBlocks();
             for (Block block : recordedBlocks) {
@@ -130,7 +149,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     public Queue<Block> getAllBlocksPlacedByPlayer(Player player) {
-        HippoPlayer hippoPlayer = getMapLogic(player);
+        HippoPlayer hippoPlayer = getHippoPlayer(player);
         return hippoPlayer.getRecordedBlocks();
     }
 
@@ -145,11 +164,11 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public void changeMap(String mapName, CommandSender sender) throws IOException {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            HippoPlayer hippoPlayer = getMapLogic(player);
+            HippoPlayer hippoPlayer = getHippoPlayer(player);
             Plot plot = hippoPlayer.getPlot();
             removeAllBlocksPlacedByPlayer(player);
-            HippoPlayer.cancelTasksIfPresent(getMapLogic(player));
-            hippoPlayer = new HippoPlayer(getMapLogic(player).getPlot(), world, mapName, player, this);
+            HippoPlayer.cancelTasksIfPresent(getHippoPlayer(player));
+            hippoPlayer = new HippoPlayer(getHippoPlayer(player).getPlot(), world, mapName, player, this);
             playerMap.replace(player.getUniqueId(), hippoPlayer);
             schematicPaster.loadMap(plot, hippoPlayer.getMapName());
             resetMap(player);
@@ -159,17 +178,17 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     public void teleportToSpawnLocation(Player player) {
-        HippoPlayer hippoPlayer = getMapLogic(player);
+        HippoPlayer hippoPlayer = getHippoPlayer(player);
         player.teleport(hippoPlayer.getSpawnPoint());
     }
 
     public void teleportToViewLocation(Player player) {
-        HippoPlayer hippoPlayer = getMapLogic(player);
+        HippoPlayer hippoPlayer = getHippoPlayer(player);
         player.teleport(Offset.location(hippoPlayer.getPlot(), hippoPlayer.getViewLocation(), false));
     }
 
     public void teleportToCenterLocation(Player player) {
-        HippoPlayer hippoPlayer = getMapLogic(player);
+        HippoPlayer hippoPlayer = getHippoPlayer(player);
         player.teleport(Offset.location(hippoPlayer.getPlot(), hippoPlayer.getMapCenter(), false));
     }
 
@@ -188,7 +207,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         double y = player.getLocation().getY() + 1;
         double z = player.getLocation().getZ();
         PacketPlayOutWorldParticles particles;
-        Plot plot = getMapLogic(player).getPlot();
+        Plot plot = getHippoPlayer(player).getPlot();
         for (int i = 0; i < NUM_PARTICLES; i++) {
             Location location = getRandLocationInBox(plot, x, y, z, 5, 3, 5, new Random());
             particles = new PacketPlayOutWorldParticles(EnumParticle.VILLAGER_HAPPY, true,
@@ -228,14 +247,14 @@ public class HippoPractice extends JavaPlugin implements Listener {
         return plots;
     }
 
-    public HippoPlayer getMapLogic(Player player) {
+    public HippoPlayer getHippoPlayer(Player player) {
         return playerMap.get(player.getUniqueId());
     }
 
     public boolean isPlotOccupied(Plot plot) {
         boolean isOccupied = false;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            HippoPlayer hippoPlayer = getMapLogic(player);
+            HippoPlayer hippoPlayer = getHippoPlayer(player);
             if (hippoPlayer != null) {
                 Plot occupiedPlot = hippoPlayer.getPlot();
                 if (occupiedPlot != null) {
