@@ -59,55 +59,7 @@ public class MapData {
     }
 
     public ChatColor getMapColor() {
-        ChatColor chatColor = ChatColor.WHITE;
-        switch (mapColor) {
-            case "black":
-                chatColor = ChatColor.BLACK;
-                break;
-            case "dark_blue":
-                chatColor = ChatColor.DARK_BLUE;
-                break;
-            case "dark_green":
-                chatColor = ChatColor.DARK_GREEN;
-                break;
-            case "dark_aqua":
-                chatColor = ChatColor.DARK_AQUA;
-                break;
-            case "dark_red":
-                chatColor = ChatColor.DARK_RED;
-                break;
-            case "dark_purple":
-                chatColor = ChatColor.DARK_PURPLE;
-                break;
-            case "gold":
-                chatColor = ChatColor.GOLD;
-                break;
-            case "gray":
-                chatColor = ChatColor.GRAY;
-                break;
-            case "dark_gray":
-                chatColor = ChatColor.DARK_GRAY;
-                break;
-            case "blue":
-                chatColor = ChatColor.BLUE;
-                break;
-            case "green":
-                chatColor = ChatColor.GREEN;
-                break;
-            case "aqua":
-                chatColor = ChatColor.AQUA;
-                break;
-            case "red":
-                chatColor = ChatColor.RED;
-                break;
-            case "light_purple":
-                chatColor = ChatColor.LIGHT_PURPLE;
-                break;
-            case "yellow":
-                chatColor = ChatColor.YELLOW;
-                break;
-        }
-        return chatColor;
+        return ChatLogic.strToChatColor(mapColor);
     }
 
     public String getMapText() {
