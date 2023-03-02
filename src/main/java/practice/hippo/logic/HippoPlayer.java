@@ -161,62 +161,9 @@ public class HippoPlayer {
         }
         return allHippoBlocks;
     }
-
-    // going to change this eventually, this is just temporary
+    
     public void updateMapValues(String mapName) throws FileNotFoundException {
         readMapData(mapName);
-//        if (mapName.equals("aquatica")) {
-//            this.redSpawnPoint = new Location(this.world, 29.5, 98.5, 0.5, 90, 0);
-//            this.blueSpawnPoint = redSpawnPoint;
-//            this.buildLimits = new BoundingBox(25, 84, -20, 1, 99, 20);
-//            mapNameColor = "" + ChatColor.DARK_AQUA;
-//        } else if (mapName.equals("boo")) {
-//            this.redSpawnPoint = new Location(this.world, 31.5, 103.0, 0.5, 90, 0);
-//            this.blueSpawnPoint = redSpawnPoint;
-//            this.buildLimits = new BoundingBox(23, 84, -20, 1, 99, 20);
-//            mapNameColor = "" + ChatColor.DARK_PURPLE;
-//        } else if (mapName.equals("chronon")) {
-//            this.redSpawnPoint = new Location(this.world, 26.5, 101.0, 0.5, 90, 0);
-//            this.blueSpawnPoint = redSpawnPoint;
-//            this.buildLimits = new BoundingBox(23, 84, -20, 1, 99, 20);
-//            mapNameColor = "" + ChatColor.RED;
-//        } else if (mapName.equals("condo")) {
-//            this.redSpawnPoint = new Location(this.world, 34.5, 99.0, 0.5, 90, 0);
-//            this.blueSpawnPoint = redSpawnPoint;
-//            this.buildLimits = new BoundingBox(25, 84, -20, 1, 99, 20);
-//            mapNameColor = "" + ChatColor.GRAY;
-//        } else if (mapName.equals("dojo")) {
-//            this.redSpawnPoint = new Location(this.world, 30.5, 100.0, 0.5, 90, 0);
-//            this.blueSpawnPoint = redSpawnPoint;
-//            this.buildLimits = new BoundingBox(25, 84, -20, 1, 99, 20);
-//            mapNameColor = "" + ChatColor.DARK_RED;
-//        } else if (mapName.equals("fortress")) {
-//            this.redSpawnPoint = new Location(this.world, 31.5, 101.0, 0.5, 90, 0);
-//            this.blueSpawnPoint = redSpawnPoint;
-//            this.buildLimits = new BoundingBox(23, 84, -20, 1, 99, 20);
-//            mapNameColor = "" + ChatColor.DARK_GRAY;
-//        } else if (mapName.equals("galaxy")) {
-//            this.redSpawnPoint = new Location(this.world, 32.5, 102.0, 0.5, 90, 0);
-//            this.blueSpawnPoint = redSpawnPoint;
-//            this.buildLimits = new BoundingBox(22, 84, -20, 1, 99, 20);
-//            mapNameColor = "" + ChatColor.WHITE;
-//        } else if (mapName.equals("sorcery")) {
-//            this.redSpawnPoint = new Location(this.world, 31.5, 103.0, 0.5, 90, 0);
-//            this.blueSpawnPoint = redSpawnPoint;
-//            this.buildLimits = new BoundingBox(23, 84, -20, 1, 99, 20);
-//            mapNameColor = "" + ChatColor.DARK_GREEN;
-//        } else if (mapName.equals("treehouse")) {
-//            this.redSpawnPoint = new Location(this.world, 28.5, 100.0, 0.5, 90, 0);
-//            this.blueSpawnPoint = redSpawnPoint;
-//            this.buildLimits = new BoundingBox(22, 84, -20, 1, 99, 20);
-//            mapNameColor = "" + ChatColor.YELLOW;
-//        } else if (mapName.equals("urban")) {
-//            this.redSpawnPoint = new Location(this.world, 30.5, 97.0, 0.5, 90, 0);
-//            this.blueSpawnPoint = redSpawnPoint;
-//            this.buildLimits = new BoundingBox(26, 84, -20, 1, 99, 20);
-//            mapNameColor = "" + ChatColor.RED;
-//        }
-
     }
 
     public String mapText() {
