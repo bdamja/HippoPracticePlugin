@@ -46,6 +46,7 @@ public class HippoPlayer {
         this.recordedBlocks = new LinkedList<>();
         this.hasFinishedHippo = false;
         this.timer = new Timer();
+        timer.setStartTime();
         this.parentPlugin = parentPlugin;
         this.awaitingMove = true;
         this.awaitingLeftClick = false;
