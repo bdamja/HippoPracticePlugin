@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 import java.util.Queue;
 
 @CommandAlias("hp|hippo")
@@ -37,8 +38,8 @@ public class HippoPracticeCommand extends BaseCommand {
     @Description("Displays a list of all the maps")
     public void onMaps(CommandSender sender) {
         String msg = ChatColor.GRAY + "List of available maps: ";
-        for (String map : HippoPractice.maps) {
-            msg = msg.concat("\n" + ChatColor.GRAY + "      - " + map);
+        for (Map.Entry<String, String> mapElement : HippoPractice.maps.entrySet()) {
+            msg = msg.concat("\n" + ChatColor.GRAY + "      - " + mapElement.getValue());
         }
         ChatLogic.sendMessageToPlayer(msg, (Player) sender);
     }
@@ -50,7 +51,7 @@ public class HippoPracticeCommand extends BaseCommand {
     public void onLoadMap(CommandSender sender, String[] args) throws IOException {
         if (args.length > 0) {
             String mapName = args[0];
-            if (HippoPractice.maps.contains(mapName)) {
+            if (HippoPractice.maps.containsKey(mapName)) {
                 ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Loading map " + mapName + "...", (Player) sender);
                 parentPlugin.changeMap(mapName, sender);
             } else {

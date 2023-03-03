@@ -1,6 +1,7 @@
 package practice.hippo.logic;
 
 import co.aikar.commands.PaperCommandManager;
+import com.google.gson.Gson;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.*;
@@ -23,8 +24,7 @@ import practice.hippo.events.misc.WeatherChangeHandler;
 import practice.hippo.events.player.*;
 import practice.hippo.util.Offset;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 import static practice.hippo.util.Side.blue;
@@ -37,7 +37,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     public static SchematicLogic schematicPaster = null;
     public World world;
-    public static Queue<String> maps = new LinkedList<>();
+    public static TreeMap<String, String> maps = new TreeMap<>();
     private static final ArrayList<Plot> plots = new ArrayList<>();
     public ScoreboardLogic scoreboardLogic = null;
     public HashMap<UUID, HippoPlayer> playerMap = new HashMap<>();
@@ -50,8 +50,12 @@ public class HippoPractice extends JavaPlugin implements Listener {
         schematicPaster = new SchematicLogic(this, Bukkit.getWorld("world"));
         PaperCommandManager manager = new PaperCommandManager(this);
         manager.registerCommand(new HippoPracticeCommand(this));
-        addMapsToQueue();
-        manager.getCommandCompletions().registerCompletion("mapNames", c -> maps);
+        try {
+            addMapsToQueue();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        manager.getCommandCompletions().registerCompletion("mapNames", c -> maps.descendingKeySet());
         scoreboardLogic = new ScoreboardLogic(this);
         setPlotList();
     }
@@ -83,16 +87,16 @@ public class HippoPractice extends JavaPlugin implements Listener {
         return new File(getDataFolder() + File.separator + subdir);
     }
 
-    private void addMapsToQueue() {
+    private void addMapsToQueue() throws FileNotFoundException {
         File mapDataDirectory = getPluginsDirSubdir("mapdata");
         if (!mapDataDirectory.exists()) {
-            getLogger().severe("Error when trying to load mapdata directory: Could not find file: " + mapDataDirectory);
+            getLogger().severe("Error when trying to load mapdata directory: Could not find directory: " + mapDataDirectory);
         } else {
             for (File mapDataFile : mapDataDirectory.listFiles()) {
-                String path = mapDataFile.toString().replace("\\", "/");
-                String[] directories = path.split("/");
-                String mapName = directories[directories.length - 1].replace(".json", "");
-                maps.add(mapName);
+                Gson gson = new Gson();
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(mapDataFile));
+                MapData mapData = gson.fromJson(bufferedReader, MapData.class);
+                maps.put(mapData.getMapName(), mapData.getMapText());
             }
         }
     }
