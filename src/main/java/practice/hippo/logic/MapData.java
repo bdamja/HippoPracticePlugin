@@ -63,7 +63,12 @@ public class MapData {
     }
 
     public String getMapText() {
-        String mapNameStr = mapName.substring(0, 1).toUpperCase() + mapName.substring(1);
+        String mapNameStr = "";
+        String[] words = mapName.split("_");
+        for (int i = 0; i < words.length; i++) {
+            String space = (i == 0) ? "" : " ";
+            mapNameStr = mapNameStr.concat(space + words[i].substring(0, 1).toUpperCase() + words[i].substring(1));
+        }
         return "" + getMapColor() + mapNameStr;
     }
 
