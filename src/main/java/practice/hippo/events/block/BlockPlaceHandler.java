@@ -13,6 +13,8 @@ import practice.hippo.logic.HippoPractice;
 import practice.hippo.logic.HippoPlayer;
 import practice.hippo.util.BoundingBox;
 
+import java.util.ArrayList;
+
 public class BlockPlaceHandler implements Listener {
 
     private final HippoPractice parentPlugin;
@@ -27,7 +29,7 @@ public class BlockPlaceHandler implements Listener {
         Block block = event.getBlock();
         HippoPlayer hippoPlayer = parentPlugin.getHippoPlayer(player);
         if (player.getGameMode() != GameMode.CREATIVE) {
-            if (isBlockWithinLimits(block, hippoPlayer)) {
+            if (isBlockWithinLimits(block, hippoPlayer) && !isBlockInBlacklistedRegion(block, hippoPlayer)) {
                 // the server will remember which blocks were placed by players
                 block.setMetadata("placed by " + player.getName(), new FixedMetadataValue(parentPlugin, ""));
                 hippoPlayer.getRecordedBlocks().add(block);
@@ -56,6 +58,16 @@ public class BlockPlaceHandler implements Listener {
     private boolean checkCompleteStructure(Block block, HippoPlayer hippoPlayer) {
         hippoPlayer.getHippoBlocks().remove(block.getLocation());
         return hippoPlayer.getHippoBlocks().isEmpty();
+    }
+
+    private boolean isBlockInBlacklistedRegion(Block block, HippoPlayer hippoPlayer) {
+        ArrayList<BoundingBox> blacklistedRegions = hippoPlayer.getBlacklistedRegions();
+        for (BoundingBox region : blacklistedRegions) {
+            if (region.containsInclusive(block.getLocation().toVector())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

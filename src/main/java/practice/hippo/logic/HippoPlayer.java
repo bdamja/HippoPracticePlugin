@@ -119,6 +119,17 @@ public class HippoPlayer {
         return Offset.boundingBox(this.plot, mapData.getBuildLimits(), true);
     }
 
+    public ArrayList<BoundingBox> getBlacklistedRegions() {
+        BoundingBox[] blacklistedRegions = mapData.getBlacklistedRegions();
+        ArrayList<BoundingBox> regions = new ArrayList<>();
+        if (blacklistedRegions != null) {
+            for (BoundingBox region : blacklistedRegions) {
+                regions.add(Offset.boundingBox(this.plot, region, true));
+            }
+        }
+        return regions;
+    }
+
     public BoundingBox getBridgeDimensions() {
         return Offset.boundingBox(this.plot, mapData.getBridgeDimensions(), true);
     }

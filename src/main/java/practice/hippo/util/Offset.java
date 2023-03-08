@@ -23,7 +23,7 @@ public class Offset {
                 offsetX += 1;
                 offsetZ += 1;
             }
-            offsetYaw *= -1;
+            offsetYaw += 180;
         }
         return new Location(location.getWorld(), offsetX, location.getY(), offsetZ, offsetYaw, location.getPitch());
     }
@@ -53,7 +53,7 @@ public class Offset {
                 offsetX += 1;
                 offsetZ += 1;
             }
-            offsetYaw *= -1;
+            offsetYaw += 180;
         }
         return new Location(world, offsetX, y, offsetZ, offsetYaw, pitch);
     }

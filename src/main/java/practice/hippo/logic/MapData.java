@@ -23,33 +23,39 @@ public class MapData {
     @SerializedName("bridge_dimensions")
     private BridgeDimensions bridgeDimensions;
 
-    public MapData(String mapName, String mapColor, Location spawnPointLoc, BoundingBox buildLimitsBox, BoundingBox bridgeDimensionsBox) {
-        this.mapName = mapName;
-        this.mapColor = mapColor;
+    @SerializedName("blacklisted_regions")
+    private BoundingBox[] blacklistedRegions;
 
-        this.spawnPoint = new SpawnPoint();
-        spawnPoint.x = spawnPointLoc.getX();
-        spawnPoint.y = spawnPointLoc.getY();
-        spawnPoint.z = spawnPointLoc.getZ();
-        spawnPoint.yaw = spawnPointLoc.getYaw();
-        spawnPoint.pitch = spawnPointLoc.getPitch();
-
-        this.buildLimits = new BuildLimits();
-        buildLimits.minX = buildLimitsBox.getMinX();
-        buildLimits.minY = buildLimitsBox.getMinY();
-        buildLimits.minZ = buildLimitsBox.getMinZ();
-        buildLimits.maxX = buildLimitsBox.getMaxX();
-        buildLimits.maxY = buildLimitsBox.getMaxY();
-        buildLimits.maxZ = buildLimitsBox.getMaxZ();
-
-        this.bridgeDimensions = new BridgeDimensions();
-        bridgeDimensions.minX = bridgeDimensionsBox.getMinX();
-        bridgeDimensions.minY = bridgeDimensionsBox.getMinY();
-        bridgeDimensions.minZ = bridgeDimensionsBox.getMinZ();
-        bridgeDimensions.maxX = bridgeDimensionsBox.getMaxX();
-        bridgeDimensions.maxY = bridgeDimensionsBox.getMaxY();
-        bridgeDimensions.maxZ = bridgeDimensionsBox.getMaxZ();
-    }
+//    public MapData(String mapName, String mapColor, Location spawnPointLoc, BoundingBox buildLimitsBox, BoundingBox bridgeDimensionsBox, BoundingBox[] regions) {
+//        this.mapName = mapName;
+//        this.mapColor = mapColor;
+//
+//        this.spawnPoint = new SpawnPoint();
+//        spawnPoint.x = spawnPointLoc.getX();
+//        spawnPoint.y = spawnPointLoc.getY();
+//        spawnPoint.z = spawnPointLoc.getZ();
+//        spawnPoint.yaw = spawnPointLoc.getYaw();
+//        spawnPoint.pitch = spawnPointLoc.getPitch();
+//
+//        this.buildLimits = new BuildLimits();
+//        buildLimits.minX = buildLimitsBox.getMinX();
+//        buildLimits.minY = buildLimitsBox.getMinY();
+//        buildLimits.minZ = buildLimitsBox.getMinZ();
+//        buildLimits.maxX = buildLimitsBox.getMaxX();
+//        buildLimits.maxY = buildLimitsBox.getMaxY();
+//        buildLimits.maxZ = buildLimitsBox.getMaxZ();
+//
+//        this.bridgeDimensions = new BridgeDimensions();
+//        bridgeDimensions.minX = bridgeDimensionsBox.getMinX();
+//        bridgeDimensions.minY = bridgeDimensionsBox.getMinY();
+//        bridgeDimensions.minZ = bridgeDimensionsBox.getMinZ();
+//        bridgeDimensions.maxX = bridgeDimensionsBox.getMaxX();
+//        bridgeDimensions.maxY = bridgeDimensionsBox.getMaxY();
+//        bridgeDimensions.maxZ = bridgeDimensionsBox.getMaxZ();
+//
+//        this.blacklistedRegions = new BlacklistedRegions();
+//        this.blacklistedRegions.regions = regions;
+//    }
 
     public MapData() {
     }
@@ -82,6 +88,10 @@ public class MapData {
 
     public BoundingBox getBridgeDimensions() {
         return new BoundingBox(bridgeDimensions.minX, bridgeDimensions.minY, bridgeDimensions.minZ, bridgeDimensions.maxX, bridgeDimensions.maxY, bridgeDimensions.maxZ);
+    }
+
+    public BoundingBox[] getBlacklistedRegions() {
+        return blacklistedRegions;
     }
 
 }
