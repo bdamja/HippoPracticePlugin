@@ -1,0 +1,27 @@
+{
+    "map_name": "mechanicus",
+    "map_color": "gray",
+    "spawn_point": {
+        "x": 39.5,
+        "y": 99.0,
+        "z": 0.5,
+        "yaw": 90.0,
+        "pitch": 0.0
+    },
+    "build_limits": {
+        "minX": 1.0,
+        "minY": 84.0,
+        "minZ": -20.0,
+        "maxX": 29.0,
+        "maxY": 99.0,
+        "maxZ": 20.0
+    },
+    "bridge_dimensions": {
+        "minX": -20.0,
+        "minY": 84.0,
+        "minZ": -0.0,
+        "maxX": 20.0,
+        "maxY": 92.0,
+        "maxZ": 0.0
+    }
+}

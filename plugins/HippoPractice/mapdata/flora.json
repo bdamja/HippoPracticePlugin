@@ -1,0 +1,37 @@
+{
+    "map_name": "flora",
+    "map_color": "light_purple",
+    "spawn_point": {
+        "x": 30.5,
+        "y": 98.0,
+        "z": 0.5,
+        "yaw": 90.0,
+        "pitch": 0.0
+    },
+    "build_limits": {
+        "minX": 1.0,
+        "minY": 84.0,
+        "minZ": -20.0,
+        "maxX": 43.0,
+        "maxY": 99.0,
+        "maxZ": 20.0
+    },
+    "blacklisted_regions": [
+        {
+            "minX": 27.0,
+            "minY": 84.0,
+            "minZ": -3.0,
+            "maxX": 33.0,
+            "maxY": 92.0,
+            "maxZ": 3.0
+        },
+        {
+            "minX": 26.0,
+            "minY": 97.0,
+            "minZ": -4.0,
+            "maxX": 34.0,
+            "maxY": 99.0,
+            "maxZ": 4.0
+        }
+    ]
+}
