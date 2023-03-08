@@ -134,7 +134,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         String mapName = hippoPlayer.getMapName();
         removeAllBlocksPlacedByPlayer(player);
         killItems();
-        schematicPaster.loadMainBridge(plot);
+        schematicPaster.loadMainBridge(plot, hippoPlayer.getMapData().getBridgeLength());
         HippoPlayer.cancelTasksIfPresent(hippoPlayer);
         hippoPlayer = new HippoPlayer(plot, world, mapName, player, this);
         playerMap.replace(player.getUniqueId(), hippoPlayer);

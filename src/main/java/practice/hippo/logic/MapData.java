@@ -90,6 +90,10 @@ public class MapData {
         return new BoundingBox(bridgeDimensions.minX, bridgeDimensions.minY, bridgeDimensions.minZ, bridgeDimensions.maxX, bridgeDimensions.maxY, bridgeDimensions.maxZ);
     }
 
+    public int getBridgeLength() {
+        return (int) (Math.abs(bridgeDimensions.minX) + Math.abs(bridgeDimensions.maxX) + 1);
+    }
+
     public BoundingBox[] getBlacklistedRegions() {
         return blacklistedRegions;
     }

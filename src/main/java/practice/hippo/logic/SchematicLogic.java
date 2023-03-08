@@ -24,8 +24,8 @@ public class SchematicLogic {
         pasteSchematic("air_" + plot.getSide(), Offset.worldeditVector(plot, 0, 93, 0, true), false);
     }
 
-    public void loadMainBridge(Plot plot) {
-        String schematicName = "bridge_" + plot.getSide();
+    public void loadMainBridge(Plot plot, int length) {
+        String schematicName = "bridge_" + plot.getSide() + "_" + length;
         pasteSchematic(schematicName, Offset.worldeditVector(plot, 0, 93, 0, true), false);
     }
 
