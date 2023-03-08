@@ -23,3 +23,5 @@ permissions.yml
 spigot-1.8.8.jar
 spigot.yml
 
+plugins/PluginMetrics/
+plugins/bStats/
