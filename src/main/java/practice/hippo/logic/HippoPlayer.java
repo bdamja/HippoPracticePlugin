@@ -168,8 +168,6 @@ public class HippoPlayer {
                 allHippoBlocks.add(Offset.location(this.plot, this.world, x, y, z, true));
             }
             input.close();
-        } else {
-            parentPlugin.getLogger().severe("Error when trying to load hippo: Could not find file: " + file);
         }
         return allHippoBlocks;
     }
@@ -255,25 +253,29 @@ public class HippoPlayer {
 
     @SuppressWarnings("deprecation")
     public void placeHippoBlocks(World world) throws FileNotFoundException {
-        byte color = getColorData();
-        parentPlugin.removeAllBlocksPlacedByPlayer(player);
         ArrayList<Location> allHippoBlocks = getLocationFromHippoFile(mapData.getMapName());
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!allHippoBlocks.isEmpty()) {
-                    Location location = allHippoBlocks.remove(0);
-                    Block block = world.getBlockAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-                    block.setType(Material.STAINED_CLAY);
-                    block.setData(color);
-                    block.setMetadata("placed by " + player.getName(), new FixedMetadataValue(parentPlugin, ""));
-                    parentPlugin.playerMap.get(getPlayerUUID()).getRecordedBlocks().add(block);
-                    player.playSound(block.getLocation(), Sound.DIG_STONE, 1.0f, 1.0f);
-                } else {
-                    this.cancel();
+        if (!allHippoBlocks.isEmpty()) {
+            byte color = getColorData();
+            parentPlugin.removeAllBlocksPlacedByPlayer(player);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (!allHippoBlocks.isEmpty()) {
+                        Location location = allHippoBlocks.remove(0);
+                        Block block = world.getBlockAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+                        block.setType(Material.STAINED_CLAY);
+                        block.setData(color);
+                        block.setMetadata("placed by " + player.getName(), new FixedMetadataValue(parentPlugin, ""));
+                        parentPlugin.playerMap.get(getPlayerUUID()).getRecordedBlocks().add(block);
+                        player.playSound(block.getLocation(), Sound.DIG_STONE, 1.0f, 1.0f);
+                    } else {
+                        this.cancel();
+                    }
                 }
-            }
-        }.runTaskTimer(parentPlugin, 3, 3);
+            }.runTaskTimer(parentPlugin, 3, 3);
+        } else {
+            ChatLogic.sendMessageToPlayer(ChatColor.RED + "There is no hippo set for this map.", player);
+        }
     }
 
     public byte getColorData() {

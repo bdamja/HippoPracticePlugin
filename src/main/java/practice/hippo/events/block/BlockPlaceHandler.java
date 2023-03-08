@@ -56,8 +56,11 @@ public class BlockPlaceHandler implements Listener {
     }
 
     private boolean checkCompleteStructure(Block block, HippoPlayer hippoPlayer) {
-        hippoPlayer.getHippoBlocks().remove(block.getLocation());
-        return hippoPlayer.getHippoBlocks().isEmpty();
+        if (!hippoPlayer.getHippoBlocks().isEmpty()) {
+            hippoPlayer.getHippoBlocks().remove(block.getLocation());
+            return hippoPlayer.getHippoBlocks().isEmpty();
+        }
+        return false;
     }
 
     private boolean isBlockInBlacklistedRegion(Block block, HippoPlayer hippoPlayer) {
