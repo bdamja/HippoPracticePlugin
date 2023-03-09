@@ -1,6 +1,8 @@
 {
     "map_name": "sunstone",
     "map_color": "dark_green",
+    "biome_red": "jungle",
+    "biome_blue": "jungle",
     "spawn_point": {
         "x": 23.5,
         "y": 101.0,

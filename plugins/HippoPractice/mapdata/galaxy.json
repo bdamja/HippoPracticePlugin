@@ -1,6 +1,8 @@
 {
     "map_name": "galaxy",
     "map_color": "white",
+    "biome_red": "deep_ocean",
+    "biome_blue": "deep_ocean",
     "spawn_point": {
         "x": 32.5,
         "y": 102.0,

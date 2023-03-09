@@ -1,6 +1,8 @@
 {
     "map_name": "ashgate",
     "map_color": "dark_red",
+    "biome_red": "plains",
+    "biome_blue": "plains",
     "spawn_point": {
         "x": 28.5,
         "y": 102.0,

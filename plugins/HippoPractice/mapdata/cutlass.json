@@ -1,6 +1,8 @@
 {
     "map_name": "cutlass",
     "map_color": "red",
+    "biome_red": "plains",
+    "biome_blue": "plains",
     "spawn_point": {
         "x": 26.5,
         "y": 101.0,

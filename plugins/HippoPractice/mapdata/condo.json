@@ -1,6 +1,8 @@
 {
     "map_name": "condo",
     "map_color": "gray",
+    "biome_red": "forest",
+    "biome_blue": "forest",
     "spawn_point": {
         "x": 34.5,
         "y": 99.0,

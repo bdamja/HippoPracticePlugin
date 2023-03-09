@@ -1,6 +1,8 @@
 {
     "map_name": "treehouse",
     "map_color": "green",
+    "biome_red": "forest",
+    "biome_blue": "forest",
     "spawn_point": {
         "x": 28.5,
         "y": 100.0,

@@ -1,6 +1,8 @@
 {
     "map_name": "lighthouse",
     "map_color": "yellow",
+    "biome_red": "deep_ocean",
+    "biome_blue": "deep_ocean",
     "spawn_point": {
         "x": 28.5,
         "y": 99.0,

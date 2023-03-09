@@ -1,6 +1,8 @@
 {
     "map_name": "sorcery",
     "map_color": "dark_green",
+    "biome_red": "jungle",
+    "biome_blue": "jungle",
     "spawn_point": {
         "x": 31.5,
         "y": 103.0,

@@ -1,6 +1,8 @@
 {
     "map_name": "boo",
     "map_color": "dark_purple",
+    "biome_red": "plains",
+    "biome_blue": "plains",
     "spawn_point": {
         "x": 31.5,
         "y": 103.0,

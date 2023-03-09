@@ -1,6 +1,8 @@
 {
     "map_name": "twilight",
     "map_color": "black",
+    "biome_red": "jungle",
+    "biome_blue": "jungle",
     "spawn_point": {
         "x": 31.5,
         "y": 100.0,

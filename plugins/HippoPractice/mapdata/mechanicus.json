@@ -1,6 +1,8 @@
 {
     "map_name": "mechanicus",
     "map_color": "gray",
+    "biome_red": "plains",
+    "biome_blue": "plains",
     "spawn_point": {
         "x": 39.5,
         "y": 99.0,

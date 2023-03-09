@@ -1,6 +1,8 @@
 {
     "map_name": "palaestra",
     "map_color": "white",
+    "biome_red": "plains",
+    "biome_blue": "plains",
     "spawn_point": {
         "x": 40.5,
         "y": 103.0,

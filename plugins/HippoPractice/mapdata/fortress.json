@@ -1,6 +1,8 @@
 {
     "map_name": "fortress",
     "map_color": "dark_gray",
+    "biome_red": "taiga",
+    "biome_blue": "taiga",
     "spawn_point": {
         "x": 31.5,
         "y": 101.0,

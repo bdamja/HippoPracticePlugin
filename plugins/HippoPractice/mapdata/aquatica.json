@@ -1,6 +1,8 @@
 {
     "map_name": "aquatica",
     "map_color": "dark_aqua",
+    "biome_red": "plains",
+    "biome_blue": "plains",
     "spawn_point": {
         "x": 29.5,
         "y": 98.0,

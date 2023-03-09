@@ -1,6 +1,8 @@
 {
     "map_name": "atlantis",
     "map_color": "blue",
+    "biome_red": "deep_ocean",
+    "biome_blue": "deep_ocean",
     "spawn_point": {
         "x": 34.5,
         "y": 105.0,

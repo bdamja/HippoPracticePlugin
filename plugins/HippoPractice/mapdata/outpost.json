@@ -1,6 +1,8 @@
 {
     "map_name": "outpost",
     "map_color": "dark_blue",
+    "biome_red": "plains",
+    "biome_blue": "plains",
     "spawn_point": {
         "x": 30.5,
         "y": 104.0,

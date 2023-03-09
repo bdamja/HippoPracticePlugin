@@ -1,6 +1,8 @@
 {
     "map_name": "coconut",
     "map_color": "green",
+    "biome_red": "forest",
+    "biome_blue": "forest",
     "spawn_point": {
         "x": 47.5,
         "y": 96.0,

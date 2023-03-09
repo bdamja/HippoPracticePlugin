@@ -1,6 +1,8 @@
 {
     "map_name": "chronon",
     "map_color": "red",
+    "biome_red": "birch_forest",
+    "biome_blue": "birch_forest",
     "spawn_point": {
         "x": 26.5,
         "y": 101.0,

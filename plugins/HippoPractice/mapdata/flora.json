@@ -1,6 +1,8 @@
 {
     "map_name": "flora",
     "map_color": "light_purple",
+    "biome_red": "swampland",
+    "biome_blue": "ice_plains",
     "spawn_point": {
         "x": 30.5,
         "y": 98.0,

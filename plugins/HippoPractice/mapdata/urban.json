@@ -1,6 +1,8 @@
 {
     "map_name": "urban",
     "map_color": "red",
+    "biome_red": "jungle",
+    "biome_blue": "jungle",
     "spawn_point": {
         "x": 30.5,
         "y": 97.0,

@@ -1,6 +1,8 @@
 {
     "map_name": "licorice",
     "map_color": "light_purple",
+    "biome_red": "deep_ocean",
+    "biome_blue": "roofed_forest",
     "spawn_point": {
         "x": 33.5,
         "y": 99.0,

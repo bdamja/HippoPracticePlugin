@@ -1,6 +1,8 @@
 {
     "map_name": "tundra",
     "map_color": "white",
+    "biome_red": "taiga",
+    "biome_blue": "taiga",
     "spawn_point": {
         "x": 24.5,
         "y": 101.0,

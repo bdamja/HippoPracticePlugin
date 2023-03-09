@@ -1,6 +1,8 @@
 {
     "map_name": "hyperfrost",
     "map_color": "aqua",
+    "biome_red": "ocean",
+    "biome_blue": "river",
     "spawn_point": {
         "x": 37.5,
         "y": 100.0,

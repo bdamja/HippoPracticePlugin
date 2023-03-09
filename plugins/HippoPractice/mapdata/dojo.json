@@ -1,6 +1,8 @@
 {
     "map_name": "dojo",
     "map_color": "dark_red",
+    "biome_red": "ice_plains",
+    "biome_blue": "ice_plains",
     "spawn_point": {
         "x": 30.5,
         "y": 100.0,

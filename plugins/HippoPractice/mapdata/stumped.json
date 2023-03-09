@@ -1,6 +1,8 @@
 {
     "map_name": "stumped",
     "map_color": "gold",
+    "biome_red": "forest",
+    "biome_blue": "forest",
     "spawn_point": {
         "x": 30.5,
         "y": 103.0,

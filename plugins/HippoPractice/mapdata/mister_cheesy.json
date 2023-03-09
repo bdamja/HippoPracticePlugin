@@ -1,6 +1,7 @@
 {
     "map_name": "mister_cheesy",
     "map_color": "gold",
+    "biome": "jungle",
     "spawn_point": {
         "x": 26.5,
         "y": 98.0,
