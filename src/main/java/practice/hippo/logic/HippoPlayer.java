@@ -1,7 +1,6 @@
 package practice.hippo.logic;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.*;
@@ -12,6 +11,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
+import practice.hippo.util.BiomeType;
 import practice.hippo.util.BoundingBox;
 import practice.hippo.util.Offset;
 import practice.hippo.util.Side;
@@ -280,6 +280,18 @@ public class HippoPlayer {
 
     public byte getColorData() {
         return (this.plot.getSide() == Side.red) ? (byte) 14 : (byte) 11;
+    }
+
+    public String getBiome() {
+        if (this.plot.getSide() == Side.red) {
+            return mapData.getBiomeRed();
+        } else {
+            return mapData.getBiomeBlue();
+        }
+    }
+
+    public int getBiomeId() {
+        return BiomeType.idOf(getBiome());
     }
 
 }

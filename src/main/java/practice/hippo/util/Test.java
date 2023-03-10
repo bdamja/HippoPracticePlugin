@@ -10,9 +10,7 @@ import java.io.FileReader;
 
 public class Test {
     public static void main(String[] args) throws FileNotFoundException {
-//        BufferedReader bufferedReader = new BufferedReader(new FileReader(HippoPractice.MAPDATA_DIRECTORY + "aquatica" + ".json"));
-//        Gson gson = new Gson();
-//        MapData mapData = gson.fromJson(bufferedReader, MapData.class);
-//        System.out.println(mapData.getMapName());
+        int x = 41;
+        System.out.println(-(x-1)/2);
     }
 }

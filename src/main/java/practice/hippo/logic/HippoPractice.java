@@ -34,6 +34,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     public static final int VOID_LEVEL = 83;
     public static final int NUM_PARTICLES = 350;
+    public static final int DISTANCE_BETWEEN_PLOTS = 41;
 
     public static SchematicLogic schematicPaster = null;
     public World world;
@@ -134,7 +135,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         String mapName = hippoPlayer.getMapName();
         removeAllBlocksPlacedByPlayer(player);
         killItems();
-        schematicPaster.loadMainBridge(plot, hippoPlayer.getMapData().getBridgeLength());
+        schematicPaster.loadMainBridge(hippoPlayer);
         HippoPlayer.cancelTasksIfPresent(hippoPlayer);
         hippoPlayer = new HippoPlayer(plot, world, mapName, player, this);
         playerMap.replace(player.getUniqueId(), hippoPlayer);
@@ -168,16 +169,15 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public void changeMap(String mapName, CommandSender sender) throws IOException {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            HippoPlayer hippoPlayer = getHippoPlayer(player);
-            Plot plot = hippoPlayer.getPlot();
             removeAllBlocksPlacedByPlayer(player);
             HippoPlayer.cancelTasksIfPresent(getHippoPlayer(player));
-            hippoPlayer = new HippoPlayer(getHippoPlayer(player).getPlot(), world, mapName, player, this);
+            HippoPlayer hippoPlayer = new HippoPlayer(getHippoPlayer(player).getPlot(), world, mapName, player, this);
             playerMap.replace(player.getUniqueId(), hippoPlayer);
-            schematicPaster.loadMap(plot, hippoPlayer.getMapName());
+            schematicPaster.loadMap(hippoPlayer);
             resetMap(player);
             resetPlayerAndSendToSpawn(player);
             scoreboardLogic.updateMapName(player, hippoPlayer.mapText());
+            reloadChunks(player);
         }
     }
 
@@ -307,6 +307,10 @@ public class HippoPractice extends JavaPlugin implements Listener {
             }
         }
         return missingBlockLocations;
+    }
+
+    private void reloadChunks(Player player) {
+        player.teleport(new Location(world, player.getLocation().getX(), VOID_LEVEL + 5, player.getLocation().getZ() + 1000));
     }
 
 }

@@ -18,6 +18,14 @@
         "maxY": 99.0,
         "maxZ": 20.0
     },
+    "bridge_dimensions": {
+        "minX": -20.0,
+        "minY": 84.0,
+        "minZ": -0.0,
+        "maxX": 20.0,
+        "maxY": 92.0,
+        "maxZ": 0.0
+    },
     "blacklisted_regions": [
         {
             "minX": 27.0,
