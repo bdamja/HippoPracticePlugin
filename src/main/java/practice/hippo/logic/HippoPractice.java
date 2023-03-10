@@ -310,7 +310,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     private void reloadChunks(Player player) {
-        player.teleport(new Location(world, player.getLocation().getX(), VOID_LEVEL + 5, player.getLocation().getZ() + 1000));
+        player.teleport(new Location(world, player.getLocation().getX(), VOID_LEVEL + 3, player.getLocation().getZ() + 1000));
     }
 
 }

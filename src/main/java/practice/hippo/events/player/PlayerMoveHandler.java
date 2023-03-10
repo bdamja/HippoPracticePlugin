@@ -27,9 +27,9 @@ public class PlayerMoveHandler implements Listener {
                 hippoPlayer.getTimer().setStartTime();
                 hippoPlayer.awaitingMove = false;
             }
-        }
-        if (player.getLocation().getY() < HippoPractice.VOID_LEVEL && player.getGameMode() != GameMode.CREATIVE) {
-            parentPlugin.resetPlayerAndSendToSpawn(player);
+            if (player.getLocation().getY() < HippoPractice.VOID_LEVEL && player.getGameMode() != GameMode.CREATIVE) {
+                parentPlugin.resetPlayerAndSendToSpawn(player);
+            }
         }
     }
 
