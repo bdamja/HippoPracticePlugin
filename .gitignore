@@ -26,3 +26,4 @@ spigot.yml
 plugins/FastAsyncWorldEdit/
 plugins/PluginMetrics/
 plugins/bStats/
+plugins/HippoPractice/playerdata/*
