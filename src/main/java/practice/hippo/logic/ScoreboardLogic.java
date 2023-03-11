@@ -3,8 +3,8 @@ package practice.hippo.logic;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.*;
+import practice.hippo.playerdata.PlayerData;
 
 public class ScoreboardLogic {
 
@@ -36,7 +36,7 @@ public class ScoreboardLogic {
         registerTeam("mapLabel", MAP_LABEL, "", "", 10, board, objective);
         registerTeam("mapName", "", DEFAULT_MAP_NAME, "", 9, board, objective);
         registerTeam("pbLabel", PB_LABEL, "", "", 7, board, objective);
-        registerTeam("pbName", DEFAULT_PB, "", "", 6, board, objective);
+        registerTeam("pbName", "", DEFAULT_PB, "", 6, board, objective);
         registerTeam("timeLabel", TIME_LABEL, "", "", 4, board, objective);
         registerTeam("timeName", " ", DEFAULT_TIME, "", 3, board, objective);
         registerTeam("lineB", DARK_GRAY_LINE + " ", "", "", 1, board, objective);
@@ -60,5 +60,18 @@ public class ScoreboardLogic {
     public void updateMapName(Player player, String mapNameFormatted) {
         Scoreboard board = player.getScoreboard();
         board.getTeam("mapName").setPrefix(mapNameFormatted);
+    }
+
+    public void updatePB(PlayerData playerData, String mapName) {
+        Player player = Bukkit.getPlayer(playerData.getPlayerName());
+        if (player != null) {
+            long pbInMS = playerData.getPB(mapName);
+            String pbFormatted = "N/A";
+            if (pbInMS != -1) {
+                pbFormatted = Timer.computeTimeFormatted(pbInMS);
+            }
+            Scoreboard board = player.getScoreboard();
+            board.getTeam("pbName").setPrefix(ChatColor.GRAY + pbFormatted);
+        }
     }
 }

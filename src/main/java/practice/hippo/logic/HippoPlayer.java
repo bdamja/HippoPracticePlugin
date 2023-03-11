@@ -11,6 +11,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
+import practice.hippo.playerdata.PlayerData;
 import practice.hippo.util.BiomeType;
 import practice.hippo.util.BoundingBox;
 import practice.hippo.util.Offset;
@@ -29,6 +30,7 @@ public class HippoPlayer {
     private World world;
     private MapData mapData;
     private Player player;
+    private PlayerData playerData;
     private Queue<Block> recordedBlocks;
     private ArrayList<Location> hippoBlocks;
     private Timer timer;
@@ -43,6 +45,7 @@ public class HippoPlayer {
         this.world = world;
         this.mapData = new MapData();
         this.player = player;
+        this.playerData = new PlayerData(parentPlugin, player.getName(), player.getUniqueId().toString());
         this.recordedBlocks = new LinkedList<>();
         this.hasFinishedHippo = false;
         this.timer = new Timer();
@@ -294,4 +297,7 @@ public class HippoPlayer {
         return BiomeType.idOf(getBiome());
     }
 
+    public PlayerData getPlayerData() {
+        return this.playerData;
+    }
 }

@@ -22,7 +22,9 @@ import practice.hippo.events.entity.EntityDamageHandler;
 import practice.hippo.events.misc.ProjectileLaunchHandler;
 import practice.hippo.events.misc.WeatherChangeHandler;
 import practice.hippo.events.player.*;
+import practice.hippo.playerdata.PlayerData;
 import practice.hippo.util.Offset;
+import practice.hippo.util.UUIDFetcher;
 
 import java.io.*;
 import java.util.*;
@@ -177,6 +179,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
             resetMap(player);
             resetPlayerAndSendToSpawn(player);
             scoreboardLogic.updateMapName(player, hippoPlayer.mapText());
+            scoreboardLogic.updatePB(hippoPlayer.getPlayerData(), hippoPlayer.getMapName());
             reloadChunks(player);
         }
     }
@@ -198,12 +201,14 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     public void completeHippo(HippoPlayer hippoPlayer, Player player) {
         long ms = hippoPlayer.getTimer().computeTime();
+        String finalTime = Timer.computeTimeFormatted(ms);
         ChatLogic.sendHippoCompletion(hippoPlayer, ms, player);
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 0.8f);
         summonCompletionParticles(player);
         hippoPlayer.hasFinishedHippo = true;
         hippoPlayer.stopVisualTimer();
-        hippoPlayer.updateVisualTimer(player.getScoreboard(), Timer.computeTimeFormatted(ms));
+        hippoPlayer.updateVisualTimer(player.getScoreboard(), finalTime);
+        checkNewPB(hippoPlayer.getPlayerData(), hippoPlayer.getMapData().getMapName(), ms);
     }
 
     private void summonCompletionParticles(Player player) {
@@ -232,6 +237,14 @@ public class HippoPractice extends JavaPlugin implements Listener {
         double randomY = minY + (maxY - minY) * random.nextDouble();
         double randomZ = minZ + (maxZ - minZ) * random.nextDouble();
         return new Location(world, randomX, randomY, randomZ);
+    }
+
+    public void checkNewPB(PlayerData playerData, String mapName, long time) {
+        long currentPB = playerData.getPB(mapName);
+        if (currentPB == -1 || time < currentPB) {
+            playerData.setPB(mapName, time);
+            scoreboardLogic.updatePB(playerData, mapName);
+        }
     }
 
     public final void setPlotList() {
@@ -311,6 +324,56 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     private void reloadChunks(Player player) {
         player.teleport(new Location(world, player.getLocation().getX(), VOID_LEVEL + 3, player.getLocation().getZ() + 1000));
+    }
+
+    public String getPlayerInfo(String playerName) throws Exception {
+        String uuid = getUUIDStrFromPlayerName(playerName);
+        if (!uuid.isEmpty()) {
+            File playerDataFile = new File(getPluginsDirSubdir("playerdata") + File.separator + uuid + ".json");
+            if (playerDataFile.exists()) {
+                return getPlayerInfoFromPlayerDataFile(playerName, uuid);
+            } else {
+                return ChatColor.RED + "Hippo Practice could not find information on the player \"" + playerName + "\"";
+            }
+        }
+        return ChatColor.RED + "Mojang could not find information on the player \"" + playerName + "\"";
+    }
+
+    public static String getUUIDStrFromPlayerName(String playerName) throws Exception {
+        ArrayList<String> nameList = new ArrayList<>();
+        nameList.add(playerName);
+        UUIDFetcher fetcher = new UUIDFetcher(nameList);
+        Map<String, UUID> uuidMap = fetcher.call();
+        if (uuidMap.size() > 0) {
+            return uuidMap.entrySet().iterator().next().getValue().toString();
+        }
+        return "";
+    }
+
+    public String getPlayerInfoFromPlayerDataFile(String playerName, String uuid) throws FileNotFoundException {
+        String msg = ChatColor.GRAY + "Showing info for the player " + ChatColor.GREEN + playerName + ChatColor.GRAY + ":";
+        PlayerData playerData = new PlayerData(this, playerName, uuid);
+        boolean completeTimesheet = true;
+        msg = msg.concat("\n" + ChatLogic.PREFIX + ChatColor.GRAY + "List of all personal best times:");
+        for (Map.Entry<String, String> mapElement : maps.entrySet()) {
+            String mapNameFormatted = mapElement.getValue();
+            String mapName = mapElement.getKey();
+            long ms = playerData.getPB(mapName);
+            String personalBest = Timer.computeTimeFormatted(ms);
+            if (!personalBest.equals("0.000")) {
+                msg = msg.concat("\n" + ChatColor.GRAY + "  - " + mapNameFormatted + ChatColor.GRAY + ": " + ChatColor.AQUA + personalBest);
+            } else {
+                if (new File(getPluginsDirSubdir("hippos") + File.separator + mapName + ".txt").exists()) {
+                    completeTimesheet = false;
+                }
+            }
+        }
+        String totalTime = ChatColor.YELLOW + Timer.computeTimeFormatted(playerData.getTotalTime());
+        msg = msg.concat("\n" + ChatColor.GRAY + "  - " + ChatColor.YELLOW + ChatColor.BOLD + "Total" + ChatColor.GRAY + ": " + totalTime);
+        if (!completeTimesheet) {
+            msg = msg.concat(ChatColor.GRAY + " (Incomplete)");
+        }
+        return msg;
     }
 
 }

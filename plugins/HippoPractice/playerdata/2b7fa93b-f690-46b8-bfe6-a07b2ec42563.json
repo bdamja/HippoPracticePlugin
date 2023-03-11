@@ -3,7 +3,7 @@
   "personal_bests": [
     {
       "map_name": "aquatica",
-      "personal_best_ms": 123
+      "personal_best_ms": 13400
     },
     {
       "map_name": "ashgate",
@@ -15,11 +15,11 @@
     },
     {
       "map_name": "boo",
-      "personal_best_ms": -1
+      "personal_best_ms": 9301
     },
     {
       "map_name": "chronon",
-      "personal_best_ms": -1
+      "personal_best_ms": 3551
     },
     {
       "map_name": "coconut",
@@ -35,7 +35,7 @@
     },
     {
       "map_name": "dojo",
-      "personal_best_ms": -1
+      "personal_best_ms": 14819
     },
     {
       "map_name": "flora",
@@ -43,15 +43,15 @@
     },
     {
       "map_name": "fortress",
-      "personal_best_ms": -1
+      "personal_best_ms": 10407
     },
     {
       "map_name": "galaxy",
-      "personal_best_ms": -1
+      "personal_best_ms": 6351
     },
     {
       "map_name": "hyperfrost",
-      "personal_best_ms": -1
+      "personal_best_ms": 17252
     },
     {
       "map_name": "licorice",
@@ -67,7 +67,7 @@
     },
     {
       "map_name": "mister_cheesy",
-      "personal_best_ms": -1
+      "personal_best_ms": 5756
     },
     {
       "map_name": "outpost",
@@ -79,23 +79,23 @@
     },
     {
       "map_name": "sorcery",
-      "personal_best_ms": -1
+      "personal_best_ms": 10151
     },
     {
       "map_name": "stumped",
-      "personal_best_ms": -1
+      "personal_best_ms": 10601
     },
     {
       "map_name": "sunstone",
-      "personal_best_ms": -1
+      "personal_best_ms": 17610
     },
     {
       "map_name": "treehouse",
-      "personal_best_ms": -1
+      "personal_best_ms": 14601
     },
     {
       "map_name": "tundra",
-      "personal_best_ms": -1
+      "personal_best_ms": 11257
     },
     {
       "map_name": "twilight",
@@ -103,7 +103,7 @@
     },
     {
       "map_name": "urban",
-      "personal_best_ms": -1
+      "personal_best_ms": 2850
     }
   ]
 }

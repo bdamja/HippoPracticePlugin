@@ -6,7 +6,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import practice.hippo.logic.*;
-import practice.hippo.playerdata.PlayerData;
 
 import java.io.IOException;
 
@@ -27,8 +26,6 @@ public class PlayerJoinHandler implements Listener {
         player.setSaturation(20);
         event.getPlayer().setGameMode(GameMode.ADVENTURE);
         InventoryLogic.hardInventoryClear(player);
-        PlayerData playerData = new PlayerData(parentPlugin, player);
-        player.sendMessage(String.valueOf(playerData.getPB("aquatica")));
         Plot plot = new Plot(parentPlugin);
         parentPlugin.playerMap.put(player.getUniqueId(), new HippoPlayer(plot, parentPlugin.world, "no_map", player, parentPlugin));
         parentPlugin.getSchematicPaster().loadViewBox(parentPlugin.getHippoPlayer(player));
