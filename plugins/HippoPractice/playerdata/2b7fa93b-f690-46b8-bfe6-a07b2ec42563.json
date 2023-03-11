@@ -1,0 +1,109 @@
+{
+  "player_name": "bdamja",
+  "personal_bests": [
+    {
+      "map_name": "aquatica",
+      "personal_best_ms": 13400
+    },
+    {
+      "map_name": "ashgate",
+      "personal_best_ms": -1
+    },
+    {
+      "map_name": "atlantis",
+      "personal_best_ms": -1
+    },
+    {
+      "map_name": "boo",
+      "personal_best_ms": 9301
+    },
+    {
+      "map_name": "chronon",
+      "personal_best_ms": 3551
+    },
+    {
+      "map_name": "coconut",
+      "personal_best_ms": -1
+    },
+    {
+      "map_name": "condo",
+      "personal_best_ms": -1
+    },
+    {
+      "map_name": "cutlass",
+      "personal_best_ms": -1
+    },
+    {
+      "map_name": "dojo",
+      "personal_best_ms": 14819
+    },
+    {
+      "map_name": "flora",
+      "personal_best_ms": -1
+    },
+    {
+      "map_name": "fortress",
+      "personal_best_ms": 10407
+    },
+    {
+      "map_name": "galaxy",
+      "personal_best_ms": 6351
+    },
+    {
+      "map_name": "hyperfrost",
+      "personal_best_ms": 17252
+    },
+    {
+      "map_name": "licorice",
+      "personal_best_ms": -1
+    },
+    {
+      "map_name": "lighthouse",
+      "personal_best_ms": -1
+    },
+    {
+      "map_name": "mechanicus",
+      "personal_best_ms": -1
+    },
+    {
+      "map_name": "mister_cheesy",
+      "personal_best_ms": 5756
+    },
+    {
+      "map_name": "outpost",
+      "personal_best_ms": -1
+    },
+    {
+      "map_name": "palaestra",
+      "personal_best_ms": -1
+    },
+    {
+      "map_name": "sorcery",
+      "personal_best_ms": 10151
+    },
+    {
+      "map_name": "stumped",
+      "personal_best_ms": 10601
+    },
+    {
+      "map_name": "sunstone",
+      "personal_best_ms": 17610
+    },
+    {
+      "map_name": "treehouse",
+      "personal_best_ms": 14601
+    },
+    {
+      "map_name": "tundra",
+      "personal_best_ms": 11257
+    },
+    {
+      "map_name": "twilight",
+      "personal_best_ms": -1
+    },
+    {
+      "map_name": "urban",
+      "personal_best_ms": 2850
+    }
+  ]
+}

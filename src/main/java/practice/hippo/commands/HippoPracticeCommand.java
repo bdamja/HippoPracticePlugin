@@ -9,8 +9,8 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import practice.hippo.logic.ChatLogic;
-import practice.hippo.logic.HippoPractice;
 import practice.hippo.logic.HippoPlayer;
+import practice.hippo.logic.HippoPractice;
 import practice.hippo.util.Offset;
 
 import java.io.File;
@@ -42,6 +42,20 @@ public class HippoPracticeCommand extends BaseCommand {
             msg = msg.concat("\n" + ChatColor.GRAY + "      - " + mapElement.getValue());
         }
         ChatLogic.sendMessageToPlayer(msg, (Player) sender);
+    }
+
+    @Subcommand("info")
+    @Description("Displays information regarding a player")
+    @Syntax("<player>")
+    @CommandCompletion("@players")
+    public void onInfo(CommandSender sender, String[] args) throws Exception {
+        String playerName;
+        if (args.length > 0) {
+            playerName = args[0];
+        } else {
+            playerName = sender.getName();
+        }
+        ChatLogic.sendMessageToPlayer(parentPlugin.getPlayerInfo(playerName), (Player) sender);
     }
 
     @Subcommand("loadmap")

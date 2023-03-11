@@ -58,7 +58,7 @@ public class ChatLogic {
         return chatColor;
     }
 
-    private static final String PREFIX = "" + ChatColor.DARK_GRAY + "[" + ChatColor.DARK_GREEN + ChatColor.BOLD + "HP" + ChatColor.RESET + ChatColor.DARK_GRAY + "] ";
+    public static final String PREFIX = "" + ChatColor.DARK_GRAY + "[" + ChatColor.DARK_GREEN + ChatColor.BOLD + "HP" + ChatColor.RESET + ChatColor.DARK_GRAY + "] ";
 
     public static void sendMessageToPlayer(String msg, Player player) {
         player.sendMessage(PREFIX + ChatColor.RESET + msg);
