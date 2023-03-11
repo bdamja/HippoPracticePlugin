@@ -21,19 +21,23 @@ public class ProjectileLaunchHandler implements Listener {
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
         Entity projectile = event.getEntity();
         if (projectile instanceof Snowball) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    Player shooter = (Player) ((Snowball) projectile).getShooter();
-                    killProjectiles();
-                    try {
-                        parentPlugin.resetPlayerAndSendToSpawn(shooter);
-                        parentPlugin.resetMap(shooter);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+            Player shooter = (Player) ((Snowball) projectile).getShooter();
+            if (parentPlugin.getHippoPlayer(shooter).isEditingKit) {
+                event.setCancelled(true);
+            } else {
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        killProjectiles();
+                        try {
+                            parentPlugin.resetPlayerAndSendToSpawn(shooter);
+                            parentPlugin.resetMap(shooter);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
-                }
-            }.runTaskLater(parentPlugin, 1);
+                }.runTaskLater(parentPlugin, 1);
+            }
         }
     }
 

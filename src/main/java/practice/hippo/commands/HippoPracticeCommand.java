@@ -111,4 +111,26 @@ public class HippoPracticeCommand extends BaseCommand {
         player.playSound(player.getLocation(), Sound.ANVIL_USE, 1.0f, 0.8f);
     }
 
+    @Subcommand("kit")
+    @Syntax("<player>")
+    @Description("Modify the current kit layout")
+    @CommandCompletion("@kitActions")
+    public void onKit(CommandSender sender, String[] args) {
+        String msg = ChatColor.RED + "Usage: /hp kit <edit or save>";
+        if (args.length > 0) {
+            if (args[0].equals("edit")) {
+                msg = ChatColor.GRAY + "Edit your layout to your liking, then do " + ChatColor.AQUA + "/hp kit save";
+                parentPlugin.beginEditingKit((Player) sender);
+            } else if (args[0].equals("save")) {
+                if (parentPlugin.getHippoPlayer((Player) sender).isEditingKit) {
+                    msg = ChatColor.GRAY + "Saving your layout.";
+                    parentPlugin.saveKit((Player) sender);
+                } else {
+                    msg = ChatColor.RED + "You must do " + ChatColor.AQUA + "/hp kit edit " + ChatColor.RED + "before saving your layout.";
+                }
+            }
+        }
+        ChatLogic.sendMessageToPlayer(msg, (Player) sender);
+    }
+
 }

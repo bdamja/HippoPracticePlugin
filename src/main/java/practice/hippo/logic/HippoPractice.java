@@ -12,6 +12,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import practice.hippo.commands.HippoPracticeCommand;
@@ -19,6 +20,8 @@ import practice.hippo.events.block.BlockBreakHandler;
 import practice.hippo.events.block.BlockDamageHandler;
 import practice.hippo.events.block.BlockPlaceHandler;
 import practice.hippo.events.entity.EntityDamageHandler;
+import practice.hippo.events.misc.InventoryClickHandler;
+import practice.hippo.events.misc.InventoryDragHandler;
 import practice.hippo.events.misc.ProjectileLaunchHandler;
 import practice.hippo.events.misc.WeatherChangeHandler;
 import practice.hippo.events.player.*;
@@ -41,6 +44,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public static SchematicLogic schematicPaster = null;
     public World world;
     public static TreeMap<String, String> maps = new TreeMap<>();
+    public static ArrayList<String> kitActions = new ArrayList<String>(){ { add("edit"); add("save"); } };
     private static final ArrayList<Plot> plots = new ArrayList<>();
     public ScoreboardLogic scoreboardLogic = null;
     public HashMap<UUID, HippoPlayer> playerMap = new HashMap<>();
@@ -59,6 +63,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
             throw new RuntimeException(e);
         }
         manager.getCommandCompletions().registerCompletion("mapNames", c -> maps.descendingKeySet());
+        manager.getCommandCompletions().registerCompletion("kitActions", c -> kitActions);
         scoreboardLogic = new ScoreboardLogic(this);
         setPlotList();
     }
@@ -76,6 +81,8 @@ public class HippoPractice extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new ProjectileLaunchHandler(this), this);
         pluginManager.registerEvents(new PlayerChatHandler(), this);
         pluginManager.registerEvents(new WeatherChangeHandler(), this);
+        pluginManager.registerEvents(new InventoryClickHandler(this), this);
+        pluginManager.registerEvents(new InventoryDragHandler(this), this);
     }
 
     private void setDefaultGameRules() {
@@ -124,7 +131,8 @@ public class HippoPractice extends JavaPlugin implements Listener {
         player.setHealth(20);
         player.setFoodLevel(20);
         player.setSaturation(20);
-        InventoryLogic.setDefaultInventory(player, getHippoPlayer(player).getPlot().getSide());
+        getHippoPlayer(player).isEditingKit = false;
+        InventoryLogic.loadInventory(player, getHippoPlayer(player).getPlot().getSide(), getHippoPlayer(player).getPlayerData());
     }
 
     public SchematicLogic getSchematicPaster() {
@@ -374,6 +382,59 @@ public class HippoPractice extends JavaPlugin implements Listener {
             msg = msg.concat(ChatColor.GRAY + " (Incomplete)");
         }
         return msg;
+    }
+
+    public void beginEditingKit(Player player) {
+        HippoPlayer hippoPlayer = getHippoPlayer(player);
+        hippoPlayer.isEditingKit = true;
+        player.setGameMode(GameMode.ADVENTURE);
+        InventoryLogic.loadInventory(player, hippoPlayer.getPlot().getSide(), hippoPlayer.getPlayerData());
+    }
+
+    public void saveKit(Player player) {
+        HippoPlayer hippoPlayer = getHippoPlayer(player);
+        if (hippoPlayer.isEditingKit) {
+            hippoPlayer.isEditingKit = false;
+            player.setGameMode(GameMode.SURVIVAL);
+            writeCurrentLayoutToFile(hippoPlayer);
+        }
+    }
+
+    private void writeCurrentLayoutToFile(HippoPlayer hippoPlayer) {
+        Player player = hippoPlayer.getPlayer();
+        Iterator<ItemStack> inventoryIterator = player.getInventory().iterator();
+        PlayerData playerData = hippoPlayer.getPlayerData();
+        int pickSlot = InventoryLogic.DEFAULT_PICK_SLOT;
+        int blocks1Slot = InventoryLogic.DEFAULT_BLOCKS1_SLOT;
+        int blocks2Slot = InventoryLogic.DEFAULT_BLOCKS2_SLOT;
+        int snowballSlot = InventoryLogic.DEFAULT_SNOWBALL_SLOT;
+        int index = 0;
+        int blocksCount = 0;
+        while (inventoryIterator.hasNext()) {
+            ItemStack itemStack = inventoryIterator.next();
+            if (itemStack != null) {
+                if (itemStack.getType().equals(Material.DIAMOND_PICKAXE)) {
+                    pickSlot = index;
+                }
+                if (itemStack.getType().equals(Material.STAINED_CLAY)) {
+                    if (blocksCount == 0) {
+                        blocks1Slot = index;
+                        blocksCount++;
+                    } else {
+                        blocks2Slot = index;
+                    }
+                }
+                if (itemStack.getType().equals(Material.SNOW_BALL)) {
+                    snowballSlot = index;
+                }
+            }
+            index++;
+        }
+        playerData.setPickSlot(pickSlot);
+        playerData.setBlocks1Slot(blocks1Slot);
+        playerData.setBlocks2Slot(blocks2Slot);
+        playerData.setSnowballSlot(snowballSlot);
+        playerData.save();
     }
 
 }

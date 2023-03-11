@@ -6,16 +6,23 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import practice.hippo.playerdata.PlayerData;
 import practice.hippo.util.Side;
 
 public class InventoryLogic {
 
-    public static void setDefaultInventory(Player player, Side side) {
+    public static final int DEFAULT_PICK_SLOT = 2;
+    public static final int DEFAULT_BLOCKS1_SLOT = 3;
+    public static final int DEFAULT_BLOCKS2_SLOT = 4;
+    public static final int DEFAULT_SNOWBALL_SLOT = 5;
+
+
+    public static void loadInventory(Player player, Side side, PlayerData playerData) {
         hardInventoryClear(player);
-        player.getInventory().setItem(2, getPickaxeItemStack());
-        player.getInventory().setItem(3, getBlocksItemStack(side));
-        player.getInventory().setItem(4, getBlocksItemStack(side));
-        player.getInventory().setItem(5, getSnowballItemStack());
+        player.getInventory().setItem(playerData.getPickSlot(), getPickaxeItemStack());
+        player.getInventory().setItem(playerData.getBlocks1Slot(), getBlocksItemStack(side));
+        player.getInventory().setItem(playerData.getBlocks2Slot(), getBlocksItemStack(side));
+        player.getInventory().setItem(playerData.getSnowballSlot(), getSnowballItemStack());
     }
 
     private static ItemStack getPickaxeItemStack() {

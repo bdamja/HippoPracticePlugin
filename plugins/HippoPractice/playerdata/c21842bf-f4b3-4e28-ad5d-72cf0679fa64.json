@@ -1,5 +1,5 @@
 {
-  "player_name": "bdamja",
+  "player_name": "ottoclicker",
   "personal_bests": [
     {
       "map_name": "aquatica",
@@ -15,7 +15,7 @@
     },
     {
       "map_name": "boo",
-      "personal_best_ms": 10801
+      "personal_best_ms": -1
     },
     {
       "map_name": "chronon",

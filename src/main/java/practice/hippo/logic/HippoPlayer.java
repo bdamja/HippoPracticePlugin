@@ -39,6 +39,7 @@ public class HippoPlayer {
     public boolean hasFinishedHippo;
     public boolean awaitingMove;
     public boolean awaitingLeftClick;
+    public boolean isEditingKit;
 
     public HippoPlayer(Plot plot, World world, String mapName, Player player, HippoPractice parentPlugin) throws FileNotFoundException {
         this.plot = plot;
@@ -53,6 +54,7 @@ public class HippoPlayer {
         this.parentPlugin = parentPlugin;
         this.awaitingMove = true;
         this.awaitingLeftClick = false;
+        this.isEditingKit = false;
         this.hippoBlocks = getLocationFromHippoFile(mapName);
         readMapData(mapName);
     }

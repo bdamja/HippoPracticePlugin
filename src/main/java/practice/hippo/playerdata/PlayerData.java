@@ -4,6 +4,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import practice.hippo.logic.HippoPractice;
+import practice.hippo.logic.InventoryLogic;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -39,13 +40,13 @@ public class PlayerData {
     }
 
     private void writeDefaultFile(File file) {
-        PlayerDataFormat mapPBs = setDefaultPBs();
+        PlayerDataFormat playerData = setDefaults();
         try (Writer writer = new FileWriter(file)) {
             Gson gson = new GsonBuilder()
                     .setPrettyPrinting()
                     .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                     .create();
-            gson.toJson(mapPBs, writer);
+            gson.toJson(playerData, writer);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -63,8 +64,12 @@ public class PlayerData {
         }
     }
 
-    private PlayerDataFormat setDefaultPBs() {
+    private PlayerDataFormat setDefaults() {
         PlayerDataFormat data = new PlayerDataFormat(playerName);
+        data.setPickSlot(InventoryLogic.DEFAULT_PICK_SLOT);
+        data.setBlocks1Slot(InventoryLogic.DEFAULT_BLOCKS1_SLOT);
+        data.setBlocks2Slot(InventoryLogic.DEFAULT_BLOCKS2_SLOT);
+        data.setSnowballSlot(InventoryLogic.DEFAULT_SNOWBALL_SLOT);
         for (Map.Entry<String, String> mapElement : HippoPractice.maps.entrySet()) {
             MapPB mapPB = new MapPB(mapElement.getKey(), DEFAULT_PB_IN_MS);
             data.addPB(mapPB);
@@ -118,5 +123,41 @@ public class PlayerData {
         if (found) {
             writeNewPlayerData();
         }
+    }
+
+    public int getPickSlot() {
+        return data.getPickSlot();
+    }
+
+    public void setPickSlot(int slot) {
+        data.setPickSlot(slot);
+    }
+
+    public int getBlocks1Slot() {
+        return data.getBlocks1Slot();
+    }
+
+    public void setBlocks1Slot(int slot) {
+        data.setBlocks1Slot(slot);
+    }
+
+    public int getBlocks2Slot() {
+        return data.getBlocks2Slot();
+    }
+
+    public void setBlocks2Slot(int slot) {
+        data.setBlocks2Slot(slot);
+    }
+
+    public int getSnowballSlot() {
+        return data.getSnowballSlot();
+    }
+
+    public void setSnowballSlot(int slot) {
+        data.setSnowballSlot(slot);
+    }
+
+    public void save() {
+        writeNewPlayerData();
     }
 }
