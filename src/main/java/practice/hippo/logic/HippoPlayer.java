@@ -1,8 +1,13 @@
 package practice.hippo.logic;
 
 import com.google.gson.Gson;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
+import static com.mongodb.client.model.Filters.eq;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
+import org.bson.Document;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -11,6 +16,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
+import practice.hippo.mapdata.MapData;
 import practice.hippo.playerdata.PlayerData;
 import practice.hippo.util.BiomeType;
 import practice.hippo.util.BoundingBox;
@@ -61,13 +67,26 @@ public class HippoPlayer {
 
     private void readMapData(String mapName) throws FileNotFoundException {
         if (!mapName.equals("no_map")) {
-            File mapDataFile = new File(parentPlugin.getPluginsDirSubdir("mapdata") + File.separator + mapName + ".json");
-            if (mapDataFile.exists()) {
-                Gson gson = new Gson();
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(mapDataFile));
-                mapData = gson.fromJson(bufferedReader, MapData.class);
+            if (HippoPractice.USE_DATABASE) {
+                MongoClient mongo = MongoClients.create("mongodb://localhost:27017");
+                MongoDatabase database = mongo.getDatabase("myDb");
+                Document doc  = database.getCollection("mapdata").find(eq("map_name", mapName)).first();
+                if (doc != null) {
+                    Gson gson = new Gson();
+                    mapData = gson.fromJson(doc.toJson(), MapData.class);
+                } else {
+                    parentPlugin.getLogger().severe("Error when trying to load map data: Could not find document in db: " + mapName);
+                }
+                mongo.close();
             } else {
-                parentPlugin.getLogger().severe("Error when trying to load map data: Could not find file: " + mapDataFile);
+                File mapDataFile = new File(parentPlugin.getPluginsDirSubdir("mapdata") + File.separator + mapName + ".json");
+                if (mapDataFile.exists()) {
+                    Gson gson = new Gson();
+                    BufferedReader bufferedReader = new BufferedReader(new FileReader(mapDataFile));
+                    mapData = gson.fromJson(bufferedReader, MapData.class);
+                } else {
+                    parentPlugin.getLogger().severe("Error when trying to load map data: Could not find file: " + mapDataFile);
+                }
             }
         }
     }

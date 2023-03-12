@@ -3,7 +3,7 @@
   "personal_bests": [
     {
       "map_name": "aquatica",
-      "personal_best_ms": -1
+      "personal_best_ms": 16003
     },
     {
       "map_name": "ashgate",
@@ -15,11 +15,11 @@
     },
     {
       "map_name": "boo",
-      "personal_best_ms": 10801
+      "personal_best_ms": 10449
     },
     {
       "map_name": "chronon",
-      "personal_best_ms": -1
+      "personal_best_ms": 24855
     },
     {
       "map_name": "coconut",
@@ -79,7 +79,7 @@
     },
     {
       "map_name": "sorcery",
-      "personal_best_ms": -1
+      "personal_best_ms": 14601
     },
     {
       "map_name": "stumped",
@@ -91,7 +91,7 @@
     },
     {
       "map_name": "treehouse",
-      "personal_best_ms": -1
+      "personal_best_ms": 13400
     },
     {
       "map_name": "tundra",

@@ -25,6 +25,7 @@ import practice.hippo.events.misc.InventoryDragHandler;
 import practice.hippo.events.misc.ProjectileLaunchHandler;
 import practice.hippo.events.misc.WeatherChangeHandler;
 import practice.hippo.events.player.*;
+import practice.hippo.mapdata.MapData;
 import practice.hippo.playerdata.PlayerData;
 import practice.hippo.util.Offset;
 import practice.hippo.util.UUIDFetcher;
@@ -40,6 +41,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public static final int VOID_LEVEL = 83;
     public static final int NUM_PARTICLES = 350;
     public static final int DISTANCE_BETWEEN_PLOTS = 41;
+    public static final boolean USE_DATABASE = true;
 
     public static SchematicLogic schematicPaster = null;
     public World world;

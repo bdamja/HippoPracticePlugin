@@ -100,7 +100,7 @@ public class HippoPracticeCommand extends BaseCommand {
         HippoPlayer hippoPlayer = parentPlugin.getHippoPlayer(player);
         Queue<Block> allBlocks = parentPlugin.getAllBlocksPlacedByPlayer(player);
         Queue<Location> allBlocksOffset = Offset.blockQueueToOriginal(hippoPlayer.getPlot(), allBlocks);
-        File file = new File("./plugins/HippoPractice/hippos/" + hippoPlayer.getMapName() + ".txt");
+        File file = new File("./plugins/HippoPractice/hippos/" + hippoPlayer.getMapName() + ".json");
         PrintWriter output = new PrintWriter(file);
         for (Location location : allBlocksOffset) {
             output.write(location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "\n");
