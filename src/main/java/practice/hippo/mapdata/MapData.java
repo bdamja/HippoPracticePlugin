@@ -1,18 +1,19 @@
-package practice.hippo.logic;
+package practice.hippo.mapdata;
 
 import com.google.gson.annotations.SerializedName;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import practice.hippo.logic.ChatLogic;
 import practice.hippo.util.BoundingBox;
 
 public class MapData {
 
     @SerializedName("map_name")
-    private String mapName;
+    private String mapName = "null";
 
     @SerializedName("map_color")
-    private String mapColor;
+    private String mapColor = "null";
 
     @SerializedName("biome_red")
     private String biomeRed = "null";

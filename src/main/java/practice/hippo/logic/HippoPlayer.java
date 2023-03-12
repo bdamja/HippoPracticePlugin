@@ -1,6 +1,8 @@
 package practice.hippo.logic;
 
 import com.google.gson.Gson;
+
+import static com.mongodb.client.model.Filters.eq;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.*;
@@ -11,11 +13,11 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.util.Vector;
+import practice.hippo.hippodata.HippoData;
+import practice.hippo.mapdata.MapData;
 import practice.hippo.playerdata.PlayerData;
-import practice.hippo.util.BiomeType;
-import practice.hippo.util.BoundingBox;
-import practice.hippo.util.Offset;
-import practice.hippo.util.Side;
+import practice.hippo.util.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,6 +33,7 @@ public class HippoPlayer {
     private MapData mapData;
     private Player player;
     private PlayerData playerData;
+    private HippoData hippoData;
     private Queue<Block> recordedBlocks;
     private ArrayList<Location> hippoBlocks;
     private Timer timer;
@@ -47,6 +50,7 @@ public class HippoPlayer {
         this.mapData = new MapData();
         this.player = player;
         this.playerData = new PlayerData(parentPlugin, player.getName(), player.getUniqueId().toString());
+        this.hippoData = null;
         this.recordedBlocks = new LinkedList<>();
         this.hasFinishedHippo = false;
         this.timer = new Timer();
@@ -61,13 +65,17 @@ public class HippoPlayer {
 
     private void readMapData(String mapName) throws FileNotFoundException {
         if (!mapName.equals("no_map")) {
-            File mapDataFile = new File(parentPlugin.getPluginsDirSubdir("mapdata") + File.separator + mapName + ".json");
-            if (mapDataFile.exists()) {
-                Gson gson = new Gson();
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(mapDataFile));
-                mapData = gson.fromJson(bufferedReader, MapData.class);
+            if (HippoPractice.USE_DATABASE) {
+                mapData = MongoDB.getMapDataFromDocument(mapName);
             } else {
-                parentPlugin.getLogger().severe("Error when trying to load map data: Could not find file: " + mapDataFile);
+                File mapDataFile = new File(parentPlugin.getPluginsDirSubdir("mapdata") + File.separator + mapName + ".json");
+                if (mapDataFile.exists()) {
+                    Gson gson = new Gson();
+                    BufferedReader bufferedReader = new BufferedReader(new FileReader(mapDataFile));
+                    mapData = gson.fromJson(bufferedReader, MapData.class);
+                } else {
+                    parentPlugin.getLogger().severe("Error when trying to load map data: Could not find file: " + mapDataFile);
+                }
             }
         }
     }
@@ -160,19 +168,24 @@ public class HippoPlayer {
     }
 
     private ArrayList<Location> getLocationFromHippoFile(String mapName) throws FileNotFoundException {
-        File file = new File(parentPlugin.getPluginsDirSubdir("hippos") + File.separator + mapName + ".txt");
-        ArrayList<Location> allHippoBlocks = new ArrayList<>();
-        if (file.exists()) {
-            Scanner input = new Scanner(file);
-            while (input.hasNext()) {
-                String line = input.nextLine();
-                String[] coords = line.split(" ");
-                int x = Integer.parseInt(coords[0]);
-                int y = Integer.parseInt(coords[1]);
-                int z = Integer.parseInt(coords[2]);
-                allHippoBlocks.add(Offset.location(this.plot, this.world, x, y, z, true));
+        if (HippoPractice.USE_DATABASE) {
+            hippoData = MongoDB.getHippoDataFromDocument(mapName);
+        } else {
+            File file = new File(parentPlugin.getPluginsDirSubdir("hippodata") + File.separator + mapName + ".json");
+            if (file.exists()) {
+                Gson gson = new Gson();
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+                hippoData = gson.fromJson(bufferedReader, HippoData.class);
+            } else {
+                parentPlugin.getLogger().severe("Error when trying to load hippo data: Could not find file: " + file);
             }
-            input.close();
+        }
+
+        ArrayList<Location> allHippoBlocks = new ArrayList<>();
+        if (hippoData != null) {
+            for (Vector vector : hippoData.getBlocks()) {
+                allHippoBlocks.add(Offset.location(this.plot, this.world, vector.getX(), vector.getY(), vector.getZ(), true));
+            }
         }
         return allHippoBlocks;
     }

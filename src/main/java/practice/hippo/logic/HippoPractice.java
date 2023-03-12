@@ -1,7 +1,9 @@
 package practice.hippo.logic;
 
 import co.aikar.commands.PaperCommandManager;
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.*;
@@ -25,7 +27,11 @@ import practice.hippo.events.misc.InventoryDragHandler;
 import practice.hippo.events.misc.ProjectileLaunchHandler;
 import practice.hippo.events.misc.WeatherChangeHandler;
 import practice.hippo.events.player.*;
+import practice.hippo.hippodata.HippoData;
+import practice.hippo.mapdata.MapData;
 import practice.hippo.playerdata.PlayerData;
+import practice.hippo.playerdata.PlayerDataFormat;
+import practice.hippo.util.MongoDB;
 import practice.hippo.util.Offset;
 import practice.hippo.util.UUIDFetcher;
 
@@ -40,6 +46,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public static final int VOID_LEVEL = 83;
     public static final int NUM_PARTICLES = 350;
     public static final int DISTANCE_BETWEEN_PLOTS = 41;
+    public static final boolean USE_DATABASE = true;
 
     public static SchematicLogic schematicPaster = null;
     public World world;
@@ -66,6 +73,16 @@ public class HippoPractice extends JavaPlugin implements Listener {
         manager.getCommandCompletions().registerCompletion("kitActions", c -> kitActions);
         scoreboardLogic = new ScoreboardLogic(this);
         setPlotList();
+        if (USE_DATABASE) {
+            MongoDB.init();
+        }
+    }
+
+    @Override
+    public void onDisable() {
+        if (USE_DATABASE) {
+            MongoDB.close();
+        }
     }
 
     private void registerEventListeners(PluginManager pluginManager) {
@@ -371,7 +388,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
             if (!personalBest.equals("0.000")) {
                 msg = msg.concat("\n" + ChatColor.GRAY + "  - " + mapNameFormatted + ChatColor.GRAY + ": " + ChatColor.AQUA + personalBest);
             } else {
-                if (new File(getPluginsDirSubdir("hippos") + File.separator + mapName + ".txt").exists()) {
+                if (new File(getPluginsDirSubdir("hippodata") + File.separator + mapName + ".json").exists()) {
                     completeTimesheet = false;
                 }
             }
@@ -434,7 +451,42 @@ public class HippoPractice extends JavaPlugin implements Listener {
         playerData.setBlocks1Slot(blocks1Slot);
         playerData.setBlocks2Slot(blocks2Slot);
         playerData.setSnowballSlot(snowballSlot);
-        playerData.save();
+        uploadPlayerData(hippoPlayer.getPlayerData());
+    }
+
+    public static void uploadHippoData(HippoData hippoData) {
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create();
+        if (USE_DATABASE) {
+            MongoDB.upsertHippoData(hippoData.getMapName(), gson.toJson(hippoData));
+        } else {
+            File file = new File("./plugins/HippoPractice/hippodata/" + hippoData.getMapName() + ".json");
+            try (Writer writer = new FileWriter(file)) {
+                gson.toJson(hippoData, writer);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static void uploadPlayerData(PlayerData playerData) {
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create();
+        PlayerDataFormat data = playerData.getData();
+        if (USE_DATABASE) {
+            MongoDB.upsertPlayerData(playerData.getPlayerUUID(), gson.toJson(data));
+        } else {
+            File file = new File("./plugins/HippoPractice/playerdata/" + playerData.getPlayerUUID() + ".json");
+            try (Writer writer = new FileWriter(file)) {
+                gson.toJson(data, writer);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 }
