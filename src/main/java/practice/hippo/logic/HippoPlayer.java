@@ -1,13 +1,10 @@
 package practice.hippo.logic;
 
 import com.google.gson.Gson;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoDatabase;
+
 import static com.mongodb.client.model.Filters.eq;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
-import org.bson.Document;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -188,7 +185,6 @@ public class HippoPlayer {
         if (hippoData != null) {
             for (Vector vector : hippoData.getBlocks()) {
                 allHippoBlocks.add(Offset.location(this.plot, this.world, vector.getX(), vector.getY(), vector.getZ(), true));
-                System.out.println(vector);
             }
         }
         return allHippoBlocks;

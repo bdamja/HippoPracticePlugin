@@ -12,6 +12,10 @@ public class Timer {
         return (System.currentTimeMillis() - startTime);
     }
 
+    public static long computeFloor50(long time) {
+        return 50 * (time / 50);
+    }
+
     public static String computeTimeFormatted(long time) {
         long ms = time % 1000;
         ms = 50 * (ms / 50);

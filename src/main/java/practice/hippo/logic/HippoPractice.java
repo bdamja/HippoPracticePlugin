@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
-import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -31,6 +30,7 @@ import practice.hippo.events.player.*;
 import practice.hippo.hippodata.HippoData;
 import practice.hippo.mapdata.MapData;
 import practice.hippo.playerdata.PlayerData;
+import practice.hippo.playerdata.PlayerDataFormat;
 import practice.hippo.util.MongoDB;
 import practice.hippo.util.Offset;
 import practice.hippo.util.UUIDFetcher;
@@ -81,7 +81,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         if (USE_DATABASE) {
-            MongoDB.init();
+            MongoDB.close();
         }
     }
 
@@ -451,7 +451,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         playerData.setBlocks1Slot(blocks1Slot);
         playerData.setBlocks2Slot(blocks2Slot);
         playerData.setSnowballSlot(snowballSlot);
-        playerData.save();
+        uploadPlayerData(hippoPlayer.getPlayerData());
     }
 
     public static void uploadHippoData(HippoData hippoData) {
@@ -465,6 +465,24 @@ public class HippoPractice extends JavaPlugin implements Listener {
             File file = new File("./plugins/HippoPractice/hippodata/" + hippoData.getMapName() + ".json");
             try (Writer writer = new FileWriter(file)) {
                 gson.toJson(hippoData, writer);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static void uploadPlayerData(PlayerData playerData) {
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create();
+        PlayerDataFormat data = playerData.getData();
+        if (USE_DATABASE) {
+            MongoDB.upsertPlayerData(playerData.getPlayerUUID(), gson.toJson(data));
+        } else {
+            File file = new File("./plugins/HippoPractice/playerdata/" + playerData.getPlayerUUID() + ".json");
+            try (Writer writer = new FileWriter(file)) {
+                gson.toJson(data, writer);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

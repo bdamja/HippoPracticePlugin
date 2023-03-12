@@ -10,8 +10,8 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import practice.hippo.hippodata.HippoData;
 import practice.hippo.mapdata.MapData;
+import practice.hippo.playerdata.PlayerDataFormat;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -67,6 +67,18 @@ public class MongoDB {
         return hippoData;
     }
 
+    public static PlayerDataFormat getPlayerDataFromDocument(String uuid) {
+        PlayerDataFormat data = null;
+        Document document  = database.getCollection("playerdata").find(eq("player_uuid", uuid)).first();
+        if (document != null) {
+            Gson gson = new Gson();
+            data = gson.fromJson(document.toJson(), PlayerDataFormat.class);
+        } else {
+            System.err.println("Error when trying to load player data: Could not find document in db with the player uuid: " + uuid);
+        }
+        return data;
+    }
+
     public static void upsertHippoData(String mapName, String json) {
         Document document = Document.parse(json);
         Bson filter = eq("map_name", mapName);
@@ -81,9 +93,9 @@ public class MongoDB {
         mapDataCollection.replaceOne(filter, document, options);
     }
 
-    public static void upsertPlayerData(String mapName, String json) {
+    public static void upsertPlayerData(String uuid, String json) {
         Document document = Document.parse(json);
-        Bson filter = eq("map_name", mapName);
+        Bson filter = eq("player_uuid", uuid);
         ReplaceOptions options = new ReplaceOptions().upsert(true);
         playerDataCollection.replaceOne(filter, document, options);
     }

@@ -1,12 +1,15 @@
 package practice.hippo.playerdata;
 
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import practice.hippo.logic.HippoPractice;
 import practice.hippo.logic.InventoryLogic;
+import practice.hippo.logic.Timer;
+import practice.hippo.util.MongoDB;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -17,55 +20,39 @@ public class PlayerData {
     private final HippoPractice parentPlugin;
     private final String playerName;
     private final String playerUUID;
-    private final File playerDataFile;
     private PlayerDataFormat data;
 
     public PlayerData(HippoPractice parentPlugin, String playerName, String playerUUID) throws FileNotFoundException {
         this.parentPlugin = parentPlugin;
         this.playerName = playerName;
         this.playerUUID = playerUUID;
-        this.playerDataFile = new File(parentPlugin.getPluginsDirSubdir("playerdata") + File.separator + playerUUID + ".json");
-        createIfNonExistent(playerDataFile);
-        readCurrentPBs(playerDataFile);
+        this.data = readData();
+        HippoPractice.uploadPlayerData(this);
     }
 
-    private void createIfNonExistent(File file) {
-        try {
-            if (file.createNewFile()){
-                writeDefaultFile(file);
+    private PlayerDataFormat readData() throws FileNotFoundException {
+        PlayerDataFormat data = null;
+        if (HippoPractice.USE_DATABASE) {
+            data = MongoDB.getPlayerDataFromDocument(playerUUID);
+        } else {
+            File playerDataFile = new File(parentPlugin.getPluginsDirSubdir("playerdata") + File.separator + playerUUID + ".json");
+            if (playerDataFile.exists()) {
+                Gson gson = new Gson();
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(playerDataFile));
+                data = gson.fromJson(bufferedReader, PlayerDataFormat.class);
+            } else {
+                parentPlugin.getLogger().severe("Error when trying to load player data: Could not find file: " + playerDataFile);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-    }
-
-    private void writeDefaultFile(File file) {
-        PlayerDataFormat playerData = setDefaults();
-        try (Writer writer = new FileWriter(file)) {
-            Gson gson = new GsonBuilder()
-                    .setPrettyPrinting()
-                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                    .create();
-            gson.toJson(playerData, writer);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (data == null) {
+            data = setDefaults();
         }
-    }
-
-    private void writeNewPlayerData() {
-        try (Writer writer = new FileWriter(playerDataFile)) {
-            Gson gson = new GsonBuilder()
-                    .setPrettyPrinting()
-                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                    .create();
-            gson.toJson(data, writer);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return data;
     }
 
     private PlayerDataFormat setDefaults() {
         PlayerDataFormat data = new PlayerDataFormat(playerName);
+        data.setPlayerUUID(playerUUID);
         data.setPickSlot(InventoryLogic.DEFAULT_PICK_SLOT);
         data.setBlocks1Slot(InventoryLogic.DEFAULT_BLOCKS1_SLOT);
         data.setBlocks2Slot(InventoryLogic.DEFAULT_BLOCKS2_SLOT);
@@ -77,14 +64,16 @@ public class PlayerData {
         return data;
     }
 
-    private void readCurrentPBs(File file) throws FileNotFoundException {
-        Gson gson = new Gson();
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-        this.data = gson.fromJson(bufferedReader, PlayerDataFormat.class);
-    }
-
     public String getPlayerName() {
         return this.playerName;
+    }
+
+    public String getPlayerUUID() {
+        return this.playerUUID;
+    }
+
+    public PlayerDataFormat getData() {
+        return this.data;
     }
 
     public ArrayList<MapPB> getPBs() {
@@ -117,11 +106,11 @@ public class PlayerData {
         for (MapPB potentialPB : data.getPersonalBests()) {
             if (potentialPB.getMapName().equals(mapName)) {
                 found = true;
-                potentialPB.setPersonalBestMs(ms);
+                potentialPB.setPersonalBestMs(Timer.computeFloor50(ms));
             }
         }
         if (found) {
-            writeNewPlayerData();
+            HippoPractice.uploadPlayerData(this);;
         }
     }
 
@@ -155,9 +144,5 @@ public class PlayerData {
 
     public void setSnowballSlot(int slot) {
         data.setSnowballSlot(slot);
-    }
-
-    public void save() {
-        writeNewPlayerData();
     }
 }

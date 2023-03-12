@@ -9,6 +9,9 @@ public class PlayerDataFormat {
     @SerializedName("player_name")
     private String playerName;
 
+    @SerializedName("player_uuid")
+    private String playerUUID;
+
     @SerializedName("personal_bests")
     private ArrayList<MapPB> personalBests;
 
@@ -67,5 +70,13 @@ public class PlayerDataFormat {
 
     public void setSnowballSlot(int slot) {
         this.snowballSlot = slot;
+    }
+
+    public String getPlayerUUID() {
+        return this.playerUUID;
+    }
+
+    public void setPlayerUUID(String playerUUID) {
+        this.playerUUID = playerUUID;
     }
 }
