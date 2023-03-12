@@ -10,10 +10,10 @@ import practice.hippo.util.BoundingBox;
 public class MapData {
 
     @SerializedName("map_name")
-    private String mapName;
+    private String mapName = "null";
 
     @SerializedName("map_color")
-    private String mapColor;
+    private String mapColor = "null";
 
     @SerializedName("biome_red")
     private String biomeRed = "null";

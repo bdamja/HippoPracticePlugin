@@ -8,15 +8,14 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import practice.hippo.hippodata.HippoData;
 import practice.hippo.logic.ChatLogic;
 import practice.hippo.logic.HippoPlayer;
 import practice.hippo.logic.HippoPractice;
 import practice.hippo.util.Offset;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Queue;
 
@@ -95,20 +94,22 @@ public class HippoPracticeCommand extends BaseCommand {
     @CommandPermission("op")
     @Subcommand("export")
     @Description("exports the current map setup to a hippo file")
-    public void onExport(CommandSender sender) throws FileNotFoundException {
+    public void onExport(CommandSender sender) throws IOException {
         Player player = (Player) sender;
         HippoPlayer hippoPlayer = parentPlugin.getHippoPlayer(player);
-        Queue<Block> allBlocks = parentPlugin.getAllBlocksPlacedByPlayer(player);
-        Queue<Location> allBlocksOffset = Offset.blockQueueToOriginal(hippoPlayer.getPlot(), allBlocks);
-        File file = new File("./plugins/HippoPractice/hippos/" + hippoPlayer.getMapName() + ".json");
-        PrintWriter output = new PrintWriter(file);
-        for (Location location : allBlocksOffset) {
-            output.write(location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "\n");
+        if (!hippoPlayer.getMapData().getMapName().equals("null")) {
+            Queue<Block> allBlocks = parentPlugin.getAllBlocksPlacedByPlayer(player);
+            Queue<Location> allBlocksOffset = Offset.blockQueueToOriginal(hippoPlayer.getPlot(), allBlocks);
+            HippoData hippoData = new HippoData();
+            hippoData.setBlocksViaLocationQueue(allBlocksOffset);
+            hippoData.setMapName(hippoPlayer.getMapName());
+            HippoPractice.uploadHippoData(hippoData);
+            ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Exported new hippo for " + hippoPlayer.mapText(), (Player) sender);
+            hippoPlayer.updateMapValues(hippoPlayer.getMapName());
+            player.playSound(player.getLocation(), Sound.ANVIL_USE, 1.0f, 0.8f);
+        } else {
+            ChatLogic.sendMessageToPlayer(ChatColor.RED + "You must be in a map to use this command.", (Player) sender);
         }
-        ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Exported new hippo for " + hippoPlayer.mapText(), (Player) sender);
-        output.close();
-        hippoPlayer.updateMapValues(hippoPlayer.getMapName());
-        player.playSound(player.getLocation(), Sound.ANVIL_USE, 1.0f, 0.8f);
     }
 
     @Subcommand("kit")
