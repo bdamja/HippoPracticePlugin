@@ -7,6 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import practice.hippo.logic.HippoPractice;
 import practice.hippo.logic.HippoPlayer;
+import practice.hippo.util.BoundingBox;
+import practice.hippo.util.Side;
 
 import java.io.IOException;
 
@@ -27,7 +29,16 @@ public class PlayerMoveHandler implements Listener {
                 hippoPlayer.getTimer().setStartTime();
                 hippoPlayer.awaitingMove = false;
             }
-            if (player.getLocation().getY() < HippoPractice.VOID_LEVEL && player.getGameMode() != GameMode.CREATIVE) {
+            BoundingBox buildLimits = hippoPlayer.getBuildLimits();
+            double x = Math.abs(player.getLocation().getX());
+            double y = player.getLocation().getY();
+            double z = player.getLocation().getZ();
+            boolean isInCreative = player.getGameMode() == GameMode.CREATIVE;
+            double minX = Math.min(Math.abs(buildLimits.getMinX()), Math.abs(buildLimits.getMaxX()));
+            if (!isInCreative && (x < minX || z < buildLimits.getMinZ() || z > buildLimits.getMaxZ())) {
+                parentPlugin.resetMap(player);
+                parentPlugin.resetPlayerAndSendToSpawn(player);
+            } else if (!isInCreative && y < HippoPractice.VOID_LEVEL) {
                 parentPlugin.resetPlayerAndSendToSpawn(player);
             }
         }
