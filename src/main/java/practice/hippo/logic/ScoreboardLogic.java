@@ -37,7 +37,7 @@ public class ScoreboardLogic {
         registerTeam("mapLabel", MAP_LABEL, "", "", 10, board, objective);
         registerTeam("mapName", "", DEFAULT_MAP_NAME, "", 9, board, objective);
         registerTeam("pbLabel", PB_LABEL, "", "", 7, board, objective);
-        registerTeam("pbName", "", DEFAULT_PB, "", 6, board, objective);
+        registerTeam("pbName", "      ", DEFAULT_PB, "", 6, board, objective);
         registerTeam("timeLabel", TIME_LABEL, "", "", 4, board, objective);
         registerTeam("timeName", " ", DEFAULT_TIME, "", 3, board, objective);
         registerTeam("lineB", DARK_GRAY_LINE + " ", "", "", 1, board, objective);

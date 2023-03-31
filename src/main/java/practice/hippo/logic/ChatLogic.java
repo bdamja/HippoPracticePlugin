@@ -76,4 +76,17 @@ public class ChatLogic {
         sendMessageToPlayer(msg1, player);
         sendMessageToPlayer(msg2, player);
     }
+
+    public static void sendHelpMessage(Player player) {
+        String message = "§2§m-----------------------------------------------------";
+        message = message + "\n§aList of Hippo Practice commands:";
+        message = message + "\n§2» §a/hp help §8- §7list all available commands";
+        message = message + "\n§2» §a/hp maps §8- §7list all available maps";
+        message = message + "\n§2» §a/hp loadmap <map> §8- §7change the map you are on";
+        message = message + "\n§2» §a/hp showhippo §8- §7show how to build the hippo";
+        message = message + "\n§2» §a/hp showmissing §8- §7show hippo blocks that are missing";
+        message = message + "\n§2» §a/hp info <player> §8- §7show stats of a particular player";
+        message = message + "\n§2§m-----------------------------------------------------";
+        sendMessageToPlayer(message, player);
+    }
 }

@@ -398,7 +398,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
                 long ms = playerData.getPB(mapName);
                 String personalBest = practice.hippo.logic.Timer.computeTimeFormatted(ms);
                 if (!personalBest.equals("0.000")) {
-                    msg = msg.concat("\n" + ChatColor.GRAY + "  - " + mapNameFormatted + ChatColor.GRAY + ": " + ChatColor.AQUA + personalBest);
+                    msg = msg.concat("\n" + ChatColor.GRAY + "  » " + mapNameFormatted + ChatColor.GRAY + ": " + ChatColor.AQUA + personalBest);
                 } else {
                     if (new File(getPluginsDirSubdir("hippodata") + File.separator + mapName + ".json").exists()) {
                         completeTimesheet = false;
@@ -406,7 +406,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
                 }
             }
             String totalTime = ChatColor.YELLOW + Timer.computeTimeFormatted(playerData.getTotalTime());
-            msg = msg.concat("\n" + ChatColor.GRAY + "  - " + ChatColor.YELLOW + ChatColor.BOLD + "Total" + ChatColor.GRAY + ": " + totalTime);
+            msg = msg.concat("\n" + ChatColor.GRAY + "  » " + ChatColor.YELLOW + ChatColor.BOLD + "Total" + ChatColor.GRAY + ": " + totalTime);
             if (!completeTimesheet) {
                 msg = msg.concat(ChatColor.GRAY + " (Incomplete)");
             }

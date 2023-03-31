@@ -28,17 +28,19 @@ public class PlayerMoveHandler implements Listener {
                 hippoPlayer.getTimer().setStartTime();
                 hippoPlayer.awaitingMove = false;
             }
-            BoundingBox buildLimits = hippoPlayer.getBuildLimits();
-            double x = Math.abs(player.getLocation().getX());
-            double y = player.getLocation().getY();
-            double z = player.getLocation().getZ();
-            boolean isInCreative = player.getGameMode() == GameMode.CREATIVE;
-            double minX = Math.min(Math.abs(buildLimits.getMinX()), Math.abs(buildLimits.getMaxX()));
-            if (!isInCreative && (x < minX || z < buildLimits.getMinZ() || z > buildLimits.getMaxZ())) {
-                parentPlugin.resetMap(player);
-                parentPlugin.resetPlayerAndSendToSpawn(player);
-            } else if (!isInCreative && y < HippoPractice.VOID_LEVEL) {
-                parentPlugin.resetPlayerAndSendToSpawn(player);
+            if (!hippoPlayer.getMapName().equals("null")) {
+                BoundingBox buildLimits = hippoPlayer.getBuildLimits();
+                double x = Math.abs(player.getLocation().getX());
+                double y = player.getLocation().getY();
+                double z = player.getLocation().getZ();
+                boolean isInCreative = player.getGameMode() == GameMode.CREATIVE;
+                double minX = Math.min(Math.abs(buildLimits.getMinX()), Math.abs(buildLimits.getMaxX()));
+                if (!isInCreative && (x < minX || z < buildLimits.getMinZ() || z > buildLimits.getMaxZ())) {
+                    parentPlugin.resetMap(player);
+                    parentPlugin.resetPlayerAndSendToSpawn(player);
+                } else if (!isInCreative && y < HippoPractice.VOID_LEVEL) {
+                    parentPlugin.resetPlayerAndSendToSpawn(player);
+                }
             }
         }
     }

@@ -2,6 +2,10 @@ package practice.hippo.commands;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -14,6 +18,7 @@ import practice.hippo.logic.HippoPlayer;
 import practice.hippo.HippoPractice;
 import practice.hippo.util.Offset;
 
+import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
@@ -29,18 +34,31 @@ public class HippoPracticeCommand extends BaseCommand {
     }
 
     @Default
+    @Description("Displays a list of all available commands")
     public void onDefault(CommandSender sender) {
-        ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "List of Hippo Practice Commands\n- hp\n- hp loadmap <map>\n- hp maps\n- hp showhippo", (Player) sender);
+        if (!(sender instanceof Player)) return;
+        Player player = (Player) sender;
+        ChatLogic.sendHelpMessage(player);    }
+
+    @Subcommand("help")
+    @Description("Displays a list of all available commands")
+    public void onHelp(CommandSender sender) {
+        if (!(sender instanceof Player)) return;
+        Player player = (Player) sender;
+        ChatLogic.sendHelpMessage(player);
     }
 
     @Subcommand("maps")
     @Description("Displays a list of all the maps")
     public void onMaps(CommandSender sender) {
-        String msg = ChatColor.GRAY + "List of available maps: ";
+        TextComponent message = new TextComponent(ChatLogic.PREFIX + "§7List of available maps: ");
         for (Map.Entry<String, String> mapElement : HippoPractice.maps.entrySet()) {
-            msg = msg.concat("\n" + ChatColor.GRAY + "      - " + mapElement.getValue());
+            TextComponent mapMessage = new TextComponent("\n" + ChatColor.GRAY + "  » " + mapElement.getValue());
+            mapMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hp loadmap " + mapElement.getKey()));
+            mapMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("Click to go to this map")}));
+            message.addExtra(mapMessage);
         }
-        ChatLogic.sendMessageToPlayer(msg, (Player) sender);
+        ((Player) sender).spigot().sendMessage(message);
     }
 
     @Subcommand("info")
@@ -65,7 +83,8 @@ public class HippoPracticeCommand extends BaseCommand {
         if (args.length > 0) {
             String mapName = args[0];
             if (HippoPractice.maps.containsKey(mapName)) {
-                ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Loading map " + mapName + "...", (Player) sender);
+                String mapNameFormatted = HippoPractice.maps.get(mapName);
+                ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Loading map " + mapNameFormatted + "§7...", (Player) sender);
                 parentPlugin.changeMap(mapName, sender);
             } else {
                 ChatLogic.sendMessageToPlayer(ChatColor.RED + "Map not found. Do /hp maps to see a list of all maps", (Player) sender);
