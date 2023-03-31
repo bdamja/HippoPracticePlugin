@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import practice.hippo.HippoPractice;
+import practice.hippo.commands.HippoPracticeCommand;
 import practice.hippo.logic.HippoPlayer;
 import practice.hippo.util.BoundingBox;
 
@@ -36,8 +37,14 @@ public class PlayerMoveHandler implements Listener {
                 boolean isInCreative = player.getGameMode() == GameMode.CREATIVE;
                 double minX = Math.min(Math.abs(buildLimits.getMinX()), Math.abs(buildLimits.getMaxX()));
                 if (!isInCreative && (x < minX || z < buildLimits.getMinZ() || z > buildLimits.getMaxZ())) {
-                    parentPlugin.resetMap(player);
-                    parentPlugin.resetPlayerAndSendToSpawn(player);
+                    if ((z - buildLimits.getMaxZ()) < 900) { // this is false in HippoPractice.reloadChunks()
+                        if (player.getGameMode().equals(GameMode.SURVIVAL)) {
+                            HippoPracticeCommand.INSTANCE.onSpectate(player);
+                        }
+                    } else {
+                        parentPlugin.resetPlayerAndSendToSpawn(player);
+                        parentPlugin.resetMap(player);
+                    }
                 } else if (!isInCreative && y < HippoPractice.VOID_LEVEL) {
                     parentPlugin.resetPlayerAndSendToSpawn(player);
                 }

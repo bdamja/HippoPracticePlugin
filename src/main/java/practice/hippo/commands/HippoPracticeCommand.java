@@ -7,6 +7,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -26,10 +27,12 @@ import java.util.Queue;
 @CommandAlias("hp|hippo")
 public class HippoPracticeCommand extends BaseCommand {
 
+    public static HippoPracticeCommand INSTANCE;
     private final HippoPractice parentPlugin;
 
     public HippoPracticeCommand(HippoPractice parentPlugin) {
         this.parentPlugin = parentPlugin;
+        INSTANCE = this;
     }
 
     @Default
@@ -158,6 +161,28 @@ public class HippoPracticeCommand extends BaseCommand {
             }
         }
         ChatLogic.sendMessageToPlayer(msg, (Player) sender);
+    }
+
+    @Subcommand("spec|spectate|watch")
+    @Description("Enter spectator mode")
+    public void onSpectate(CommandSender sender) {
+        Player player = (Player) sender;
+        player.setGameMode(GameMode.SPECTATOR);
+        TextComponent message = new TextComponent(ChatLogic.PREFIX + "§7You are now spectating. Do ");
+        TextComponent command = new TextComponent("§b/hp return");
+        command.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hp return"));
+        command.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("Click here to return")}));
+        message.addExtra(command);
+        message.addExtra(new TextComponent(" §7to continue playing"));
+        player.spigot().sendMessage(message);
+    }
+
+    @Subcommand("reset|return")
+    @Description("Return to your plot after spectating")
+    public void onReturn(CommandSender sender) throws IOException {
+        Player player = (Player) sender;
+        parentPlugin.resetPlayerAndSendToSpawn(player);
+        parentPlugin.resetMap(player);
     }
 
 }

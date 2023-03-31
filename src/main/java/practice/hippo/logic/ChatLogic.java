@@ -1,5 +1,9 @@
 package practice.hippo.logic;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -72,9 +76,14 @@ public class ChatLogic {
 
     public static void sendWelcomeMessage(Player player) {
         String msg1 = ChatColor.GRAY + "Welcome to " + ChatColor.DARK_GREEN + "Hippo Practice";
-        String msg2 = ChatColor.GRAY + "Do " + ChatColor.AQUA + "/hp maps" + ChatColor.GRAY + " and click on a map to play.";
         sendMessageToPlayer(msg1, player);
-        sendMessageToPlayer(msg2, player);
+        TextComponent msg2 = new TextComponent(ChatLogic.PREFIX + "§7Do ");
+        TextComponent command = new TextComponent("§b/hp maps");
+        command.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hp maps"));
+        command.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("Click here to select a map")}));
+        msg2.addExtra(command);
+        msg2.addExtra(new TextComponent(" §7and click on a map to play"));
+        player.spigot().sendMessage(msg2);
     }
 
     public static void sendHelpMessage(Player player) {
@@ -87,6 +96,8 @@ public class ChatLogic {
         message = message + "\n§2» §a/hp showhippo §8- §7show how to build the hippo";
         message = message + "\n§2» §a/hp showmissing §8- §7show hippo blocks that are missing";
         message = message + "\n§2» §a/hp stats <player> §8- §7show stats of a particular player";
+        message = message + "\n§2» §a/hp spectate §8- §7enter spectator mode";
+        message = message + "\n§2» §a/hp return §8- §7return to your plot";
         message = message + "\n§2§m-----------------------------------------------------";
         player.sendMessage(message);
     }
