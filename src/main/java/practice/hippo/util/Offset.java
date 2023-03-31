@@ -127,6 +127,7 @@ public class Offset {
             int offsetZ = block.getZ() - (int) plot.z;
             if (plot.getSide() == Side.blue) {
                 offsetX *= -1;
+                offsetZ *= -1;
             }
             originalBlockPositions.offer(new Location(Bukkit.getWorld("world"), offsetX, block.getY(), offsetZ));
         }
