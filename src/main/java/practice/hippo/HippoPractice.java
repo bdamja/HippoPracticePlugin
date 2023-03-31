@@ -24,7 +24,6 @@ import practice.hippo.events.block.BlockPlaceHandler;
 import practice.hippo.events.entity.EntityDamageHandler;
 import practice.hippo.events.misc.InventoryClickHandler;
 import practice.hippo.events.misc.InventoryDragHandler;
-import practice.hippo.events.misc.ProjectileLaunchHandler;
 import practice.hippo.events.misc.WeatherChangeHandler;
 import practice.hippo.events.player.*;
 import practice.hippo.hippodata.HippoData;
@@ -49,6 +48,8 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public static final int NUM_PARTICLES = 350;
     public static final int DISTANCE_BETWEEN_PLOTS = 41;
     public static final boolean USE_DATABASE = true;
+    public static final Material RESET_MATERIAL = Material.REDSTONE;
+
     public String ip;
     public long commandCooldownMilliseconds;
 
@@ -101,11 +102,11 @@ public class HippoPractice extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new BlockBreakHandler(this), this);
         pluginManager.registerEvents(new BlockDamageHandler(this), this);
         pluginManager.registerEvents(new PlayerRespawnHandler(this), this);
-        pluginManager.registerEvents(new ProjectileLaunchHandler(this), this);
         pluginManager.registerEvents(new PlayerChatHandler(), this);
         pluginManager.registerEvents(new WeatherChangeHandler(), this);
         pluginManager.registerEvents(new InventoryClickHandler(this), this);
         pluginManager.registerEvents(new InventoryDragHandler(this), this);
+        pluginManager.registerEvents(new PlayerInteractListener(this), this);
     }
 
     private void setDefaultGameRules() {
@@ -449,7 +450,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         int pickSlot = InventoryLogic.DEFAULT_PICK_SLOT;
         int blocks1Slot = InventoryLogic.DEFAULT_BLOCKS1_SLOT;
         int blocks2Slot = InventoryLogic.DEFAULT_BLOCKS2_SLOT;
-        int snowballSlot = InventoryLogic.DEFAULT_SNOWBALL_SLOT;
+        int resetItemSlot = InventoryLogic.DEFAULT_RESET_ITEM_SLOT;
         int index = 0;
         int blocksCount = 0;
         while (inventoryIterator.hasNext()) {
@@ -466,8 +467,8 @@ public class HippoPractice extends JavaPlugin implements Listener {
                         blocks2Slot = index;
                     }
                 }
-                if (itemStack.getType().equals(Material.SNOW_BALL)) {
-                    snowballSlot = index;
+                if (itemStack.getType().equals(HippoPractice.RESET_MATERIAL)) {
+                    resetItemSlot = index;
                 }
             }
             index++;
@@ -475,7 +476,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         playerData.setPickSlot(pickSlot);
         playerData.setBlocks1Slot(blocks1Slot);
         playerData.setBlocks2Slot(blocks2Slot);
-        playerData.setSnowballSlot(snowballSlot);
+        playerData.setResetItemSlot(resetItemSlot);
         uploadPlayerData(hippoPlayer.getPlayerData());
     }
 

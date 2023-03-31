@@ -1,11 +1,11 @@
 package practice.hippo.logic;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import practice.hippo.HippoPractice;
 import practice.hippo.playerdata.PlayerData;
 import practice.hippo.util.Side;
 
@@ -14,7 +14,7 @@ public class InventoryLogic {
     public static final int DEFAULT_PICK_SLOT = 2;
     public static final int DEFAULT_BLOCKS1_SLOT = 3;
     public static final int DEFAULT_BLOCKS2_SLOT = 4;
-    public static final int DEFAULT_SNOWBALL_SLOT = 5;
+    public static final int DEFAULT_RESET_ITEM_SLOT = 5;
 
 
     public static void loadInventory(Player player, Side side, PlayerData playerData) {
@@ -22,7 +22,7 @@ public class InventoryLogic {
         player.getInventory().setItem(playerData.getPickSlot(), getPickaxeItemStack());
         player.getInventory().setItem(playerData.getBlocks1Slot(), getBlocksItemStack(side));
         player.getInventory().setItem(playerData.getBlocks2Slot(), getBlocksItemStack(side));
-        player.getInventory().setItem(playerData.getSnowballSlot(), getSnowballItemStack());
+        player.getInventory().setItem(playerData.getResetItemSlot(), getResetItemItemStack());
     }
 
     private static ItemStack getPickaxeItemStack() {
@@ -44,11 +44,12 @@ public class InventoryLogic {
         return(block);
     }
 
-    private static ItemStack getSnowballItemStack() {
-        ItemStack snowball = new ItemStack(Material.SNOW_BALL, 1);
-        ItemMeta itemMetaSnowball = snowball.getItemMeta();
-        itemMetaSnowball.setDisplayName("" + ChatColor.RED + ChatColor.BOLD + "Reset Map");
-        return(snowball);
+    private static ItemStack getResetItemItemStack() {
+        ItemStack itemStack = new ItemStack(HippoPractice.RESET_MATERIAL, 1);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.setDisplayName("§c§lReset Map §7(Right Click)");
+        itemStack.setItemMeta(itemMeta);
+        return(itemStack);
     }
 
     public static void hardInventoryClear(Player player){

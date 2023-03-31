@@ -24,8 +24,8 @@ public class PlayerDataFormat {
     @SerializedName("blocks2_slot")
     private int blocks2Slot;
 
-    @SerializedName("snowball_slot")
-    private int snowballSlot;
+    @SerializedName("reset_item_slot")
+    private int resetItemSlot;
 
     public PlayerDataFormat(String playerName) {
         this.playerName = playerName;
@@ -64,12 +64,12 @@ public class PlayerDataFormat {
         this.blocks2Slot = slot;
     }
 
-    public int getSnowballSlot() {
-        return this.snowballSlot;
+    public int getResetItemSlot() {
+        return this.resetItemSlot;
     }
 
-    public void setSnowballSlot(int slot) {
-        this.snowballSlot = slot;
+    public void setResetItemSlot(int slot) {
+        this.resetItemSlot = slot;
     }
 
     public String getPlayerUUID() {

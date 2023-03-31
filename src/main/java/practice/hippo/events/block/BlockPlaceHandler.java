@@ -3,6 +3,7 @@ package practice.hippo.events.block;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,6 +26,10 @@ public class BlockPlaceHandler implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
+        if (event.getBlock().getType().equals(Material.REDSTONE_WIRE)) {
+            event.setCancelled(true);
+            return;
+        }
         Player player = event.getPlayer();
         Block block = event.getBlock();
         HippoPlayer hippoPlayer = parentPlugin.getHippoPlayer(player);

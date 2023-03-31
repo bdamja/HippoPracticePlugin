@@ -62,7 +62,7 @@ public class MongoDB {
             Gson gson = new Gson();
             hippoData = gson.fromJson(document.toJson(), HippoData.class);
         } else {
-            System.err.println("Error when trying to load hippo data: Could not find document in db with the map name: " + mapName);
+            //System.err.println("Error when trying to load hippo data: Could not find document in db with the map name: " + mapName);
         }
         return hippoData;
     }
