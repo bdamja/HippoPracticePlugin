@@ -29,6 +29,7 @@ public class PlayerJoinHandler implements Listener {
         InventoryLogic.hardInventoryClear(player);
         Plot plot = new Plot(parentPlugin);
         parentPlugin.playerMap.put(player.getUniqueId(), new HippoPlayer(plot, parentPlugin.world, "no_map", player, parentPlugin));
+        parentPlugin.lastExecutedHeftyCommand.put(player, (System.currentTimeMillis() - 3000));
         parentPlugin.getSchematicPaster().loadViewBox(parentPlugin.getHippoPlayer(player));
         parentPlugin.teleportToCenterLocation(player);
         parentPlugin.scoreboardLogic.makeBoard(player);

@@ -12,7 +12,7 @@ public class ScoreboardLogic {
     private final HippoPractice parentPlugin;
     private final ScoreboardManager manager;
 
-    private static final String IP = ChatColor.DARK_GREEN + "someserver.net";
+    private String IP = ChatColor.DARK_GREEN + "";
     private static final String MAP_LABEL = "" + ChatColor.GREEN + ChatColor.BOLD + "Map" + ChatColor.GRAY + ChatColor.BOLD + ":";
     private static final String PB_LABEL = "" + ChatColor.YELLOW + ChatColor.BOLD + "Personal Best" + ChatColor.GRAY + ChatColor.BOLD + ":";
     private static final String TIME_LABEL = "" + ChatColor.AQUA + ChatColor.BOLD + "Time" + ChatColor.GRAY + ChatColor.BOLD + ":";
@@ -24,6 +24,7 @@ public class ScoreboardLogic {
     public ScoreboardLogic(HippoPractice parentPlugin) {
         this.parentPlugin = parentPlugin;
         this.manager = Bukkit.getScoreboardManager();
+        IP = IP + parentPlugin.ip;
     }
 
     public void makeBoard(Player player) {

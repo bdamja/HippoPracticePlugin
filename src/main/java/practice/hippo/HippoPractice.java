@@ -49,6 +49,8 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public static final int NUM_PARTICLES = 350;
     public static final int DISTANCE_BETWEEN_PLOTS = 41;
     public static final boolean USE_DATABASE = true;
+    public String ip;
+    public long commandCooldownMilliseconds;
 
     public static SchematicLogic schematicPaster = null;
     public World world;
@@ -57,12 +59,14 @@ public class HippoPractice extends JavaPlugin implements Listener {
     private static final ArrayList<Plot> plots = new ArrayList<>();
     public ScoreboardLogic scoreboardLogic = null;
     public HashMap<UUID, HippoPlayer> playerMap = new HashMap<>();
+    public HashMap<Player, Long> lastExecutedHeftyCommand = new HashMap<>();
 
     @Override
     public void onEnable() {
         PluginManager pluginManager = this.getServer().getPluginManager();
         registerEventListeners(pluginManager);
         setDefaultGameRules();
+        readConfigValues();
         schematicPaster = new SchematicLogic(this, Bukkit.getWorld("world"));
         PaperCommandManager manager = new PaperCommandManager(this);
         manager.registerCommand(new HippoPracticeCommand(this));
@@ -110,6 +114,12 @@ public class HippoPractice extends JavaPlugin implements Listener {
         world.setGameRuleValue("naturalRegeneration", "false");
         world.setGameRuleValue("doDaylightCycle", "false");
         world.setGameRuleValue("randomTickSpeed", "0");
+    }
+
+    private void readConfigValues() {
+        ip = getConfig().getString("ip");
+        commandCooldownMilliseconds = getConfig().getLong("command_cooldown_ms");
+        this.saveConfig();
     }
 
     public File getPluginsDirSubdir(String subdir) {

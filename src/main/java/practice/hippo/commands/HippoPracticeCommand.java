@@ -79,17 +79,25 @@ public class HippoPracticeCommand extends BaseCommand {
     @Syntax("<map>")
     @CommandCompletion("@mapNames")
     public void onLoadMap(CommandSender sender, String[] args) throws IOException {
-        if (args.length > 0) {
-            String mapName = args[0];
-            if (HippoPractice.maps.containsKey(mapName)) {
-                String mapNameFormatted = HippoPractice.maps.get(mapName);
-                ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Loading map " + mapNameFormatted + "§7...", (Player) sender);
-                parentPlugin.changeMap(mapName, sender);
+        if (!(sender instanceof Player)) return;
+        Player player = (Player) sender;
+        long timeSinceLastExecute = System.currentTimeMillis() - parentPlugin.lastExecutedHeftyCommand.get(player);
+        if (timeSinceLastExecute > parentPlugin.commandCooldownMilliseconds) {
+            if (args.length > 0) {
+                String mapName = args[0];
+                if (HippoPractice.maps.containsKey(mapName)) {
+                    String mapNameFormatted = HippoPractice.maps.get(mapName);
+                    ChatLogic.sendMessageToPlayer(ChatColor.GRAY + "Loading map " + mapNameFormatted + "§7...", player);
+                    parentPlugin.changeMap(mapName, player);
+                    parentPlugin.lastExecutedHeftyCommand.put(player, System.currentTimeMillis());
+                } else {
+                    ChatLogic.sendMessageToPlayer(ChatColor.RED + "Map not found. Do /hp maps to see a list of all maps", player);
+                }
             } else {
-                ChatLogic.sendMessageToPlayer(ChatColor.RED + "Map not found. Do /hp maps to see a list of all maps", (Player) sender);
+                ChatLogic.sendMessageToPlayer(ChatColor.RED + "Usage: /hp loadmap <map>", player);
             }
         } else {
-            ChatLogic.sendMessageToPlayer(ChatColor.RED + "Usage: /hp loadmap <map>", (Player) sender);
+            ChatLogic.sendMessageToPlayer(ChatColor.RED + "You must wait before executing this command again!", player);
         }
     }
 
