@@ -12,13 +12,12 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import practice.hippo.HippoPractice;
 import practice.hippo.hippodata.HippoData;
 import practice.hippo.logic.ChatLogic;
 import practice.hippo.logic.HippoPlayer;
-import practice.hippo.HippoPractice;
 import practice.hippo.util.Offset;
 
-import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
@@ -48,7 +47,7 @@ public class HippoPracticeCommand extends BaseCommand {
         ChatLogic.sendHelpMessage(player);
     }
 
-    @Subcommand("maps")
+    @Subcommand("maps|map")
     @Description("Displays a list of all the maps")
     public void onMaps(CommandSender sender) {
         TextComponent message = new TextComponent(ChatLogic.PREFIX + "§7List of available maps: ");
@@ -61,7 +60,7 @@ public class HippoPracticeCommand extends BaseCommand {
         ((Player) sender).spigot().sendMessage(message);
     }
 
-    @Subcommand("info")
+    @Subcommand("info|stat|stats")
     @Description("Displays information regarding a player")
     @Syntax("<player>")
     @CommandCompletion("@players")
@@ -75,7 +74,7 @@ public class HippoPracticeCommand extends BaseCommand {
         ChatLogic.sendMessageToPlayer(parentPlugin.getPlayerInfo(playerName), (Player) sender);
     }
 
-    @Subcommand("loadmap")
+    @Subcommand("loadmap|choosemap|changemap")
     @Description("Loads a bridge map")
     @Syntax("<map>")
     @CommandCompletion("@mapNames")
@@ -131,7 +130,7 @@ public class HippoPracticeCommand extends BaseCommand {
         }
     }
 
-    @Subcommand("kit")
+    @Subcommand("kit|layout|hotbar")
     @Syntax("<player>")
     @Description("Modify the current kit layout")
     @CommandCompletion("@kitActions")

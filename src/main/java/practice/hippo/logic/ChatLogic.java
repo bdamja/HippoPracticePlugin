@@ -72,7 +72,7 @@ public class ChatLogic {
 
     public static void sendWelcomeMessage(Player player) {
         String msg1 = ChatColor.GRAY + "Welcome to " + ChatColor.DARK_GREEN + "Hippo Practice";
-        String msg2 = ChatColor.GRAY + "Do " + ChatColor.AQUA + "/hp loadmap <map>" + ChatColor.GRAY + " to select a map.";
+        String msg2 = ChatColor.GRAY + "Do " + ChatColor.AQUA + "/hp maps" + ChatColor.GRAY + " and click on a map to play.";
         sendMessageToPlayer(msg1, player);
         sendMessageToPlayer(msg2, player);
     }
@@ -82,11 +82,12 @@ public class ChatLogic {
         message = message + "\n§aList of Hippo Practice commands:";
         message = message + "\n§2» §a/hp help §8- §7list all available commands";
         message = message + "\n§2» §a/hp maps §8- §7list all available maps";
+        message = message + "\n§2» §a/hp kit §8- §7Modify your kit layout";
         message = message + "\n§2» §a/hp loadmap <map> §8- §7change the map you are on";
         message = message + "\n§2» §a/hp showhippo §8- §7show how to build the hippo";
         message = message + "\n§2» §a/hp showmissing §8- §7show hippo blocks that are missing";
-        message = message + "\n§2» §a/hp info <player> §8- §7show stats of a particular player";
+        message = message + "\n§2» §a/hp stats <player> §8- §7show stats of a particular player";
         message = message + "\n§2§m-----------------------------------------------------";
-        sendMessageToPlayer(message, player);
+        player.sendMessage(message);
     }
 }
