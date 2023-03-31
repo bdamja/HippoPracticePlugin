@@ -3,7 +3,7 @@ package practice.hippo.events.player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import practice.hippo.logic.HippoPractice;
+import practice.hippo.HippoPractice;
 
 import java.io.IOException;
 

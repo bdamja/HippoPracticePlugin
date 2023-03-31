@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import practice.hippo.logic.HippoPractice;
+import practice.hippo.HippoPractice;
 
 import java.io.IOException;
 

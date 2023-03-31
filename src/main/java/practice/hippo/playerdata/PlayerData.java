@@ -1,7 +1,7 @@
 package practice.hippo.playerdata;
 
 import com.google.gson.Gson;
-import practice.hippo.logic.HippoPractice;
+import practice.hippo.HippoPractice;
 import practice.hippo.logic.InventoryLogic;
 import practice.hippo.logic.Timer;
 import practice.hippo.util.MongoDB;

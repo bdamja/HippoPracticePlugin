@@ -1,6 +1,7 @@
 package practice.hippo.logic;
 
 import org.bukkit.Location;
+import practice.hippo.HippoPractice;
 import practice.hippo.util.Side;
 
 import java.util.ArrayList;

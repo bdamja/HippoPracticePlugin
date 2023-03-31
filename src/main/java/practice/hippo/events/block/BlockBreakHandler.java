@@ -9,7 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import practice.hippo.logic.HippoPlayer;
-import practice.hippo.logic.HippoPractice;
+import practice.hippo.HippoPractice;
 import practice.hippo.util.BoundingBox;
 
 import java.io.IOException;

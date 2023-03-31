@@ -9,7 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-import practice.hippo.logic.HippoPractice;
+import practice.hippo.HippoPractice;
 import practice.hippo.logic.HippoPlayer;
 import practice.hippo.util.BoundingBox;
 

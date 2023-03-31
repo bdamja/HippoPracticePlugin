@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
+import practice.hippo.HippoPractice;
 import practice.hippo.hippodata.HippoData;
 import practice.hippo.mapdata.MapData;
 import practice.hippo.playerdata.PlayerData;

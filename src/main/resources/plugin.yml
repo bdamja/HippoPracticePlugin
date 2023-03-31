@@ -1,5 +1,5 @@
 name: HippoPractice
 version: ${project.version}
-main: practice.hippo.logic.HippoPractice
+main: practice.hippo.HippoPractice
 api-version: 1.8
 depend: [WorldEdit]

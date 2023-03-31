@@ -1,4 +1,4 @@
-package practice.hippo.logic;
+package practice.hippo;
 
 import co.aikar.commands.PaperCommandManager;
 import com.google.gson.FieldNamingPolicy;
@@ -28,6 +28,8 @@ import practice.hippo.events.misc.ProjectileLaunchHandler;
 import practice.hippo.events.misc.WeatherChangeHandler;
 import practice.hippo.events.player.*;
 import practice.hippo.hippodata.HippoData;
+import practice.hippo.logic.*;
+import practice.hippo.logic.Timer;
 import practice.hippo.mapdata.MapData;
 import practice.hippo.playerdata.PlayerData;
 import practice.hippo.playerdata.PlayerDataFormat;
@@ -226,7 +228,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     public void completeHippo(HippoPlayer hippoPlayer, Player player) {
         long ms = hippoPlayer.getTimer().computeTime();
-        String finalTime = Timer.computeTimeFormatted(ms);
+        String finalTime = practice.hippo.logic.Timer.computeTimeFormatted(ms);
         ChatLogic.sendHippoCompletion(hippoPlayer, ms, player);
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 0.8f);
         summonCompletionParticles(player);
@@ -354,11 +356,20 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public String getPlayerInfo(String playerName) throws Exception {
         String uuid = getUUIDStrFromPlayerName(playerName);
         if (!uuid.isEmpty()) {
-            File playerDataFile = new File(getPluginsDirSubdir("playerdata") + File.separator + uuid + ".json");
-            if (playerDataFile.exists()) {
-                return getPlayerInfoFromPlayerDataFile(playerName, uuid);
+            if (USE_DATABASE) {
+                String info = getPlayerInfoFromPlayerDataFile(playerName, uuid);
+                if (info != null) {
+                    return info;
+                } else {
+                    return ChatColor.RED + "Hippo Practice could not find information on the player \"" + playerName + "\"";
+                }
             } else {
-                return ChatColor.RED + "Hippo Practice could not find information on the player \"" + playerName + "\"";
+                File playerDataFile = new File(getPluginsDirSubdir("playerdata") + File.separator + uuid + ".json");
+                if (playerDataFile.exists()) {
+                    return getPlayerInfoFromPlayerDataFile(playerName, uuid);
+                } else {
+                    return ChatColor.RED + "Hippo Practice could not find information on the player \"" + playerName + "\"";
+                }
             }
         }
         return ChatColor.RED + "Mojang could not find information on the player \"" + playerName + "\"";
@@ -378,27 +389,31 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public String getPlayerInfoFromPlayerDataFile(String playerName, String uuid) throws FileNotFoundException {
         String msg = ChatColor.GRAY + "Showing info for the player " + ChatColor.GREEN + playerName + ChatColor.GRAY + ":";
         PlayerData playerData = new PlayerData(this, playerName, uuid);
-        boolean completeTimesheet = true;
-        msg = msg.concat("\n" + ChatLogic.PREFIX + ChatColor.GRAY + "List of all personal best times:");
-        for (Map.Entry<String, String> mapElement : maps.entrySet()) {
-            String mapNameFormatted = mapElement.getValue();
-            String mapName = mapElement.getKey();
-            long ms = playerData.getPB(mapName);
-            String personalBest = Timer.computeTimeFormatted(ms);
-            if (!personalBest.equals("0.000")) {
-                msg = msg.concat("\n" + ChatColor.GRAY + "  - " + mapNameFormatted + ChatColor.GRAY + ": " + ChatColor.AQUA + personalBest);
-            } else {
-                if (new File(getPluginsDirSubdir("hippodata") + File.separator + mapName + ".json").exists()) {
-                    completeTimesheet = false;
+        if (playerData.getData() != null) {
+            boolean completeTimesheet = true;
+            msg = msg.concat("\n" + ChatLogic.PREFIX + ChatColor.GRAY + "List of all personal best times:");
+            for (Map.Entry<String, String> mapElement : maps.entrySet()) {
+                String mapNameFormatted = mapElement.getValue();
+                String mapName = mapElement.getKey();
+                long ms = playerData.getPB(mapName);
+                String personalBest = practice.hippo.logic.Timer.computeTimeFormatted(ms);
+                if (!personalBest.equals("0.000")) {
+                    msg = msg.concat("\n" + ChatColor.GRAY + "  - " + mapNameFormatted + ChatColor.GRAY + ": " + ChatColor.AQUA + personalBest);
+                } else {
+                    if (new File(getPluginsDirSubdir("hippodata") + File.separator + mapName + ".json").exists()) {
+                        completeTimesheet = false;
+                    }
                 }
             }
+            String totalTime = ChatColor.YELLOW + Timer.computeTimeFormatted(playerData.getTotalTime());
+            msg = msg.concat("\n" + ChatColor.GRAY + "  - " + ChatColor.YELLOW + ChatColor.BOLD + "Total" + ChatColor.GRAY + ": " + totalTime);
+            if (!completeTimesheet) {
+                msg = msg.concat(ChatColor.GRAY + " (Incomplete)");
+            }
+            return msg;
+        } else {
+            return null;
         }
-        String totalTime = ChatColor.YELLOW + Timer.computeTimeFormatted(playerData.getTotalTime());
-        msg = msg.concat("\n" + ChatColor.GRAY + "  - " + ChatColor.YELLOW + ChatColor.BOLD + "Total" + ChatColor.GRAY + ": " + totalTime);
-        if (!completeTimesheet) {
-            msg = msg.concat(ChatColor.GRAY + " (Incomplete)");
-        }
-        return msg;
     }
 
     public void beginEditingKit(Player player) {

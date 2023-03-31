@@ -6,6 +6,7 @@ import com.sk89q.worldedit.schematic.MCEditSchematicFormat;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import org.bukkit.World;
+import practice.hippo.HippoPractice;
 import practice.hippo.util.BoundingBox;
 import practice.hippo.util.Offset;
 

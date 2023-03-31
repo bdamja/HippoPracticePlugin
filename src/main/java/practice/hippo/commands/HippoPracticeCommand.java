@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import practice.hippo.hippodata.HippoData;
 import practice.hippo.logic.ChatLogic;
 import practice.hippo.logic.HippoPlayer;
-import practice.hippo.logic.HippoPractice;
+import practice.hippo.HippoPractice;
 import practice.hippo.util.Offset;
 
 import java.io.FileNotFoundException;
