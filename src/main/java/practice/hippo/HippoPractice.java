@@ -50,6 +50,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public static final boolean USE_DATABASE = true;
     public static final Material RESET_MATERIAL = Material.REDSTONE;
 
+    public String worldName;
     public String ip;
     public long commandCooldownMilliseconds;
 
@@ -286,16 +287,13 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     public final void setPlotList() {
-        plots.add(new Plot(this, new Location(world, 0, 0, 0), red));
-        plots.add(new Plot(this, new Location(world, 0, 0, 41), red));
-        plots.add(new Plot(this, new Location(world, 0, 0, 82), red));
-        plots.add(new Plot(this, new Location(world, 0, 0, 123), red));
-        plots.add(new Plot(this, new Location(world, 0, 0, 164), red));
-        plots.add(new Plot(this, new Location(world, 0, 0, 0), blue));
-        plots.add(new Plot(this, new Location(world, 0, 0, 41), blue));
-        plots.add(new Plot(this, new Location(world, 0, 0, 82), blue));
-        plots.add(new Plot(this, new Location(world, 0, 0, 123), blue));
-        plots.add(new Plot(this, new Location(world, 0, 0, 164), blue));
+        int maxPlayers = Bukkit.getMaxPlayers();
+        int z = 0;
+        for (int i = 0; i < maxPlayers/2; i++) {
+            plots.add(new Plot(this, new Location(world, 0, 0, z), red));
+            plots.add(new Plot(this, new Location(world, 0, 0, z), blue));
+            z += DISTANCE_BETWEEN_PLOTS;
+        }
     }
 
     public ArrayList<Plot> getPlotList() {
