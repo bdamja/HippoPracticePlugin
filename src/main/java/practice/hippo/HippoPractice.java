@@ -68,10 +68,10 @@ public class HippoPractice extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         INSTANCE = this;
+        readConfigValues();
         PluginManager pluginManager = this.getServer().getPluginManager();
         registerEventListeners(pluginManager);
         setDefaultGameRules();
-        readConfigValues();
         schematicPaster = new SchematicLogic(this, Bukkit.getWorld(worldName));
         PaperCommandManager manager = new PaperCommandManager(this);
         manager.registerCommand(new HippoPracticeCommand(this));
@@ -115,10 +115,14 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     private void setDefaultGameRules() {
         world = Bukkit.getWorld(worldName);
-        world.setGameRuleValue("keepInventory", "true");
-        world.setGameRuleValue("naturalRegeneration", "false");
-        world.setGameRuleValue("doDaylightCycle", "false");
-        world.setGameRuleValue("randomTickSpeed", "0");
+        if (world != null) {
+            world.setGameRuleValue("keepInventory", "true");
+            world.setGameRuleValue("naturalRegeneration", "false");
+            world.setGameRuleValue("doDaylightCycle", "false");
+            world.setGameRuleValue("randomTickSpeed", "0");
+        } else {
+            getLogger().info("The world name in the config could not be found, so Hippo Practice won't be functional in this server.");
+        }
     }
 
     private void readConfigValues() {
