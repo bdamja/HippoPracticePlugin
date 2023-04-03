@@ -24,6 +24,7 @@ public class BlockBreakHandler implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) throws IOException {
+        if (!event.getPlayer().getWorld().getName().equals(parentPlugin.worldName)) return;
         Player player = event.getPlayer();
         Block block = event.getBlock();
         HippoPlayer hippoPlayer = parentPlugin.getHippoPlayer(player);

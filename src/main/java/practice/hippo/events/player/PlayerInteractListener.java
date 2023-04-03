@@ -21,6 +21,7 @@ public class PlayerInteractListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) throws IOException {
+        if (!event.getPlayer().getWorld().getName().equals(HippoPractice.INSTANCE.worldName)) return;
         Player player = event.getPlayer();
         Action action = event.getAction();
         ItemStack heldItem = player.getInventory().getItem(player.getInventory().getHeldItemSlot());

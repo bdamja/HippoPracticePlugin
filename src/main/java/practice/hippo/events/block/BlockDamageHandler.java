@@ -16,6 +16,7 @@ public class BlockDamageHandler implements Listener {
 
     @EventHandler
     public void onBlockDamage(BlockDamageEvent event) {
+        if (!event.getPlayer().getWorld().getName().equals(parentPlugin.worldName)) return;
         HippoPlayer hippoPlayer = parentPlugin.getHippoPlayer(event.getPlayer());
         if (hippoPlayer.awaitingLeftClick) {
             parentPlugin.revertGlassToClay(hippoPlayer);

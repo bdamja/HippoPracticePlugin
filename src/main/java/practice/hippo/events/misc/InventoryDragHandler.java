@@ -17,6 +17,7 @@ public class InventoryDragHandler implements Listener {
 
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent event) {
+        if (!event.getWhoClicked().getWorld().getName().equals(parentPlugin.worldName)) return;
         Player player = (Player) event.getWhoClicked();
         HippoPlayer hippoPlayer = parentPlugin.getHippoPlayer(player);
         if (hippoPlayer.isEditingKit) {

@@ -18,7 +18,11 @@ public class PlayerQuitHandler implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
+        if (!event.getPlayer().getWorld().getName().equals(HippoPractice.INSTANCE.worldName)) return;
+        handleQuit(event.getPlayer(), parentPlugin);
+    }
+
+    public static void handleQuit(Player player, HippoPractice parentPlugin) {
         UUID uuid = player.getUniqueId();
         parentPlugin.playerMap.remove(uuid);
     }

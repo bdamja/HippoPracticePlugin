@@ -26,6 +26,7 @@ public class BlockPlaceHandler implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
+        if (!event.getPlayer().getWorld().getName().equals(parentPlugin.worldName)) return;
         if (event.getBlock().getType().equals(Material.REDSTONE_WIRE)) {
             event.setCancelled(true);
             return;

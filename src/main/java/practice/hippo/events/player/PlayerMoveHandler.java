@@ -22,6 +22,7 @@ public class PlayerMoveHandler implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) throws IOException {
+        if (!event.getPlayer().getWorld().getName().equals(HippoPractice.INSTANCE.worldName)) return;
         Player player = event.getPlayer();
         HippoPlayer hippoPlayer = parentPlugin.getHippoPlayer(player);
         if (hippoPlayer != null) {

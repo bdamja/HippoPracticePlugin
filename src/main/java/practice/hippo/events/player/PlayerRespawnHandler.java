@@ -17,6 +17,7 @@ public class PlayerRespawnHandler implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) throws IOException {
+        if (!event.getPlayer().getWorld().getName().equals(HippoPractice.INSTANCE.worldName)) return;
         parentPlugin.resetPlayerAndSendToSpawn(event.getPlayer());
     }
 
