@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import practice.hippo.HippoPractice;
 import practice.hippo.logic.Plot;
 
 import java.util.LinkedList;
@@ -129,7 +130,7 @@ public class Offset {
                 offsetX *= -1;
                 offsetZ *= -1;
             }
-            originalBlockPositions.offer(new Location(Bukkit.getWorld("world"), offsetX, block.getY(), offsetZ));
+            originalBlockPositions.offer(new Location(Bukkit.getWorld(HippoPractice.INSTANCE.worldName), offsetX, block.getY(), offsetZ));
         }
         return originalBlockPositions;
     }

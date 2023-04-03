@@ -44,6 +44,8 @@ import static practice.hippo.util.Side.red;
 
 public class HippoPractice extends JavaPlugin implements Listener {
 
+    public static HippoPractice INSTANCE;
+
     public static final int VOID_LEVEL = 83;
     public static final int NUM_PARTICLES = 350;
     public static final int DISTANCE_BETWEEN_PLOTS = 41;
@@ -65,11 +67,12 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        INSTANCE = this;
         PluginManager pluginManager = this.getServer().getPluginManager();
         registerEventListeners(pluginManager);
         setDefaultGameRules();
         readConfigValues();
-        schematicPaster = new SchematicLogic(this, Bukkit.getWorld("world"));
+        schematicPaster = new SchematicLogic(this, Bukkit.getWorld(worldName));
         PaperCommandManager manager = new PaperCommandManager(this);
         manager.registerCommand(new HippoPracticeCommand(this));
         try {
@@ -111,7 +114,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     private void setDefaultGameRules() {
-        world = Bukkit.getWorld("world");
+        world = Bukkit.getWorld(worldName);
         world.setGameRuleValue("keepInventory", "true");
         world.setGameRuleValue("naturalRegeneration", "false");
         world.setGameRuleValue("doDaylightCycle", "false");
@@ -119,6 +122,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     private void readConfigValues() {
+        worldName = getConfig().getString("world_name");
         ip = getConfig().getString("ip");
         commandCooldownMilliseconds = getConfig().getLong("command_cooldown_ms");
         this.saveConfig();

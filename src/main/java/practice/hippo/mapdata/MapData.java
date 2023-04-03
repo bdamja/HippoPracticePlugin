@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import practice.hippo.HippoPractice;
 import practice.hippo.logic.ChatLogic;
 import practice.hippo.util.BoundingBox;
 
@@ -63,7 +64,7 @@ public class MapData {
     }
 
     public Location getSpawnPoint() {
-        return new Location(Bukkit.getWorld("world"), spawnPoint.x, spawnPoint.y, spawnPoint.z, spawnPoint.yaw, spawnPoint.pitch);
+        return new Location(Bukkit.getWorld(HippoPractice.INSTANCE.worldName), spawnPoint.x, spawnPoint.y, spawnPoint.z, spawnPoint.yaw, spawnPoint.pitch);
     }
 
     public BoundingBox getBuildLimits() {
