@@ -17,6 +17,8 @@ import practice.hippo.HippoPractice;
 import practice.hippo.hippodata.HippoData;
 import practice.hippo.logic.ChatLogic;
 import practice.hippo.logic.HippoPlayer;
+import practice.hippo.playerdata.MapPB;
+import practice.hippo.util.MongoDB;
 import practice.hippo.util.Offset;
 
 import java.io.FileNotFoundException;
@@ -183,6 +185,20 @@ public class HippoPracticeCommand extends BaseCommand {
         Player player = (Player) sender;
         parentPlugin.resetPlayerAndSendToSpawn(player);
         parentPlugin.resetMap(player);
+    }
+
+    @Subcommand("lb|lbs|leaderboard|leaderboards")
+    @Description("Display the leaderboard for a certain map")
+    public void onLeaderboard(CommandSender sender, String[] args) {
+        Player player = (Player) sender;
+        if (args.length > 0) {
+            String mapName = args[0];
+            StringBuilder msg = new StringBuilder().append("Leaderboard for ").append(mapName);
+            for (MapPB mapPB : MongoDB.getTimeLeaderboardFromMap(mapName)) {
+                msg.append("\n").append(mapPB.getPersonalBestMs());
+            }
+            player.sendMessage(msg.toString());
+        }
     }
 
 }

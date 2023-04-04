@@ -1,15 +1,14 @@
 package practice.hippo.util;
 
 import com.google.gson.Gson;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import com.mongodb.client.model.ReplaceOptions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import practice.hippo.hippodata.HippoData;
 import practice.hippo.mapdata.MapData;
+import practice.hippo.playerdata.MapPB;
+import practice.hippo.playerdata.PlayerData;
 import practice.hippo.playerdata.PlayerDataFormat;
 
 import java.util.ArrayList;
@@ -102,5 +101,19 @@ public class MongoDB {
 
     public static void close() {
         mongo.close();
+    }
+
+    public static ArrayList<MapPB> getTimeLeaderboardFromMap(String mapName) {
+        ArrayList<MapPB> result = new ArrayList<>();
+        FindIterable<Document> collection = database.getCollection("playerdata").find();
+        Gson gson = new Gson();
+        for (Document document : collection) {
+            PlayerDataFormat data = gson.fromJson(document.toJson(), PlayerDataFormat.class);
+            MapPB pb = data.getMapPB(mapName);
+            if (pb != null) {
+                result.add(pb);
+            }
+        }
+        return result;
     }
 }

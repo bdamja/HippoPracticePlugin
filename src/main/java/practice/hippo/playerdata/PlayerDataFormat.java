@@ -79,4 +79,13 @@ public class PlayerDataFormat {
     public void setPlayerUUID(String playerUUID) {
         this.playerUUID = playerUUID;
     }
+
+    public MapPB getMapPB(String mapName) {
+        for (MapPB potentialPB : personalBests) {
+            if (potentialPB.getMapName().equals(mapName)) {
+                return potentialPB;
+            }
+        }
+        return null;
+    }
 }
