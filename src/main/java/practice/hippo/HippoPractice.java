@@ -418,7 +418,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
                 if (!personalBest.equals("0.000")) {
                     msg = msg.concat("\n" + ChatColor.GRAY + "  » " + mapNameFormatted + ChatColor.GRAY + ": " + ChatColor.AQUA + personalBest);
                 } else {
-                    if (new File(getPluginsDirSubdir("hippodata") + File.separator + mapName + ".json").exists()) {
+                    if (doesHippoExist(mapName)) {
                         completeTimesheet = false;
                     }
                 }
@@ -431,6 +431,14 @@ public class HippoPractice extends JavaPlugin implements Listener {
             return msg;
         } else {
             return null;
+        }
+    }
+
+    public boolean doesHippoExist(String mapName) {
+        if (USE_DATABASE) {
+            return MongoDB.doesHippoExist(mapName);
+        } else {
+            return new File(getPluginsDirSubdir("hippodata") + File.separator + mapName + ".json").exists();
         }
     }
 

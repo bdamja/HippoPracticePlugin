@@ -15,11 +15,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import practice.hippo.HippoPractice;
 import practice.hippo.hippodata.HippoData;
-import practice.hippo.leaderboard.LeaderboardLogic;
+import practice.hippo.logic.LeaderboardLogic;
 import practice.hippo.logic.ChatLogic;
 import practice.hippo.logic.HippoPlayer;
-import practice.hippo.playerdata.MapPB;
-import practice.hippo.util.MongoDB;
 import practice.hippo.util.Offset;
 
 import java.io.FileNotFoundException;
@@ -189,12 +187,14 @@ public class HippoPracticeCommand extends BaseCommand {
     }
 
     @Subcommand("lb|lbs|leaderboard|leaderboards")
+    @Syntax("<map> <page>")
+    @CommandCompletion("@mapNames")
     @Description("Display the leaderboard for a certain map")
     public void onLeaderboard(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         if (args.length > 0) {
             String mapName = args[0];
-            if (HippoPractice.maps.containsKey(mapName)) {
+            if (HippoPractice.maps.containsKey(mapName) || mapName.equals("total") || mapName.equals("overall")) {
                 String mapNameFormatted = HippoPractice.maps.get(mapName);
                 int page = 1;
                 if (args.length > 1) {

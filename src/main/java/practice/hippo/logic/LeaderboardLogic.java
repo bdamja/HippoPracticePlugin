@@ -1,4 +1,4 @@
-package practice.hippo.leaderboard;
+package practice.hippo.logic;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -14,7 +14,13 @@ public class LeaderboardLogic {
     private static final int MAX_PLAYERS_PER_LINE = 10;
 
     public static TextComponent getLeaderboardForMap(String playerName, String mapName, String mapNameFormatted, int page) {
-        HashMap<String, Long> sortedLB = sortPlayerTimeMap(MongoDB.getTimeLeaderboardFromMap(mapName));
+        HashMap<String, Long> sortedLB;
+        if (mapName.equals("total") || mapName.equals("overall")) {
+            mapNameFormatted = "§7Overall";
+            sortedLB = sortPlayerTimeMap(MongoDB.getTotalTimeLeaderboard());
+        } else {
+            sortedLB = sortPlayerTimeMap(MongoDB.getTimeLeaderboardFromMap(mapName));
+        }
         int maxPage = 1 + sortedLB.size() / MAX_PLAYERS_PER_LINE;
         if (page > maxPage) {
             page = maxPage;
@@ -45,7 +51,7 @@ public class LeaderboardLogic {
                 String position = String.valueOf(i + 1);
                 String name = (String) sortedLB.keySet().toArray()[i];
                 String time = Timer.computeTimeFormatted((Long) (sortedLB.values().toArray()[i]));
-                if (i == 0) {
+                if (sortedLB.values().toArray()[i] == sortedLB.values().toArray()[0]) {
                     name = "§b" + name;
                     time = "§f" + time + " §e✴";
                 }

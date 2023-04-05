@@ -100,10 +100,6 @@ public class MongoDB {
         playerDataCollection.replaceOne(filter, document, options);
     }
 
-    public static void close() {
-        mongo.close();
-    }
-
     public static HashMap<String, Long> getTimeLeaderboardFromMap(String mapName) {
         HashMap<String, Long> result = new HashMap<>();
         FindIterable<Document> collection = database.getCollection("playerdata").find();
@@ -116,5 +112,28 @@ public class MongoDB {
             }
         }
         return result;
+    }
+
+    public static HashMap<String, Long> getTotalTimeLeaderboard() {
+        HashMap<String, Long> result = new HashMap<>();
+        FindIterable<Document> collection = database.getCollection("playerdata").find();
+        Gson gson = new Gson();
+        for (Document document : collection) {
+            PlayerDataFormat data = gson.fromJson(document.toJson(), PlayerDataFormat.class);
+            if (data.hasCompleteTimesheet()) {
+                result.put(data.getPlayerName(), data.getTotalTime());
+            }
+        }
+        return result;
+    }
+
+    public static boolean doesHippoExist(String mapName) {
+        Bson filter = eq("map_name", mapName);
+        Document hippoDocument = database.getCollection("hippodata").find(filter).first();
+        return hippoDocument != null;
+    }
+
+    public static void close() {
+        mongo.close();
     }
 }

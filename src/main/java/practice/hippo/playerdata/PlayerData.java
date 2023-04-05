@@ -116,6 +116,7 @@ public class PlayerData {
             }
         }
         if (found) {
+            data.update();
             HippoPractice.uploadPlayerData(this);;
         }
     }

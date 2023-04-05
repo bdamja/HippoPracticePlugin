@@ -1,6 +1,7 @@
 package practice.hippo.playerdata;
 
 import com.google.gson.annotations.SerializedName;
+import practice.hippo.util.MongoDB;
 
 import java.util.ArrayList;
 
@@ -14,6 +15,12 @@ public class PlayerDataFormat {
 
     @SerializedName("personal_bests")
     private ArrayList<MapPB> personalBests;
+
+    @SerializedName("total_time")
+    private long totalTime;
+
+    @SerializedName("has_complete_timesheet")
+    private boolean hasCompleteTimesheet;
 
     @SerializedName("pick_slot")
     private int pickSlot;
@@ -30,6 +37,8 @@ public class PlayerDataFormat {
     public PlayerDataFormat(String playerName) {
         this.playerName = playerName;
         this.personalBests = new ArrayList<>();
+        this.totalTime = setTotalTime();
+        this.hasCompleteTimesheet = setCompleteTimesheet();
     }
 
     public void addPB(MapPB mapPB) {
@@ -95,5 +104,39 @@ public class PlayerDataFormat {
             }
         }
         return null;
+    }
+
+    public long setTotalTime() {
+        long total = 0;
+        for (MapPB mapPB : personalBests) {
+            long time = mapPB.getPersonalBestMs();
+            if (time == -1) {
+                time = 0;
+            }
+            total += time;
+        }
+        return total;
+    }
+
+    public long getTotalTime() {
+        return totalTime;
+    }
+
+    public boolean setCompleteTimesheet() {
+        for (MapPB mapPB : personalBests) {
+            if (mapPB.getPersonalBestMs() == -1 && MongoDB.doesHippoExist(mapPB.getMapName())) {
+                return false;
+            }
+        }
+        return !personalBests.isEmpty();
+    }
+
+    public boolean hasCompleteTimesheet() {
+        return hasCompleteTimesheet;
+    }
+
+    public void update() {
+        this.totalTime = setTotalTime();
+        this.hasCompleteTimesheet = setCompleteTimesheet();
     }
 }
