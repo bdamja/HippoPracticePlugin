@@ -202,7 +202,7 @@ public class HippoPracticeCommand extends BaseCommand {
                         page = Integer.parseInt(args[1]);
                     } catch (NumberFormatException ignored) { }
                 }
-                player.sendMessage(LeaderboardLogic.getLeaderboardForMap(mapName, mapNameFormatted, page));
+                player.spigot().sendMessage(new TextComponent(LeaderboardLogic.getLeaderboardForMap(player.getName(), mapName, mapNameFormatted, page)));
             } else {
                 ChatLogic.sendMessageToPlayer(ChatColor.RED + "Map not found. Do /hp maps to see a list of all maps", player);
             }
