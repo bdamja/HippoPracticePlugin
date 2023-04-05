@@ -27,12 +27,12 @@ public class LeaderboardLogic {
                 String name = (String) sortedLB.keySet().toArray()[i];
                 String time = Timer.computeTimeFormatted((Long) (sortedLB.values().toArray()[i]));
                 if (i == 0) {
-                    name = "§l" + name;
+                    name = "§b" + name;
                     time = "§f" + time + " §e✴";
                 }
                 response.append("\n§7")
                         .append(position)
-                        .append(". §b")
+                        .append(". §3")
                         .append(name)
                         .append(" §7- §f")
                         .append(time);
