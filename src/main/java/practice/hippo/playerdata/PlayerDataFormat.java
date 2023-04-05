@@ -80,6 +80,14 @@ public class PlayerDataFormat {
         this.playerUUID = playerUUID;
     }
 
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
     public MapPB getMapPB(String mapName) {
         for (MapPB potentialPB : personalBests) {
             if (potentialPB.getMapName().equals(mapName)) {

@@ -17,7 +17,7 @@ public class PlayerData {
 
     public static final long DEFAULT_PB_IN_MS = -1;
 
-    private final HippoPractice parentPlugin;
+    private HippoPractice parentPlugin;
     private final String playerName;
     private final String playerUUID;
     private PlayerDataFormat data;
@@ -28,6 +28,12 @@ public class PlayerData {
         this.playerUUID = playerUUID;
         this.data = readData();
         HippoPractice.uploadPlayerData(this);
+    }
+
+    public PlayerData(String playerName, String playerUUID) throws FileNotFoundException { // FOR TESTING ONLY
+        this.playerName = playerName;
+        this.playerUUID = playerUUID;
+        this.data = setDefaults();
     }
 
     private PlayerDataFormat readData() throws FileNotFoundException {

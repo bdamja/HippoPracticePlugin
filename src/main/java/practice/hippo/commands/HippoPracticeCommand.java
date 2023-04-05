@@ -15,6 +15,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import practice.hippo.HippoPractice;
 import practice.hippo.hippodata.HippoData;
+import practice.hippo.leaderboard.LeaderboardLogic;
 import practice.hippo.logic.ChatLogic;
 import practice.hippo.logic.HippoPlayer;
 import practice.hippo.playerdata.MapPB;
@@ -193,11 +194,20 @@ public class HippoPracticeCommand extends BaseCommand {
         Player player = (Player) sender;
         if (args.length > 0) {
             String mapName = args[0];
-            StringBuilder msg = new StringBuilder().append("Leaderboard for ").append(mapName);
-            for (MapPB mapPB : MongoDB.getTimeLeaderboardFromMap(mapName)) {
-                msg.append("\n").append(mapPB.getPersonalBestMs());
+            if (HippoPractice.maps.containsKey(mapName)) {
+                String mapNameFormatted = HippoPractice.maps.get(mapName);
+                int page = 1;
+                if (args.length > 1) {
+                    try {
+                        page = Integer.parseInt(args[1]);
+                    } catch (NumberFormatException ignored) { }
+                }
+                player.sendMessage(LeaderboardLogic.getLeaderboardForMap(mapName, mapNameFormatted, page));
+            } else {
+                ChatLogic.sendMessageToPlayer(ChatColor.RED + "Map not found. Do /hp maps to see a list of all maps", player);
             }
-            player.sendMessage(msg.toString());
+        } else {
+            ChatLogic.sendMessageToPlayer(ChatColor.RED + "Usage: /leaderboard <map> <page>", player);
         }
     }
 

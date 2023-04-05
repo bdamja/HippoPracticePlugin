@@ -12,6 +12,7 @@ import practice.hippo.playerdata.PlayerData;
 import practice.hippo.playerdata.PlayerDataFormat;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -103,15 +104,15 @@ public class MongoDB {
         mongo.close();
     }
 
-    public static ArrayList<MapPB> getTimeLeaderboardFromMap(String mapName) {
-        ArrayList<MapPB> result = new ArrayList<>();
+    public static HashMap<String, Long> getTimeLeaderboardFromMap(String mapName) {
+        HashMap<String, Long> result = new HashMap<>();
         FindIterable<Document> collection = database.getCollection("playerdata").find();
         Gson gson = new Gson();
         for (Document document : collection) {
             PlayerDataFormat data = gson.fromJson(document.toJson(), PlayerDataFormat.class);
             MapPB pb = data.getMapPB(mapName);
-            if (pb != null) {
-                result.add(pb);
+            if (pb != null && pb.getPersonalBestMs() != -1) {
+                result.put(data.getPlayerName(), pb.getPersonalBestMs());
             }
         }
         return result;
