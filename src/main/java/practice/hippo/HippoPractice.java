@@ -4,6 +4,8 @@ import co.aikar.commands.PaperCommandManager;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.*;
@@ -59,6 +61,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     public static SchematicLogic schematicPaster = null;
     public World world;
+    public HolographicDisplaysAPI holographicDisplaysAPI;
     public static TreeMap<String, String> maps = new TreeMap<>();
     public static ArrayList<String> kitActions = new ArrayList<String>(){ { add("edit"); add("save"); } };
     private static final ArrayList<Plot> plots = new ArrayList<>();
@@ -88,6 +91,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         if (USE_DATABASE) {
             MongoDB.init();
         }
+        holographicDisplaysAPI = HolographicDisplaysAPI.get(this);
     }
 
     @Override
@@ -229,6 +233,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
             scoreboardLogic.updateMapName(player, hippoPlayer.mapText());
             scoreboardLogic.updatePB(hippoPlayer.getPlayerData(), hippoPlayer.getMapName());
             reloadChunks(player);
+            hippoPlayer.updateLeaderboardsFully();
         }
     }
 

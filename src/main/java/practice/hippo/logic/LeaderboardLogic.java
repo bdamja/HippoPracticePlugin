@@ -1,9 +1,13 @@
 package practice.hippo.logic;
 
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Location;
+import practice.hippo.HippoPractice;
 import practice.hippo.logic.Timer;
 import practice.hippo.util.MongoDB;
 
@@ -91,6 +95,16 @@ public class LeaderboardLogic {
             }
         }
         return null;
+    }
+
+    public static void createHologram(HippoPractice plugin) {
+        HolographicDisplaysAPI api = HolographicDisplaysAPI.get(plugin);
+        Hologram individualLeaderboard = api.createHologram(new Location(plugin.getServer().getWorld(plugin.worldName), 0, 100, 0));
+        individualLeaderboard.getLines().clear();
+        individualLeaderboard.getLines().appendText("Leaderboard for Aquatica");
+        individualLeaderboard.getLines().appendText("Leaderboard for Aquatica");
+        individualLeaderboard.getLines().appendText("Leaderboard for Aquatica");
+
     }
 
 }

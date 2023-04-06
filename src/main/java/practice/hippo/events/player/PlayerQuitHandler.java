@@ -24,6 +24,7 @@ public class PlayerQuitHandler implements Listener {
 
     public static void handleQuit(Player player, HippoPractice parentPlugin) {
         UUID uuid = player.getUniqueId();
+        parentPlugin.getHippoPlayer(player).deleteLeaderboards();
         parentPlugin.playerMap.remove(uuid);
     }
 

@@ -3,6 +3,8 @@ package practice.hippo.logic;
 import com.google.gson.Gson;
 
 import static com.mongodb.client.model.Filters.eq;
+
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.*;
@@ -40,6 +42,8 @@ public class HippoPlayer {
     private Timer timer;
     private BukkitTask visualTimer;
     private BukkitTask particleSummoner;
+    private Hologram mapLeaderboardHologram;
+    private Hologram overallLeaderboardHologram;
     public boolean hasFinishedHippo;
     public boolean awaitingMove;
     public boolean awaitingLeftClick;
@@ -62,6 +66,8 @@ public class HippoPlayer {
         this.isEditingKit = false;
         this.hippoBlocks = getLocationFromHippoFile(mapName);
         readMapData(mapName);
+        this.mapLeaderboardHologram = parentPlugin.holographicDisplaysAPI.createHologram(getViewLocation());
+        this.overallLeaderboardHologram = parentPlugin.holographicDisplaysAPI.createHologram(getViewLocation());
     }
 
     private void readMapData(String mapName) throws FileNotFoundException {
@@ -267,6 +273,15 @@ public class HippoPlayer {
             if (hippoPlayer.getParticleSummoner() != null) {
                 hippoPlayer.getParticleSummoner().cancel();
             }
+            if (hippoPlayer.overallLeaderboardHologram != null) {
+                hippoPlayer.overallLeaderboardHologram.getLines().clear();
+                System.out.println("deleting");
+                hippoPlayer.overallLeaderboardHologram.;
+            }
+            if (hippoPlayer.mapLeaderboardHologram != null) {
+                hippoPlayer.mapLeaderboardHologram.getLines().clear();
+                hippoPlayer.mapLeaderboardHologram.delete();
+            }
         }
     }
 
@@ -315,5 +330,27 @@ public class HippoPlayer {
 
     public PlayerData getPlayerData() {
         return this.playerData;
+    }
+
+    public void updateLeaderboardsFully() {
+        this.mapLeaderboardHologram = parentPlugin.holographicDisplaysAPI.createHologram(getViewLocation());
+        this.overallLeaderboardHologram = parentPlugin.holographicDisplaysAPI.createHologram(getViewLocation());
+        updateLeaderboardPosition();
+        updateLeaderboardTime();
+    }
+
+    public void updateLeaderboardTime() {
+        mapLeaderboardHologram.getLines().appendText("§7Leaderboard for " + mapText());
+        overallLeaderboardHologram.getLines().appendText("§7Overall Leaderboard");
+    }
+
+    public void updateLeaderboardPosition() {
+        mapLeaderboardHologram.setPosition(Offset.location(this.plot, this.world, mapData.getSpawnPoint().getX() - 4, mapData.getSpawnPoint().getY(), mapData.getSpawnPoint().getZ() + 4, false));
+        overallLeaderboardHologram.setPosition(Offset.location(this.plot, this.world, mapData.getSpawnPoint().getX() - 4, mapData.getSpawnPoint().getY(), mapData.getSpawnPoint().getZ() - 4, false));
+    }
+
+    public void deleteLeaderboards() {
+        mapLeaderboardHologram.delete();
+        overallLeaderboardHologram.delete();
     }
 }
