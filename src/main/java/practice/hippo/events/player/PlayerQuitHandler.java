@@ -19,6 +19,7 @@ public class PlayerQuitHandler implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         if (!event.getPlayer().getWorld().getName().equals(HippoPractice.INSTANCE.worldName)) return;
+        event.setQuitMessage("§b" + event.getPlayer().getName() + " §7has left.");
         handleQuit(event.getPlayer(), parentPlugin);
     }
 

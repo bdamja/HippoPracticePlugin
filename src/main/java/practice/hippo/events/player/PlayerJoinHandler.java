@@ -1,5 +1,6 @@
 package practice.hippo.events.player;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,7 +23,7 @@ public class PlayerJoinHandler implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) throws IOException {
         if (!event.getPlayer().getWorld().getName().equals(HippoPractice.INSTANCE.worldName)) return;
-        event.setJoinMessage("");
+        event.setJoinMessage("§b" + event.getPlayer().getName() + " §7has joined.");
         handleJoin(event.getPlayer(), parentPlugin);
     }
 

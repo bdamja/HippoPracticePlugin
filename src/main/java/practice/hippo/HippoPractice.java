@@ -104,6 +104,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     private void registerEventListeners(PluginManager pluginManager) {
         pluginManager.registerEvents(this, this);
         pluginManager.registerEvents(new PlayerJoinHandler(this), this);
+        pluginManager.registerEvents(new PlayerQuitHandler(this), this);
         pluginManager.registerEvents(new EntityDamageHandler(), this);
         pluginManager.registerEvents(new PlayerMoveHandler(this), this);
         pluginManager.registerEvents(new PlayerDropItemHandler(), this);
