@@ -172,7 +172,7 @@ public class HippoPlayer {
         return new Location(this.world, 2.5, 93.0, 0.5, -90, 0);
     }
 
-    private ArrayList<Location> getLocationFromHippoFile(String mapName) throws FileNotFoundException {
+    public ArrayList<Location> getLocationFromHippoFile(String mapName) throws FileNotFoundException {
         if (HippoPractice.USE_DATABASE) {
             hippoData = MongoDB.getHippoDataFromDocument(mapName);
         } else {

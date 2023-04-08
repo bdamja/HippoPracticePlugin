@@ -34,6 +34,9 @@ public class PlayerDataFormat {
     @SerializedName("reset_item_slot")
     private int resetItemSlot;
 
+    @SerializedName("settings_slot")
+    private int settingsItemSlot;
+
     public PlayerDataFormat(String playerName) {
         this.playerName = playerName;
         this.personalBests = new ArrayList<>();
@@ -79,6 +82,14 @@ public class PlayerDataFormat {
 
     public void setResetItemSlot(int slot) {
         this.resetItemSlot = slot;
+    }
+
+    public int getSettingsItemSlot() {
+        return settingsItemSlot;
+    }
+
+    public void setSettingsItemSlot(int settingsItemSlot) {
+        this.settingsItemSlot = settingsItemSlot;
     }
 
     public String getPlayerUUID() {

@@ -63,6 +63,7 @@ public class PlayerData {
         data.setBlocks1Slot(InventoryLogic.DEFAULT_BLOCKS1_SLOT);
         data.setBlocks2Slot(InventoryLogic.DEFAULT_BLOCKS2_SLOT);
         data.setResetItemSlot(InventoryLogic.DEFAULT_RESET_ITEM_SLOT);
+        data.setSettingsItemSlot(InventoryLogic.DEFAULT_SETTINGS_ITEM_SLOT);
         for (Map.Entry<String, String> mapElement : HippoPractice.maps.entrySet()) {
             MapPB mapPB = new MapPB(mapElement.getKey(), DEFAULT_PB_IN_MS);
             data.addPB(mapPB);
@@ -151,5 +152,13 @@ public class PlayerData {
 
     public void setResetItemSlot(int slot) {
         data.setResetItemSlot(slot);
+    }
+
+    public int getSettingsItemSlot() {
+        return data.getSettingsItemSlot();
+    }
+
+    public void setSettingsItemSlot(int slot) {
+        data.setSettingsItemSlot(slot);
     }
 }
