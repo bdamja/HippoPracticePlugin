@@ -14,6 +14,7 @@ public class PlayerChangedWorldHandler implements Listener {
         if (event.getFrom().getName().equals(HippoPractice.INSTANCE.worldName)) {
             PlayerQuitHandler.handleQuit(event.getPlayer(), HippoPractice.INSTANCE);
         } else {
+            System.out.println("pawg");
             PlayerJoinHandler.handleJoin(event.getPlayer(), HippoPractice.INSTANCE);
         }
     }

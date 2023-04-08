@@ -66,8 +66,6 @@ public class HippoPlayer {
         this.isEditingKit = false;
         this.hippoBlocks = getLocationFromHippoFile(mapName);
         readMapData(mapName);
-        this.mapLeaderboardHologram = parentPlugin.holographicDisplaysAPI.createHologram(getViewLocation());
-        this.overallLeaderboardHologram = parentPlugin.holographicDisplaysAPI.createHologram(getViewLocation());
     }
 
     private void readMapData(String mapName) throws FileNotFoundException {
@@ -274,12 +272,9 @@ public class HippoPlayer {
                 hippoPlayer.getParticleSummoner().cancel();
             }
             if (hippoPlayer.overallLeaderboardHologram != null) {
-                hippoPlayer.overallLeaderboardHologram.getLines().clear();
-                System.out.println("deleting");
-                hippoPlayer.overallLeaderboardHologram.;
+                hippoPlayer.overallLeaderboardHologram.delete();
             }
             if (hippoPlayer.mapLeaderboardHologram != null) {
-                hippoPlayer.mapLeaderboardHologram.getLines().clear();
                 hippoPlayer.mapLeaderboardHologram.delete();
             }
         }
@@ -345,8 +340,8 @@ public class HippoPlayer {
     }
 
     public void updateLeaderboardPosition() {
-        mapLeaderboardHologram.setPosition(Offset.location(this.plot, this.world, mapData.getSpawnPoint().getX() - 4, mapData.getSpawnPoint().getY(), mapData.getSpawnPoint().getZ() + 4, false));
-        overallLeaderboardHologram.setPosition(Offset.location(this.plot, this.world, mapData.getSpawnPoint().getX() - 4, mapData.getSpawnPoint().getY(), mapData.getSpawnPoint().getZ() - 4, false));
+        mapLeaderboardHologram.setPosition(Offset.location(this.plot, this.world, mapData.getSpawnPoint().getX() - 2, mapData.getSpawnPoint().getY() + 1, mapData.getSpawnPoint().getZ() + 4, false));
+        overallLeaderboardHologram.setPosition(Offset.location(this.plot, this.world, mapData.getSpawnPoint().getX() - 2, mapData.getSpawnPoint().getY() + 1, mapData.getSpawnPoint().getZ() - 4, false));
     }
 
     public void deleteLeaderboards() {

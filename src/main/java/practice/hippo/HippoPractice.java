@@ -194,6 +194,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         hippoPlayer = new HippoPlayer(plot, world, mapName, player, this);
         playerMap.replace(player.getUniqueId(), hippoPlayer);
         hippoPlayer.resetVisualTimer();
+        hippoPlayer.updateLeaderboardsFully();
     }
 
     public void removeAllBlocksPlacedByPlayer(Player player) {
@@ -233,7 +234,6 @@ public class HippoPractice extends JavaPlugin implements Listener {
             scoreboardLogic.updateMapName(player, hippoPlayer.mapText());
             scoreboardLogic.updatePB(hippoPlayer.getPlayerData(), hippoPlayer.getMapName());
             reloadChunks(player);
-            hippoPlayer.updateLeaderboardsFully();
         }
     }
 
