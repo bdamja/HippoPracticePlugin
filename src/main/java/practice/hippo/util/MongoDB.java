@@ -133,6 +133,10 @@ public class MongoDB {
         return hippoDocument != null;
     }
 
+    public static FindIterable<Document> getAllMaps() {
+        return database.getCollection("mapdata").find();
+    }
+
     public static void close() {
         mongo.close();
     }

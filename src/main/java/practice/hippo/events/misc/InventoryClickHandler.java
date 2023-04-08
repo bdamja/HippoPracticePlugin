@@ -10,6 +10,7 @@ import practice.hippo.HippoPractice;
 import practice.hippo.logic.ItemGUIManager;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class InventoryClickHandler implements Listener {
 
@@ -20,7 +21,7 @@ public class InventoryClickHandler implements Listener {
     }
 
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) throws FileNotFoundException {
+    public void onInventoryClick(InventoryClickEvent event) throws IOException {
         if (!event.getWhoClicked().getWorld().getName().equals(parentPlugin.worldName)) return;
         Player player = (Player) event.getWhoClicked();
         HippoPlayer hippoPlayer = parentPlugin.getHippoPlayer(player);
