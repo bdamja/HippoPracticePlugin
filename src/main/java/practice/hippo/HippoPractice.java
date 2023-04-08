@@ -4,6 +4,8 @@ import co.aikar.commands.PaperCommandManager;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.*;
@@ -34,6 +36,7 @@ import practice.hippo.playerdata.PlayerData;
 import practice.hippo.playerdata.PlayerDataFormat;
 import practice.hippo.util.MongoDB;
 import practice.hippo.util.Offset;
+import practice.hippo.util.Test;
 import practice.hippo.util.UUIDFetcher;
 
 import java.io.*;
@@ -58,6 +61,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     public static SchematicLogic schematicPaster = null;
     public World world;
+    public HolographicDisplaysAPI holographicDisplaysAPI;
     public static TreeMap<String, String> maps = new TreeMap<>();
     public static ArrayList<String> kitActions = new ArrayList<String>(){ { add("edit"); add("save"); } };
     private static final ArrayList<Plot> plots = new ArrayList<>();
@@ -87,6 +91,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         if (USE_DATABASE) {
             MongoDB.init();
         }
+        holographicDisplaysAPI = HolographicDisplaysAPI.get(this);
     }
 
     @Override
@@ -189,6 +194,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         hippoPlayer = new HippoPlayer(plot, world, mapName, player, this);
         playerMap.replace(player.getUniqueId(), hippoPlayer);
         hippoPlayer.resetVisualTimer();
+        hippoPlayer.updateLeaderboardsFully();
     }
 
     public void removeAllBlocksPlacedByPlayer(Player player) {
@@ -255,6 +261,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         hippoPlayer.hasFinishedHippo = true;
         hippoPlayer.stopVisualTimer();
         hippoPlayer.updateVisualTimer(player.getScoreboard(), finalTime);
+        hippoPlayer.updateLeaderboardsFully();
         checkNewPB(hippoPlayer.getPlayerData(), hippoPlayer.getMapData().getMapName(), ms);
     }
 
@@ -417,7 +424,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
                 if (!personalBest.equals("0.000")) {
                     msg = msg.concat("\n" + ChatColor.GRAY + "  » " + mapNameFormatted + ChatColor.GRAY + ": " + ChatColor.AQUA + personalBest);
                 } else {
-                    if (new File(getPluginsDirSubdir("hippodata") + File.separator + mapName + ".json").exists()) {
+                    if (doesHippoExist(mapName)) {
                         completeTimesheet = false;
                     }
                 }
@@ -430,6 +437,14 @@ public class HippoPractice extends JavaPlugin implements Listener {
             return msg;
         } else {
             return null;
+        }
+    }
+
+    public boolean doesHippoExist(String mapName) {
+        if (USE_DATABASE) {
+            return MongoDB.doesHippoExist(mapName);
+        } else {
+            return new File(getPluginsDirSubdir("hippodata") + File.separator + mapName + ".json").exists();
         }
     }
 

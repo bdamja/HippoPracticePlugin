@@ -15,6 +15,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import practice.hippo.HippoPractice;
 import practice.hippo.hippodata.HippoData;
+import practice.hippo.logic.LeaderboardLogic;
 import practice.hippo.logic.ChatLogic;
 import practice.hippo.logic.HippoPlayer;
 import practice.hippo.util.Offset;
@@ -185,4 +186,28 @@ public class HippoPracticeCommand extends BaseCommand {
         parentPlugin.resetMap(player);
     }
 
+    @Subcommand("lb|lbs|leaderboard|leaderboards")
+    @Syntax("<map> <page>")
+    @CommandCompletion("@mapNames")
+    @Description("Display the leaderboard for a certain map")
+    public void onLeaderboard(CommandSender sender, String[] args) {
+        Player player = (Player) sender;
+        if (args.length > 0) {
+            String mapName = args[0];
+            if (HippoPractice.maps.containsKey(mapName) || mapName.equals("total") || mapName.equals("overall")) {
+                String mapNameFormatted = HippoPractice.maps.get(mapName);
+                int page = 1;
+                if (args.length > 1) {
+                    try {
+                        page = Integer.parseInt(args[1]);
+                    } catch (NumberFormatException ignored) { }
+                }
+                player.spigot().sendMessage(new TextComponent(LeaderboardLogic.getLeaderboardForMap(player.getName(), mapName, mapNameFormatted, page)));
+            } else {
+                ChatLogic.sendMessageToPlayer(ChatColor.RED + "Map not found. Do /hp maps to see a list of all maps", player);
+            }
+        } else {
+            ChatLogic.sendMessageToPlayer(ChatColor.RED + "Usage: /leaderboard <map> <page>", player);
+        }
+    }
 }

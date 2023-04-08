@@ -52,7 +52,7 @@ public class MapData {
             String space = (i == 0) ? "" : " ";
             mapNameStr = mapNameStr.concat(space + words[i].substring(0, 1).toUpperCase() + words[i].substring(1));
         }
-        return "" + getMapColor() + mapNameStr;
+        return mapNameStr;
     }
 
     public String getBiomeRed() {

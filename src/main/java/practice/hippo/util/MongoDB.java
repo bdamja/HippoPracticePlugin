@@ -1,18 +1,18 @@
 package practice.hippo.util;
 
 import com.google.gson.Gson;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import com.mongodb.client.model.ReplaceOptions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import practice.hippo.hippodata.HippoData;
 import practice.hippo.mapdata.MapData;
+import practice.hippo.playerdata.MapPB;
+import practice.hippo.playerdata.PlayerData;
 import practice.hippo.playerdata.PlayerDataFormat;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -98,6 +98,39 @@ public class MongoDB {
         Bson filter = eq("player_uuid", uuid);
         ReplaceOptions options = new ReplaceOptions().upsert(true);
         playerDataCollection.replaceOne(filter, document, options);
+    }
+
+    public static HashMap<String, Long> getTimeLeaderboardFromMap(String mapName) {
+        HashMap<String, Long> result = new HashMap<>();
+        FindIterable<Document> collection = database.getCollection("playerdata").find();
+        Gson gson = new Gson();
+        for (Document document : collection) {
+            PlayerDataFormat data = gson.fromJson(document.toJson(), PlayerDataFormat.class);
+            MapPB pb = data.getMapPB(mapName);
+            if (pb != null && pb.getPersonalBestMs() != -1) {
+                result.put(data.getPlayerName(), pb.getPersonalBestMs());
+            }
+        }
+        return result;
+    }
+
+    public static HashMap<String, Long> getTotalTimeLeaderboard() {
+        HashMap<String, Long> result = new HashMap<>();
+        FindIterable<Document> collection = database.getCollection("playerdata").find();
+        Gson gson = new Gson();
+        for (Document document : collection) {
+            PlayerDataFormat data = gson.fromJson(document.toJson(), PlayerDataFormat.class);
+            if (data.hasCompleteTimesheet()) {
+                result.put(data.getPlayerName(), data.getTotalTime());
+            }
+        }
+        return result;
+    }
+
+    public static boolean doesHippoExist(String mapName) {
+        Bson filter = eq("map_name", mapName);
+        Document hippoDocument = database.getCollection("hippodata").find(filter).first();
+        return hippoDocument != null;
     }
 
     public static void close() {

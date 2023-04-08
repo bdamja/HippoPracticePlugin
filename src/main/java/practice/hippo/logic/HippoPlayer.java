@@ -3,6 +3,8 @@ package practice.hippo.logic;
 import com.google.gson.Gson;
 
 import static com.mongodb.client.model.Filters.eq;
+
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.*;
@@ -40,6 +42,8 @@ public class HippoPlayer {
     private Timer timer;
     private BukkitTask visualTimer;
     private BukkitTask particleSummoner;
+    private Hologram mapLeaderboardHologram;
+    private Hologram overallLeaderboardHologram;
     public boolean hasFinishedHippo;
     public boolean awaitingMove;
     public boolean awaitingLeftClick;
@@ -267,6 +271,12 @@ public class HippoPlayer {
             if (hippoPlayer.getParticleSummoner() != null) {
                 hippoPlayer.getParticleSummoner().cancel();
             }
+            if (hippoPlayer.overallLeaderboardHologram != null) {
+                hippoPlayer.overallLeaderboardHologram.delete();
+            }
+            if (hippoPlayer.mapLeaderboardHologram != null) {
+                hippoPlayer.mapLeaderboardHologram.delete();
+            }
         }
     }
 
@@ -315,5 +325,37 @@ public class HippoPlayer {
 
     public PlayerData getPlayerData() {
         return this.playerData;
+    }
+
+    public void updateLeaderboardsFully() {
+        deleteLeaderboards();
+        this.mapLeaderboardHologram = parentPlugin.holographicDisplaysAPI.createHologram(getViewLocation());
+        this.overallLeaderboardHologram = parentPlugin.holographicDisplaysAPI.createHologram(getViewLocation());
+        updateLeaderboardPosition();
+        updateLeaderboardTime();
+    }
+
+    public void updateLeaderboardTime() {
+        LeaderboardLogic.updateMapLeaderboardHologramTimes(mapLeaderboardHologram, getMapName(), mapText());
+        LeaderboardLogic.updateMapLeaderboardHologramTimes(overallLeaderboardHologram, "total", mapText());
+    }
+
+    public void updateLeaderboardPosition() {
+        mapLeaderboardHologram.setPosition(Offset.location(this.plot, this.world, mapData.getSpawnPoint().getX() - 2, mapData.getSpawnPoint().getY() + 3.1, mapData.getSpawnPoint().getZ() + 4, false));
+        overallLeaderboardHologram.setPosition(Offset.location(this.plot, this.world, mapData.getSpawnPoint().getX() - 2, mapData.getSpawnPoint().getY() + 3.1, mapData.getSpawnPoint().getZ() - 4, false));
+    }
+
+    public void clearLeaderboards() {
+        mapLeaderboardHologram.getLines().clear();
+        overallLeaderboardHologram.getLines().clear();
+    }
+
+    public void deleteLeaderboards() {
+        if (overallLeaderboardHologram != null) {
+            overallLeaderboardHologram.delete();
+        }
+        if (mapLeaderboardHologram != null) {
+            mapLeaderboardHologram.delete();
+        }
     }
 }
