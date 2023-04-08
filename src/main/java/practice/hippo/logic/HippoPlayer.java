@@ -328,6 +328,7 @@ public class HippoPlayer {
     }
 
     public void updateLeaderboardsFully() {
+        deleteLeaderboards();
         this.mapLeaderboardHologram = parentPlugin.holographicDisplaysAPI.createHologram(getViewLocation());
         this.overallLeaderboardHologram = parentPlugin.holographicDisplaysAPI.createHologram(getViewLocation());
         updateLeaderboardPosition();
@@ -335,17 +336,26 @@ public class HippoPlayer {
     }
 
     public void updateLeaderboardTime() {
-        mapLeaderboardHologram.getLines().appendText("§7Leaderboard for " + mapText());
-        overallLeaderboardHologram.getLines().appendText("§7Overall Leaderboard");
+        LeaderboardLogic.updateMapLeaderboardHologramTimes(mapLeaderboardHologram, getMapName(), mapText());
+        LeaderboardLogic.updateMapLeaderboardHologramTimes(overallLeaderboardHologram, "total", mapText());
     }
 
     public void updateLeaderboardPosition() {
-        mapLeaderboardHologram.setPosition(Offset.location(this.plot, this.world, mapData.getSpawnPoint().getX() - 2, mapData.getSpawnPoint().getY() + 1, mapData.getSpawnPoint().getZ() + 4, false));
-        overallLeaderboardHologram.setPosition(Offset.location(this.plot, this.world, mapData.getSpawnPoint().getX() - 2, mapData.getSpawnPoint().getY() + 1, mapData.getSpawnPoint().getZ() - 4, false));
+        mapLeaderboardHologram.setPosition(Offset.location(this.plot, this.world, mapData.getSpawnPoint().getX() - 2, mapData.getSpawnPoint().getY() + 3.1, mapData.getSpawnPoint().getZ() + 4, false));
+        overallLeaderboardHologram.setPosition(Offset.location(this.plot, this.world, mapData.getSpawnPoint().getX() - 2, mapData.getSpawnPoint().getY() + 3.1, mapData.getSpawnPoint().getZ() - 4, false));
+    }
+
+    public void clearLeaderboards() {
+        mapLeaderboardHologram.getLines().clear();
+        overallLeaderboardHologram.getLines().clear();
     }
 
     public void deleteLeaderboards() {
-        mapLeaderboardHologram.delete();
-        overallLeaderboardHologram.delete();
+        if (overallLeaderboardHologram != null) {
+            overallLeaderboardHologram.delete();
+        }
+        if (mapLeaderboardHologram != null) {
+            mapLeaderboardHologram.delete();
+        }
     }
 }

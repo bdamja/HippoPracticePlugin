@@ -261,6 +261,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         hippoPlayer.hasFinishedHippo = true;
         hippoPlayer.stopVisualTimer();
         hippoPlayer.updateVisualTimer(player.getScoreboard(), finalTime);
+        hippoPlayer.updateLeaderboardsFully();
         checkNewPB(hippoPlayer.getPlayerData(), hippoPlayer.getMapData().getMapName(), ms);
     }
 

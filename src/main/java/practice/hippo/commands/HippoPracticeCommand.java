@@ -210,11 +210,4 @@ public class HippoPracticeCommand extends BaseCommand {
             ChatLogic.sendMessageToPlayer(ChatColor.RED + "Usage: /leaderboard <map> <page>", player);
         }
     }
-
-    @Subcommand("delete")
-    public void onDelete(CommandSender sender) {
-        Player player = (Player) sender;
-        System.out.println(parentPlugin.playerMap);
-    }
-
 }

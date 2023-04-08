@@ -97,14 +97,35 @@ public class LeaderboardLogic {
         return null;
     }
 
-    public static void createHologram(HippoPractice plugin) {
-        HolographicDisplaysAPI api = HolographicDisplaysAPI.get(plugin);
-        Hologram individualLeaderboard = api.createHologram(new Location(plugin.getServer().getWorld(plugin.worldName), 0, 100, 0));
-        individualLeaderboard.getLines().clear();
-        individualLeaderboard.getLines().appendText("Leaderboard for Aquatica");
-        individualLeaderboard.getLines().appendText("Leaderboard for Aquatica");
-        individualLeaderboard.getLines().appendText("Leaderboard for Aquatica");
-
+    public static void updateMapLeaderboardHologramTimes(Hologram hologram, String mapName, String mapNameFormatted) {
+        hologram.getLines().clear();
+        HashMap<String, Long> sortedLB;
+        if (mapName.equals("total") || mapName.equals("overall")) {
+            sortedLB = sortPlayerTimeMap(MongoDB.getTotalTimeLeaderboard());
+            hologram.getLines().appendText("§aOverall Leaderboard");
+        } else {
+            sortedLB = sortPlayerTimeMap(MongoDB.getTimeLeaderboardFromMap(mapName));
+            hologram.getLines().appendText("§aLeaderboard for " + mapNameFormatted);
+        }
+        for (int i = 0; i < MAX_PLAYERS_PER_LINE; i++) {
+            if (sortedLB.size() > i) {
+                String position = String.valueOf(i + 1);
+                String name = (String) sortedLB.keySet().toArray()[i];
+                String time = Timer.computeTimeFormatted((Long) (sortedLB.values().toArray()[i]));
+                if (sortedLB.values().toArray()[i] == sortedLB.values().toArray()[0]) {
+                    name = "§e" + name;
+                    time = "§e" + time + " §e✴";
+                }
+                hologram.getLines().appendText("§7" + position + ". §b" + name + " §7- §f" + time);
+            } else {
+                hologram.getLines().appendText("§7-.---");
+            }
+        }
+        if (mapName.equals("total") || mapName.equals("overall")) {
+            hologram.getLines().appendText("§7/hp lb overall for full leaderboard!");
+        } else {
+            hologram.getLines().appendText("§7/hp lb " + mapName + " for full leaderboard!");
+        }
     }
 
 }
