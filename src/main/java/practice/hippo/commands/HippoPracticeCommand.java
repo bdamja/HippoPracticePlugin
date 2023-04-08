@@ -56,7 +56,7 @@ public class HippoPracticeCommand extends BaseCommand {
     public void onMaps(CommandSender sender) {
         TextComponent message = new TextComponent(ChatLogic.PREFIX + "§7List of available maps: ");
         for (Map.Entry<String, String> mapElement : HippoPractice.maps.entrySet()) {
-            TextComponent mapMessage = new TextComponent("\n" + ChatColor.GRAY + "  » " + mapElement.getValue());
+            TextComponent mapMessage = new TextComponent("\n" + ChatColor.GRAY + "  §3» §b" + mapElement.getValue());
             mapMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hp loadmap " + mapElement.getKey()));
             mapMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("Click to go to this map")}));
             message.addExtra(mapMessage);

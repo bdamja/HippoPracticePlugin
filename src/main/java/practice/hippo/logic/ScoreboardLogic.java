@@ -61,7 +61,7 @@ public class ScoreboardLogic {
 
     public void updateMapName(Player player, String mapNameFormatted) {
         Scoreboard board = player.getScoreboard();
-        board.getTeam("mapName").setPrefix(mapNameFormatted);
+        board.getTeam("mapName").setPrefix("§b" + mapNameFormatted);
     }
 
     public void updatePB(PlayerData playerData, String mapName) {

@@ -69,7 +69,7 @@ public class ChatLogic {
     }
 
     public static void sendHippoCompletion(HippoPlayer hippoPlayer, long ms, Player player) {
-        String msg = ChatColor.GRAY + "You completed the " + hippoPlayer.mapText() + ChatColor.GRAY + " structure in "
+        String msg = ChatColor.GRAY + "You completed the §a" + hippoPlayer.mapText() + ChatColor.GRAY + " structure in "
                 + ChatColor.AQUA + Timer.computeTimeFormatted(ms) + ChatColor.GRAY + "!";
         sendMessageToPlayer(msg, player);
     }
