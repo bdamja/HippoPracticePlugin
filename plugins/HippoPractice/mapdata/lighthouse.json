@@ -25,5 +25,6 @@
         "maxX": 19.0,
         "maxY": 92.0,
         "maxZ": 0.0
-    }
+    },
+    "item": "REDSTONE_LAMP_OFF"
 }

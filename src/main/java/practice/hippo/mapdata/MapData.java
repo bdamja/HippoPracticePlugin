@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import practice.hippo.HippoPractice;
 import practice.hippo.logic.ChatLogic;
 import practice.hippo.util.BoundingBox;
@@ -33,6 +35,9 @@ public class MapData {
 
     @SerializedName("blacklisted_regions")
     private BoundingBox[] blacklistedRegions;
+
+    @SerializedName("item")
+    private String item;
 
     public MapData() {
     }
@@ -83,6 +88,15 @@ public class MapData {
         return blacklistedRegions;
     }
 
+    public ItemStack getItem() {
+        String[] itemStrArray = item.split(":");
+        Material material = Material.valueOf(itemStrArray[0]);
+        ItemStack result = new ItemStack(material);
+        if (itemStrArray.length > 1) {
+            result.setDurability(Short.parseShort(itemStrArray[1]));
+        }
+        return result;
+    }
 }
 
 // The default color is red, so all coordinates are implied to be on the red side.

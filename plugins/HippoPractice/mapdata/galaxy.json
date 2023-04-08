@@ -25,5 +25,6 @@
         "maxX": 20.0,
         "maxY": 92.0,
         "maxZ": 0.0
-    }
+    },
+    "item": "QUARTZ_BLOCK"
 }

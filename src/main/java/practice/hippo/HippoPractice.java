@@ -4,10 +4,13 @@ import co.aikar.commands.PaperCommandManager;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mongodb.client.FindIterable;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
+import net.minecraft.server.v1_8_R3.Tuple;
+import org.bson.Document;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -54,6 +57,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public static final int DISTANCE_BETWEEN_PLOTS = 41;
     public static final boolean USE_DATABASE = true;
     public static final Material RESET_MATERIAL = Material.REDSTONE;
+    public static final Material SETTINGS_MATERIAL = Material.EMERALD;
 
     public String worldName;
     public String ip;
@@ -63,6 +67,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public World world;
     public HolographicDisplaysAPI holographicDisplaysAPI;
     public static TreeMap<String, String> maps = new TreeMap<>();
+    public static TreeMap<String, Tuple<String, ItemStack>> mapsMapNamesItems = new TreeMap<>();
     public static ArrayList<String> kitActions = new ArrayList<String>(){ { add("edit"); add("save"); } };
     private static final ArrayList<Plot> plots = new ArrayList<>();
     public ScoreboardLogic scoreboardLogic = null;
@@ -73,6 +78,9 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public void onEnable() {
         INSTANCE = this;
         readConfigValues();
+        if (USE_DATABASE) {
+            MongoDB.init();
+        }
         PluginManager pluginManager = this.getServer().getPluginManager();
         registerEventListeners(pluginManager);
         setDefaultGameRules();
@@ -88,9 +96,6 @@ public class HippoPractice extends JavaPlugin implements Listener {
         manager.getCommandCompletions().registerCompletion("kitActions", c -> kitActions);
         scoreboardLogic = new ScoreboardLogic(this);
         setPlotList();
-        if (USE_DATABASE) {
-            MongoDB.init();
-        }
         holographicDisplaysAPI = HolographicDisplaysAPI.get(this);
     }
 
@@ -143,15 +148,28 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     private void addMapsToQueue() throws FileNotFoundException {
-        File mapDataDirectory = getPluginsDirSubdir("mapdata");
-        if (!mapDataDirectory.exists()) {
-            getLogger().severe("Error when trying to load mapdata directory: Could not find directory: " + mapDataDirectory);
-        } else {
-            for (File mapDataFile : mapDataDirectory.listFiles()) {
+        if (USE_DATABASE) {
+            FindIterable<Document> allMaps = MongoDB.getAllMaps();
+            for (Document document : allMaps) {
                 Gson gson = new Gson();
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(mapDataFile));
-                MapData mapData = gson.fromJson(bufferedReader, MapData.class);
+                MapData mapData = gson.fromJson(document.toJson(), MapData.class);
                 maps.put(mapData.getMapName(), mapData.getMapText());
+                Tuple<String, ItemStack> mapNameItem = new Tuple<>(mapData.getMapText(), mapData.getItem());
+                mapsMapNamesItems.put(mapData.getMapName(), mapNameItem);
+            }
+        } else {
+            File mapDataDirectory = getPluginsDirSubdir("mapdata");
+            if (!mapDataDirectory.exists()) {
+                getLogger().severe("Error when trying to load mapdata directory: Could not find directory: " + mapDataDirectory);
+            } else {
+                for (File mapDataFile : mapDataDirectory.listFiles()) {
+                    Gson gson = new Gson();
+                    BufferedReader bufferedReader = new BufferedReader(new FileReader(mapDataFile));
+                    MapData mapData = gson.fromJson(bufferedReader, MapData.class);
+                    maps.put(mapData.getMapName(), mapData.getMapText());
+                    Tuple<String, ItemStack> mapNameItem = new Tuple<>(mapData.getMapText(), mapData.getItem());
+                    mapsMapNamesItems.put(mapData.getMapName(), mapNameItem);
+                }
             }
         }
     }
@@ -172,12 +190,18 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     public void refreshPlayerAttributes(Player player) {
-        player.setGameMode(GameMode.SURVIVAL);
+        HippoPlayer hippoPlayer = getHippoPlayer(player);
+        if (!hippoPlayer.getMapName().equals("null") && !hippoPlayer.getMapName().equals("no_map")) {
+            player.setGameMode(GameMode.SURVIVAL);
+            InventoryLogic.loadInventory(player, hippoPlayer.getPlot().getSide(), hippoPlayer.getPlayerData());
+        } else {
+            player.setGameMode(GameMode.ADVENTURE);
+            InventoryLogic.giveSettingsItem(player, hippoPlayer.getPlayerData());
+        }
         player.setHealth(20);
         player.setFoodLevel(20);
         player.setSaturation(20);
         getHippoPlayer(player).isEditingKit = false;
-        InventoryLogic.loadInventory(player, getHippoPlayer(player).getPlot().getSide(), getHippoPlayer(player).getPlayerData());
     }
 
     public SchematicLogic getSchematicPaster() {
@@ -186,6 +210,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     public void resetMap(Player player) throws IOException {
         HippoPlayer hippoPlayer = getHippoPlayer(player);
+        if (hippoPlayer.getMapName().equals("null") || hippoPlayer.getMapName().equals("no_map")) return;
         Plot plot = hippoPlayer.getPlot();
         String mapName = hippoPlayer.getMapName();
         removeAllBlocksPlacedByPlayer(player);
@@ -240,7 +265,11 @@ public class HippoPractice extends JavaPlugin implements Listener {
 
     public void teleportToSpawnLocation(Player player) {
         HippoPlayer hippoPlayer = getHippoPlayer(player);
-        player.teleport(hippoPlayer.getSpawnPoint());
+        if (!hippoPlayer.getMapName().equals("null") && !hippoPlayer.getMapName().equals("no_map")) {
+            player.teleport(hippoPlayer.getSpawnPoint());
+        } else {
+            teleportToCenterLocation(player);
+        }
     }
 
     public void teleportToViewLocation(Player player) {
@@ -337,13 +366,17 @@ public class HippoPractice extends JavaPlugin implements Listener {
     }
 
     @SuppressWarnings("deprecation")
-    public void showMissingBlocks(HippoPlayer hippoPlayer) {
-        for (Block block : hippoPlayer.getRecordedBlocks()) {
-            block.setType(Material.STAINED_GLASS);
-            block.setData(hippoPlayer.getColorData());
+    public void showMissingBlocks(HippoPlayer hippoPlayer) throws FileNotFoundException {
+        if (hippoPlayer.getLocationFromHippoFile(hippoPlayer.getMapName()).isEmpty()) {
+            ChatLogic.sendMessageToPlayer(ChatColor.RED + "There is no hippo set for this map.", hippoPlayer.getPlayer());
+        } else {
+            for (Block block : hippoPlayer.getRecordedBlocks()) {
+                block.setType(Material.STAINED_GLASS);
+                block.setData(hippoPlayer.getColorData());
+            }
+            hippoPlayer.awaitingLeftClick = true;
+            showMissingParticles(hippoPlayer);
         }
-        hippoPlayer.awaitingLeftClick = true;
-        showMissingParticles(hippoPlayer);
     }
 
     @SuppressWarnings("deprecation")
@@ -460,8 +493,14 @@ public class HippoPractice extends JavaPlugin implements Listener {
         HippoPlayer hippoPlayer = getHippoPlayer(player);
         if (hippoPlayer.isEditingKit) {
             hippoPlayer.isEditingKit = false;
-            player.setGameMode(GameMode.SURVIVAL);
             writeCurrentLayoutToFile(hippoPlayer);
+            if (hippoPlayer.getMapName().equals("null") || hippoPlayer.getMapName().equals("no_map")) {
+                player.setGameMode(GameMode.ADVENTURE);
+                InventoryLogic.hardInventoryClear(player);
+                InventoryLogic.giveSettingsItem(player, hippoPlayer.getPlayerData());
+            } else {
+                player.setGameMode(GameMode.SURVIVAL);
+            }
         }
     }
 
@@ -473,6 +512,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         int blocks1Slot = InventoryLogic.DEFAULT_BLOCKS1_SLOT;
         int blocks2Slot = InventoryLogic.DEFAULT_BLOCKS2_SLOT;
         int resetItemSlot = InventoryLogic.DEFAULT_RESET_ITEM_SLOT;
+        int settingsSlot = InventoryLogic.DEFAULT_SETTINGS_ITEM_SLOT;
         int index = 0;
         int blocksCount = 0;
         while (inventoryIterator.hasNext()) {
@@ -492,6 +532,9 @@ public class HippoPractice extends JavaPlugin implements Listener {
                 if (itemStack.getType().equals(HippoPractice.RESET_MATERIAL)) {
                     resetItemSlot = index;
                 }
+                if (itemStack.getType().equals(HippoPractice.SETTINGS_MATERIAL)) {
+                    settingsSlot = index;
+                }
             }
             index++;
         }
@@ -499,6 +542,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         playerData.setBlocks1Slot(blocks1Slot);
         playerData.setBlocks2Slot(blocks2Slot);
         playerData.setResetItemSlot(resetItemSlot);
+        playerData.setSettingsItemSlot(settingsSlot);
         uploadPlayerData(hippoPlayer.getPlayerData());
     }
 

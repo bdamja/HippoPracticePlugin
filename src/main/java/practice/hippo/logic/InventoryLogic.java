@@ -15,7 +15,7 @@ public class InventoryLogic {
     public static final int DEFAULT_BLOCKS1_SLOT = 3;
     public static final int DEFAULT_BLOCKS2_SLOT = 4;
     public static final int DEFAULT_RESET_ITEM_SLOT = 5;
-
+    public static final int DEFAULT_SETTINGS_ITEM_SLOT = 8;
 
     public static void loadInventory(Player player, Side side, PlayerData playerData) {
         hardInventoryClear(player);
@@ -23,6 +23,7 @@ public class InventoryLogic {
         player.getInventory().setItem(playerData.getBlocks1Slot(), getBlocksItemStack(side));
         player.getInventory().setItem(playerData.getBlocks2Slot(), getBlocksItemStack(side));
         player.getInventory().setItem(playerData.getResetItemSlot(), getResetItemItemStack());
+        player.getInventory().setItem(playerData.getSettingsItemSlot(), getSettingsItemStack());
     }
 
     private static ItemStack getPickaxeItemStack() {
@@ -52,7 +53,15 @@ public class InventoryLogic {
         return(itemStack);
     }
 
-    public static void hardInventoryClear(Player player){
+    private static ItemStack getSettingsItemStack() {
+        ItemStack itemStack = new ItemStack(HippoPractice.SETTINGS_MATERIAL, 1);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.setDisplayName("§aSettings §7(Right Click)");
+        itemStack.setItemMeta(itemMeta);
+        return(itemStack);
+    }
+
+    public static void hardInventoryClear(Player player) {
         player.getInventory().clear();
         ItemStack clear = new ItemStack(Material.AIR);
         player.getOpenInventory().setCursor(clear);
@@ -62,6 +71,10 @@ public class InventoryLogic {
         player.getInventory().setChestplate(null);
         player.getInventory().setLeggings(null);
         player.getInventory().setBoots(null);
+    }
+
+    public static void giveSettingsItem(Player player, PlayerData playerData) {
+        player.getInventory().setItem(playerData.getSettingsItemSlot(), getSettingsItemStack());
     }
 
 }

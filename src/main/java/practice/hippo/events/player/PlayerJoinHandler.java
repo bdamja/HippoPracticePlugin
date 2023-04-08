@@ -40,6 +40,7 @@ public class PlayerJoinHandler implements Listener {
         parentPlugin.teleportToCenterLocation(player);
         parentPlugin.scoreboardLogic.makeBoard(player);
         ChatLogic.sendWelcomeMessage(player);
+        InventoryLogic.giveSettingsItem(player, parentPlugin.getHippoPlayer(player).getPlayerData());
     }
 
 }
