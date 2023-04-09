@@ -1,3 +1,6 @@
 world_name: "world"
 ip: serverip.here
 command_cooldown_ms: 3000
+use_development_env: true
+development_mongo_line: 'mongodb://localhost:27017'
+production_mongo_line: ''

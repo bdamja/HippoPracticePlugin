@@ -50,7 +50,7 @@ public class PlayerData {
                 parentPlugin.getLogger().severe("Error when trying to load player data: Could not find file: " + playerDataFile);
             }
         }
-        if (data == null) {
+        if (data == null || data.getPersonalBests().isEmpty()) {
             data = setDefaults();
         }
         return data;
@@ -118,8 +118,10 @@ public class PlayerData {
         }
         if (found) {
             data.update();
-            HippoPractice.uploadPlayerData(this);;
+        } else {
+            data.addPB(new MapPB(mapName, ms));
         }
+        HippoPractice.uploadPlayerData(this);
     }
 
     public int getPickSlot() {

@@ -62,6 +62,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
     public String worldName;
     public String ip;
     public long commandCooldownMilliseconds;
+    public String mongoLine;
 
     public static SchematicLogic schematicPaster = null;
     public World world;
@@ -79,7 +80,7 @@ public class HippoPractice extends JavaPlugin implements Listener {
         INSTANCE = this;
         readConfigValues();
         if (USE_DATABASE) {
-            MongoDB.init();
+            MongoDB.init(mongoLine);
         }
         PluginManager pluginManager = this.getServer().getPluginManager();
         registerEventListeners(pluginManager);
@@ -140,6 +141,8 @@ public class HippoPractice extends JavaPlugin implements Listener {
         worldName = getConfig().getString("world_name");
         ip = getConfig().getString("ip");
         commandCooldownMilliseconds = getConfig().getLong("command_cooldown_ms");
+        boolean useDevelopmentEnv = getConfig().getBoolean("use_development_env");
+        mongoLine = useDevelopmentEnv ? getConfig().getString("development_mongo_line") : getConfig().getString("production_mongo_line");
         this.saveConfig();
     }
 

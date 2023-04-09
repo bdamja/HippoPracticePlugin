@@ -8,7 +8,6 @@ import org.bson.conversions.Bson;
 import practice.hippo.hippodata.HippoData;
 import practice.hippo.mapdata.MapData;
 import practice.hippo.playerdata.MapPB;
-import practice.hippo.playerdata.PlayerData;
 import practice.hippo.playerdata.PlayerDataFormat;
 
 import java.util.ArrayList;
@@ -24,9 +23,9 @@ public class MongoDB {
     private static MongoCollection<Document> playerDataCollection;
     private static MongoCollection<Document> hippoDataCollection;
 
-    public static void init() {
-        mongo = MongoClients.create("mongodb://localhost:27017");
-        database = mongo.getDatabase("myDb");
+    public static void init(String mongoLine) {
+        mongo = MongoClients.create(mongoLine);
+        database = mongo.getDatabase("hippopractice");
 
         if (!database.listCollectionNames().into(new ArrayList<>()).contains("hippodata")) {
             database.createCollection("hippodata");
