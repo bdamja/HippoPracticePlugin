@@ -150,8 +150,14 @@ public class HippoPracticeCommand extends BaseCommand {
         String msg = ChatColor.RED + "Usage: /hp kit <edit or save>";
         if (args.length > 0) {
             if (args[0].equals("edit")) {
-                msg = ChatColor.GRAY + "Edit your layout to your liking, then do " + ChatColor.AQUA + "/hp kit save";
+                TextComponent message = new TextComponent(ChatLogic.PREFIX + "§7Edit your layout to your liking, then do ");
+                TextComponent command = new TextComponent("§b/hp kit save");
+                command.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hp kit save"));
+                command.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("Click here to save your kit")}));
+                message.addExtra(command);
                 parentPlugin.beginEditingKit((Player) sender);
+                ((Player) sender).spigot().sendMessage(message);
+                return;
             } else if (args[0].equals("save")) {
                 if (parentPlugin.getHippoPlayer((Player) sender).isEditingKit) {
                     msg = ChatColor.GRAY + "Saving your layout.";
