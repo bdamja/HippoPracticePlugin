@@ -75,8 +75,14 @@ public class ChatLogic {
     }
 
     public static void sendWelcomeMessage(Player player) {
-        String msg1 = ChatColor.GRAY + "Welcome to " + ChatColor.DARK_GREEN + "Hippo Practice";
-        sendMessageToPlayer(msg1, player);
+        TextComponent msg1 = new TextComponent(ChatLogic.PREFIX + "§7Welcome to §2Hippo Practice");
+        msg1.addExtra("\n" + ChatLogic.PREFIX + "§7This plugin was created by §abdamja");
+        msg1.addExtra("\n" + ChatLogic.PREFIX + "§7The source can be found ");
+        TextComponent link = new TextComponent("§3§nhere");
+        link.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/bdamja/HippoPracticePlugin"));
+        link.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("Click here to view source on github")}));
+        msg1.addExtra(link);
+        player.spigot().sendMessage(msg1);
         TextComponent msg2 = new TextComponent(ChatLogic.PREFIX + "§7Do ");
         TextComponent command = new TextComponent("§b/hp maps");
         command.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hp maps"));
